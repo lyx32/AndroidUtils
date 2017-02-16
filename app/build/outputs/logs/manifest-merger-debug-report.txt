@@ -1,0 +1,55 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:2:1-12:12
+	package
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:3:11-49
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:2:11-69
+	android:versionCode
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:5:5-75
+	android:name
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:5:22-73
+application
+ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:6:5-10:19
+MERGED from [com.android.support:appcompat-v7:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-v4:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-compat\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-fragment:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-vector-drawable:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.2.1\AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.2.1\AndroidManifest.xml:22:5-20
+	android:label
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:8:9-41
+	android:supportsRtl
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:9:9-35
+	android:allowBackup
+		ADDED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml:7:9-35
+uses-sdk
+INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:appcompat-v7:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.2.1\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-v4:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.2.1\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-compat:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-compat\24.2.1\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-media-compat:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-ui:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\24.2.1\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-fragment:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-vector-drawable:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.2.1\AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.2.1\AndroidManifest.xml:20:5-44
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:24.2.1] D:\hk\github\AndroidUtils\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.2.1\AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml
+		INJECTED from D:\hk\github\AndroidUtils\app\src\main\AndroidManifest.xml

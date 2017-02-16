@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SwipeRefreshLayoutLoadingColor">
+        <attr name="allColor" format="color" />
+        <attr name="topColor" format="color" />
+        <attr name="topColor1" format="color" />
+        <attr name="topColor2" format="color" />
+        <attr name="topColor3" format="color" />
+        <attr name="topColor4" format="color" />
+        <attr name="bottomColor" format="color" />
+        <attr name="bottomColor1" format="color" />
+        <attr name="bottomColor2" format="color" />
+        <attr name="bottomColor3" format="color" />
+        <attr name="bottomColor4" format="color" />
+    </declare-styleable>
+</resources>
