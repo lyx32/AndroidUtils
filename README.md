@@ -1,5 +1,7 @@
 # AndroidUtils
+
 该项目主要是自己写的和收集的一些android工具包。
+
 1.StringUtils 一些String的处理，包含是否为空，是否小数，编码，解码等
 2.FIleUtils 一些File的操作，包括写入，读取，追加，删除，拷贝等
 3.HTMLUtils 来源于oschina的官方app
