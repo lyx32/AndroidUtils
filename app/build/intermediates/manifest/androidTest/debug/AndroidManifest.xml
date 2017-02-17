@@ -3,7 +3,7 @@
     package="com.arraylist7.android.utils.test" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="11"
         android:targetSdkVersion="24" />
 
     <instrumentation
