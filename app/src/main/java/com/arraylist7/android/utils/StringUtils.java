@@ -48,10 +48,6 @@ public final class StringUtils {
     private final static SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
-    private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
-    private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>"; // 定义style的正则表达式
-    private static final String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
-    private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
 
     private final static Pattern URL = Pattern.compile("^(https|http)://.*?$(net|com|.com.cn|org|me|info|top|cn|cc|tv|)");
 
@@ -444,4 +440,36 @@ public final class StringUtils {
         }
     }
 
+    /**
+     * 将内容中的关键字替换掉。主要用于处理json格式错误，网页展示问题，以及sql关键字
+     * @param val
+     * @return
+     */
+    public static String filterKeywords(String val){
+        if (!isNullOrEmpty(val)) {
+            if (val.matches("\\([^u])"))
+                val = val.replace(val, "\\\\$1");
+            if (val.contains("'"))
+                val = val.replace("'", "\\u0027");
+            if (val.contains("\r\n"))
+                val = val.replace("\r\n", "\\u000a");
+            if (val.contains("\n"))
+                val = val.replace("\n", "\\u000a");
+            if (val.contains("\r"))
+                val = val.replace("\r", "\\u000a");
+            if (val.contains("\t"))
+                val = val.replace("\t", "　　");
+            if (val.contains("\""))
+                val = val.replace("\"", "\\u0022");
+            if (val.contains("'"))
+                val = val.replace("'", "\\u0027");
+            if (val.contains("<"))
+                val = val.replace("<", "\\u003c");
+            if (val.contains(">"))
+                val = val.replace(">", "\\u003e");
+            if (val.contains("/"))
+                val = val.replace("/", "\\u002f");
+        }
+        return val;
+    }
 }
