@@ -31,7 +31,7 @@ public class LogUtils {
     }
 
     public static void e(String tag, String message) {
-        e(tag, message,null);
+        e(tag, message, null);
     }
 
     public static void e(String tag, String message, Throwable tr) {
@@ -46,8 +46,12 @@ public class LogUtils {
         d(getTag(), message, tr);
     }
 
+    public static void d(String tag, String message) {
+        d(getTag(), message, null);
+    }
+
     public static void d(String tag, String message, Throwable tr) {
-        if (debug) Log.d(tag, message,tr);
+        if (debug) Log.d(tag, message, tr);
     }
 
     public static void i(String message) {
@@ -84,13 +88,14 @@ public class LogUtils {
 
     /**
      * 保存日志
-     * @param message 要保存的内容
+     *
+     * @param message          要保存的内容
      * @param fileAbsolutePath 要保存的文件绝对路径
      */
     public static void file(String message, String fileAbsolutePath) {
         LogUtils.e(message);
         try {
-            FileUtils.writeFile(fileAbsolutePath, message+"\n\n", true);
+            FileUtils.writeFile(fileAbsolutePath, message + "\n\n", true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,21 +104,24 @@ public class LogUtils {
 
     /**
      * 保存日志
-     * @param message 要保存的内容
+     *
+     * @param message      要保存的内容
      * @param rootDirctory 要保存的sd卡根目录
-     * @param fileName 要保存的文件名
+     * @param fileName     要保存的文件名
      */
     public static void file(String message, String rootDirctory, String fileName) {
-        file(message, CacheUtils.createAppRootDir(rootDirctory)+"/" + fileName);
+        file(message, CacheUtils.createAppRootDir(rootDirctory) + "/" + fileName);
     }
+
     /**
      * 保存日志
-     * @param message 要保存的内容
+     *
+     * @param message      要保存的内容
      * @param rootDirctory 要保存的sd卡根目录
-     * @param dirctory 要保存的二级目录
-     * @param fileName 要保存的文件名
+     * @param dirctory     要保存的二级目录
+     * @param fileName     要保存的文件名
      */
-    public static void file(String message, String rootDirctory,String dirctory, String fileName) {
-        file(message, CacheUtils.createAppOtherDir(rootDirctory, dirctory)+"/" + fileName);
+    public static void file(String message, String rootDirctory, String dirctory, String fileName) {
+        file(message, CacheUtils.createAppOtherDir(rootDirctory, dirctory) + "/" + fileName);
     }
 }

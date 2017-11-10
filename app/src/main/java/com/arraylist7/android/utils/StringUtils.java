@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils;
 
+import android.content.Intent;
 import android.util.Base64;
 
 import java.io.BufferedReader;
@@ -21,9 +22,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -48,16 +51,109 @@ public final class StringUtils {
     private final static SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
+    private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
+    private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>"; // 定义style的正则表达式
+    private static final String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
+    private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
 
     private final static Pattern URL = Pattern.compile("^(https|http)://.*?$(net|com|.com.cn|org|me|info|top|cn|cc|tv|)");
 
 
     private static DecimalFormat df = new DecimalFormat("#.##");
-    private static DecimalFormat df2 = new DecimalFormat("#.00");
+    private static DecimalFormat df1 = new DecimalFormat("0.0");
+    private static DecimalFormat df2 = new DecimalFormat("0.00");
 
     StringUtils() {
     }
 
+    public static String trim(Object val){
+        if(isNullOrEmpty(val))
+            return "";
+        return val.toString().trim();
+    }
+
+    public static boolean isInt(Object obj){
+        if(!isNullOrEmpty(obj)){
+            return obj.toString().matches("^\\d+$");
+        }
+        return false;
+    }
+    public static boolean isDouble(Object obj,boolean hasDecimal){
+        if(!isNullOrEmpty(obj)){
+            String regex = "^\\d+$";
+            if(hasDecimal)
+                regex="^\\d+(\\.\\d+)?$";
+            return obj.toString().matches(regex);
+        }
+        return false;
+    }
+
+    public static int getInt(Object obj,int def){
+        if(!isNullOrEmpty(obj))
+            obj = obj.toString().trim();
+        if(isInt(obj)){
+            return Integer.parseInt(obj.toString());
+        }else{
+            String val = obj.toString().replaceAll("\\D","");
+            if(isInt(val))
+                return Integer.parseInt(val);
+        }
+        return def;
+    }
+    public static double getDouble(Object obj,double def){
+        if(!isNullOrEmpty(obj))
+            obj = obj.toString().trim();
+        if(isDouble(obj,false)){
+            return Integer.parseInt(obj.toString());
+        }
+        if(isDouble(obj,true)){
+            return Double.parseDouble(obj.toString());
+        }
+        return def;
+    }
+
+    public static float getFloat(Object obj,float def){
+        if(!isNullOrEmpty(obj))
+            obj = obj.toString().trim();
+        if(isDouble(obj,false)){
+            return Integer.parseInt(obj.toString());
+        }
+        if(isDouble(obj,true)){
+            return Float.parseFloat(obj.toString());
+        }
+        return def;
+    }
+
+    public static boolean equals(Object left,Object right){
+        if(isAllNullOrEmpty(left,right)) return true;
+        if(!isAllNotNullOrEmpty(left,right)) return false;
+        if(left instanceof String)
+            return left.toString().equalsIgnoreCase(right.toString());
+        return left.equals(right);
+    }
+
+    public static int len(Object value){
+        if (null == value)
+            return 0;
+        if(value instanceof Map){
+            return ((Map)value).keySet().size();
+        }else if(value instanceof Dictionary){
+            return ((Dictionary)value).size();
+        }else if(value instanceof Collection){
+            return ((Collection)value).size();
+        }else if(value instanceof Iterable){
+            int j=0;
+            Iterator i = ((Iterable)value).iterator();
+            while(null != i.next()) {
+                j++;
+            }
+            return j;
+        }else if(value.getClass().isArray()){
+            return Array.getLength(value);
+        } else {
+            return value.toString().length();
+        }
+    }
 
     /**
      * 取消小数
@@ -70,6 +166,16 @@ public final class StringUtils {
     }
 
     /**
+     * 保留1位小数。不足用0补位
+     *
+     * @param val
+     * @return
+     */
+    public static String doubleFormat1(double val) {
+        return df1.format(val);
+    }
+
+    /**
      * 保留2位小数。不足用0补位
      *
      * @param val
@@ -78,7 +184,6 @@ public final class StringUtils {
     public static String doubleFormat2(double val) {
         return df2.format(val);
     }
-
 
     public static boolean isNullOrEmpty(Object value) {
         if (null == value) {
@@ -118,6 +223,27 @@ public final class StringUtils {
         return isAllNotNullOrEmpty;
     }
 
+    public static String putRightTrim(String val,int length){
+        return putTrim(val,false,length);
+    }
+
+    public static String putTrim(String val,boolean isLeft,int length){
+        if(isNullOrEmpty(val)) return "";
+        StringBuffer newVal = new StringBuffer(length);
+        int end = val.length();
+        int len = length-end;
+        if(len > 0) {
+            for (int i = 0; i < len; i++) {
+                newVal.append(" ");
+            }
+            if (isLeft) newVal.append(val);
+            else newVal.insert(0,val);
+        }else{
+            newVal.append(val);
+        }
+        return newVal.toString();
+    }
+
     public static boolean isPhone(Object value) {
         if (isNullOrEmpty(value))
             return false;
@@ -136,20 +262,59 @@ public final class StringUtils {
         return emailer.matcher(email.toString()).matches();
     }
 
-    public static boolean isJSONString(String string) {
+    public static boolean isJSONObject(String string) {
         if (isNullOrEmpty(string))
             return false;
         try {
             new JSONObject(string);
         } catch (Exception e) {
-            try {
-                new JSONArray(string);
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-                return false;
-            }
+            return string.startsWith("{") && string.endsWith("}");
         }
         return true;
+    }
+
+    public static boolean isJSONArray(String string) {
+        if (isNullOrEmpty(string))
+            return false;
+        try {
+            new JSONArray(string);
+        } catch (Exception e) {
+            return string.startsWith("[") && string.endsWith("]");
+        }
+        return true;
+    }
+
+    public static boolean isJSONString(String string) {
+        if (isNullOrEmpty(string))
+            return false;
+       if(isJSONArray(string))
+           return true;
+        if(isJSONObject(string))
+            return true;
+        return false;
+    }
+
+    public static <T> List<T> asList(T... t){
+        return Arrays.asList(t);
+    }
+
+    public static <T> T[] asArray(T... t){
+        return t;
+    }
+
+    public static <T> T[] asArray(List<T> list){
+        return (T[])list.toArray();
+    }
+
+
+    public static <T> Map<String, T> asMap(T... args) {
+        Map<String, T> map = new HashMap<String, T>();
+        int i = 0;
+        for (T t : args) {
+            map.put(i + "", t);
+            i++;
+        }
+        return map;
     }
 
     public static long random(int min, int max) {
@@ -309,6 +474,12 @@ public final class StringUtils {
         return new SimpleDateFormat(format).format(new Date());
     }
 
+
+    public static int getWeek() {
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.DAY_OF_WEEK)-1;
+    }
+
     public static String friendly_time(String dateStr, int day) {
         if (1 > day)
             day = 1;
@@ -379,25 +550,6 @@ public final class StringUtils {
         return value.trim();
     }
 
-    public static <T> T[] toArray(T... t) {
-        return t;
-    }
-
-    public static <T> List<T> toList(T... args) {
-        List<T> list = new ArrayList<T>(args.length);
-        for (T t : args)
-            list.add(t);
-        return list;
-    }
-
-    public static <T> Map<String, T> toMap(T... args) {
-        Map<String, T> map = new HashMap<String, T>();
-        int i = 0;
-        for (T t : args) {
-            map.put(i + "", t);
-        }
-        return map;
-    }
 
     public static String numToHex(int n) {
         String s = Integer.toHexString(n);
@@ -440,36 +592,4 @@ public final class StringUtils {
         }
     }
 
-    /**
-     * 将内容中的关键字替换掉。主要用于处理json格式错误，网页展示问题，以及sql关键字
-     * @param val
-     * @return
-     */
-    public static String filterKeywords(String val){
-        if (!isNullOrEmpty(val)) {
-            if (val.matches("\\([^u])"))
-                val = val.replace(val, "\\\\$1");
-            if (val.contains("'"))
-                val = val.replace("'", "\\u0027");
-            if (val.contains("\r\n"))
-                val = val.replace("\r\n", "\\u000a");
-            if (val.contains("\n"))
-                val = val.replace("\n", "\\u000a");
-            if (val.contains("\r"))
-                val = val.replace("\r", "\\u000a");
-            if (val.contains("\t"))
-                val = val.replace("\t", "　　");
-            if (val.contains("\""))
-                val = val.replace("\"", "\\u0022");
-            if (val.contains("'"))
-                val = val.replace("'", "\\u0027");
-            if (val.contains("<"))
-                val = val.replace("<", "\\u003c");
-            if (val.contains(">"))
-                val = val.replace(">", "\\u003e");
-            if (val.contains("/"))
-                val = val.replace("/", "\\u002f");
-        }
-        return val;
-    }
 }

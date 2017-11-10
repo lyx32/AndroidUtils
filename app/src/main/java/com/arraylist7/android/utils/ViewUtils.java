@@ -1,11 +1,15 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.arraylist7.android.utils.annotation.Params;
+import com.arraylist7.android.utils.annotation.RArray;
+import com.arraylist7.android.utils.annotation.RColor;
+import com.arraylist7.android.utils.annotation.RString;
 import com.arraylist7.android.utils.annotation.Views;
 
 import java.lang.reflect.Field;
@@ -39,7 +43,7 @@ public final class ViewUtils {
         return bundle;
     }
 
-    private static void injectObject(Object object, ViewSource iv) {
+    private static void injectObject(Object object, ViewSource vs) {
         if (null == object) {
             LogUtils.e("要注入的对象为空");
             return;
@@ -54,44 +58,75 @@ public final class ViewUtils {
         for (Field field : fields) {
             Views aView = field.getAnnotation(Views.class);
             Params params = field.getAnnotation(Params.class);
+            RArray array = field.getAnnotation(RArray.class);
+            RString string = field.getAnnotation(RString.class);
+            RColor color = field.getAnnotation(RColor.class);
+            // 注入View
             if (null != aView) {
-                View findView = iv.findViewById(aView.value());
+                View findView = vs.findViewById(aView.value());
                 if (null == findView) {
                     LogUtils.e(getFieldInfo(field) + " 注入id无效");
-                    break;
+                    continue;
                 }
-                field.setAccessible(true);
                 try {
-                    field.set(object, findView);
+                    ClassUtils.setValue(field, object, findView);
                 } catch (Throwable e) {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
                     LogUtils.e(getFieldInfo(field) + " 将要注入" + injectViewName);
                 }
             }
+            // 注入参数
             if (null != params) {
-                if (null == keys) {
-                    field.setAccessible(true);
-                    Object val = params.def();
-                    try {
-                        field.set(object, val);
-                    } catch (Throwable e) {
-                        LogUtils.e(getFieldInfo(field) + " 绑定def参数：" + val + " 错误。");
-                    }
-                } else {
-                    for (String key : keys) {
-                        if (key.equalsIgnoreCase(params.value())) {
-                            field.setAccessible(true);
-                            try {
-                                Object val = bundle.get(key);
-                                if (StringUtils.isNullOrEmpty(val))
-                                    val = params.def();
-                                field.set(object, val);
-                            } catch (Throwable e) {
-                                LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
-                            }
-                            break;
+                for (String key : keys) {
+                    if (key.equalsIgnoreCase(params.value())) {
+                        try {
+                            Object val = bundle.get(key);
+                            if (!StringUtils.isNullOrEmpty(val))
+                                ClassUtils.setValue(field, object, val);
+                        } catch (Throwable e) {
+                            LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
                         }
+                        break;
                     }
+                }
+            }
+            // 注入r.array
+            if (null != array) {
+                String[] arrays = vs.getContext().getResources().getStringArray(array.value());
+                if (null == arrays && 0 != StringUtils.len(arrays)) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.array无效");
+                    continue;
+                }
+                try {
+                    ClassUtils.setValue(field, object, arrays);
+                } catch (Throwable e) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.array：" + array.value() + " 失败");
+                }
+            }
+            // 注入r.string
+            if (null != string) {
+                String strings = vs.getContext().getResources().getString(string.value());
+                if (null == strings) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.string无效");
+                    continue;
+                }
+                try {
+                    ClassUtils.setValue(field, object, strings);
+                } catch (Throwable e) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.string：" + string.value() + " 失败");
+                }
+            }
+            // 注入r.color
+            if (null != color) {
+                int colors = vs.getContext().getResources().getColor(color.value());
+                if (0 >= colors) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.color无效");
+                    continue;
+                }
+                try {
+                    ClassUtils.setValue(field, object, colors);
+                } catch (Throwable e) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.color：" + color.value() + " 失败");
                 }
             }
         }
@@ -108,20 +143,27 @@ public final class ViewUtils {
 }
 
 class ViewSource {
+    private Context context;
     private Activity activity;
     private View view;
 
     public ViewSource(Activity activity) {
         super();
         this.activity = activity;
+        this.context = activity;
     }
 
     public ViewSource(View view) {
         super();
         this.view = view;
+        this.context = view.getContext();
     }
 
     public View findViewById(int id) {
         return null == activity ? view.findViewById(id) : activity.findViewById(id);
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

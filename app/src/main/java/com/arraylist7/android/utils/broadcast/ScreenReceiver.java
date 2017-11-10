@@ -26,12 +26,12 @@ public class ScreenReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_SCREEN_ON)) {
             Log.d(TAG, "屏幕解锁广播...");
             if (screenListener != null) {
-                screenListener.screenOn();
+                screenListener.screenOnOrOff(true);
             }
         } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
             Log.d(TAG, "屏幕加锁广播...");
             if (screenListener != null) {
-                screenListener.screenOff();
+                screenListener.screenOnOrOff(false);
             }
         }
     }
@@ -59,9 +59,7 @@ public class ScreenReceiver extends BroadcastReceiver {
     }
 
     public static interface ScreenListener {
-        public void screenOn();
-
-        public void screenOff();
+        public void screenOnOrOff(boolean isOn);
     }
 
 }

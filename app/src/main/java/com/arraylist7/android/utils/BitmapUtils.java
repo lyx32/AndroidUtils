@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -36,7 +37,7 @@ public final class BitmapUtils {
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
                 LogUtils.i("BitmapUtils加载图片失败:" + uri.toString(), exception);
             }
-        }).loggingEnabled(false).indicatorsEnabled(true).defaultBitmapConfig(Config.ARGB_4444).build();
+        }).loggingEnabled(BuildConfig.DEBUG).indicatorsEnabled(true).defaultBitmapConfig(Config.ARGB_4444).build();
     }
 
     public static Picasso getPicasso() {

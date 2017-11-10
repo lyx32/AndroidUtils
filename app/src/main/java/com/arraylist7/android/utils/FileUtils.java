@@ -1,6 +1,8 @@
 package com.arraylist7.android.utils;
 
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -92,6 +94,9 @@ public final class FileUtils {
 		if (!file.exists()) {
 			throw new FileNotFoundException(file.getAbsolutePath());
 		}
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			throw new RuntimeException("没有挂载SD卡");
+		}
 		if (!file.canRead()) {
 			throw new RuntimeException(file.getAbsolutePath() + "没有读取权限");
 		}
@@ -135,6 +140,9 @@ public final class FileUtils {
 		if (!file.canWrite()) {
 			throw new RuntimeException(path + "没有写入权限");
 		}
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			throw new RuntimeException("没有挂载SD卡");
+		}
 		FileOutputStream fos = new FileOutputStream(file, isAppend);
 		FileChannel channel = fos.getChannel();
 		ByteBuffer buffer = ByteBuffer.wrap(content);
@@ -145,6 +153,9 @@ public final class FileUtils {
 	}
 
 	public static void copyFile(String path, String newPath) {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			throw new RuntimeException(path + "没有挂载SD卡");
+		}
 		File source = new File(path);
 		File newFile = new File(newPath);
 		if (!newFile.exists()) {

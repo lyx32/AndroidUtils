@@ -1,16 +1,13 @@
 package com.arraylist7.android.utils.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.Button;
 
-import com.arraylist7.android.utils.widget.v4.SwipeProgressBar;
 
 
-@SuppressLint("InlinedApi")
 public class ProgressButton extends Button {
 
 	private int mProgressBarHeight = 5;

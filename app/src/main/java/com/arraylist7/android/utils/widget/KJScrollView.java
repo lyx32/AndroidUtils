@@ -52,10 +52,12 @@ public class KJScrollView extends ScrollView {
 
     public KJScrollView(Context context) {
         super(context);
+        this.scrollTo(0,0);
     }
 
     public KJScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.scrollTo(0,0);
     }
 
     @Override
