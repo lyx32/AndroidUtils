@@ -19,10 +19,9 @@ import com.arraylist7.android.utils.inter.IHandler;
 /**
  * Created by Administrator on 2016/6/29.
  */
-public abstract class BaseActivity extends Activity implements IData,IHandler {
+public abstract class BaseActivity extends Activity implements IData {
 
     protected Bundle bundle;
-    protected NHandler handler;
     protected BaseActivity activity;
 
 
@@ -31,7 +30,6 @@ public abstract class BaseActivity extends Activity implements IData,IHandler {
         super.onCreate(savedInstanceState);
         this.setContentView(getLayoutId());
         activity = this;
-        handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
         onCreate2(savedInstanceState);
         initWidget();

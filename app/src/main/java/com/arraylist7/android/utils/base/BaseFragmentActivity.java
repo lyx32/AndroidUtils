@@ -17,11 +17,10 @@ import com.arraylist7.android.utils.inter.IHandler;
 /**
  * Created by Administrator on 2016/6/29.
  */
-public abstract class BaseFragmentActivity extends FragmentActivity implements IData, IHandler {
+public abstract class BaseFragmentActivity extends FragmentActivity implements IData {
 
 
     protected Bundle bundle;
-    protected NHandler handler;
     protected BaseFragmentActivity activity;
 
     @Override
@@ -29,7 +28,6 @@ public abstract class BaseFragmentActivity extends FragmentActivity implements I
         super.onCreate(savedInstanceState);
         this.setContentView(getLayoutId());
         activity = this;
-        handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
         onCreate2(savedInstanceState);
         initWidget();

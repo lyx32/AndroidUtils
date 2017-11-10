@@ -15,11 +15,10 @@ import com.arraylist7.android.utils.handler.NHandler;
 import com.arraylist7.android.utils.inter.IData;
 import com.arraylist7.android.utils.inter.IHandler;
 
-public abstract class BaseAppCompatActivity extends AppCompatActivity implements IData,IHandler {
+public abstract class BaseAppCompatActivity extends AppCompatActivity implements IData {
 
 
     protected Bundle bundle;
-    protected NHandler handler;
     protected BaseAppCompatActivity activity;
 
     @Override
@@ -27,7 +26,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         this.setContentView(getLayoutId());
         activity = this;
-        handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
         onCreate2(savedInstanceState);
         initWidget();

@@ -23,9 +23,8 @@ import java.lang.reflect.Field;
  * Created by Administrator on 2017/6/16 0016.
  */
 
-public abstract class BaseFragment extends Fragment implements IData,IHandler {
+public abstract class BaseFragment extends Fragment implements IData {
     protected BaseFragment that;
-    protected NHandler hanlder;
     protected Bundle bundle;
     protected Context context;
 
@@ -34,7 +33,6 @@ public abstract class BaseFragment extends Fragment implements IData,IHandler {
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(getLayoutId(), container, false);
         that = this;
-        hanlder = new NHandler(this);
         context = getActivity().getApplicationContext();
         bundle = savedInstanceState;
         onCreate(root);

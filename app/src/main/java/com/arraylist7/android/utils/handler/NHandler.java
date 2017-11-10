@@ -14,18 +14,21 @@ import java.lang.ref.WeakReference;
  */
 
 public class NHandler extends Handler {
-    private final WeakReference<IHandler> handlers;
+    private IHandler handler;
+    private final WeakReference<Context> contexts;
 
-    public NHandler(IHandler handler) {
-        handlers = new WeakReference<IHandler>(handler);
+    public NHandler(Context context,IHandler handler) {
+        this.contexts = new WeakReference<Context>(context);
+        this.handler = handler;
     }
 
     @Override
     public final void handleMessage(Message msg) {
-        IHandler handler = handlers.get();
-        if (handler != null) {
+        Context context = contexts.get();
+        if (context != null) {
             handler.handlerMsg(msg);
+        }else{
+            this.removeCallbacksAndMessages(null);
         }
     }
-
 }

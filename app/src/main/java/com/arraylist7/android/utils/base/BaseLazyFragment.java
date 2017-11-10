@@ -19,7 +19,7 @@ import com.arraylist7.android.utils.inter.IHandler;
 
 import java.lang.reflect.Field;
 
-public abstract class BaseLazyFragment extends Fragment implements IData, IHandler {
+public abstract class BaseLazyFragment extends Fragment implements IData {
 
     private View rootView;
     private boolean isInit = false;
@@ -28,7 +28,6 @@ public abstract class BaseLazyFragment extends Fragment implements IData, IHandl
     private ViewGroup container;
 
     protected BaseLazyFragment that;
-    protected NHandler hanlder;
     protected Bundle bundle;
     protected Context context;
 
@@ -38,7 +37,6 @@ public abstract class BaseLazyFragment extends Fragment implements IData, IHandl
         this.inflater = inflater;
         this.container = container;
         that = this;
-        hanlder = new NHandler(this);
         context = getActivity().getApplicationContext();
         bundle = this.getArguments();
         if (!isVisibility && !isInit && rootView == null)

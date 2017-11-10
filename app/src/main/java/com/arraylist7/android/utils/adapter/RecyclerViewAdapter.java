@@ -17,12 +17,14 @@ import java.util.List;
  * Created by Administrator on 2017/6/19 0019.
  */
 
-public abstract class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<V> {
+public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends RecyclerView.Adapter<V> {
+
     protected List<T> data = new ArrayList<T>();
     protected Context context;
+    protected LayoutInflater flater;
 
     private int TYPE_HEADER = 0;
-    private int TYPE_NORMAL = 1;
+    private int TYPE_CONTENT = 1;
     private int TYPE_FOOTER = 2;
 
     private int layoutId;
@@ -37,6 +39,7 @@ public abstract class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder> 
     public RecyclerViewAdapter(int layoutId, Context context, List<T> data) {
         this.layoutId = layoutId;
         this.context = context;
+        this.flater = LayoutInflater.from(context);
         if (data != null)
             this.data.addAll(data);
         setHeader(onCreateHeader());
@@ -45,7 +48,7 @@ public abstract class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder> 
 
 
     public View getViewForFlate(int layoutId, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(layoutId, parent, false);
+        return flater.inflate(layoutId, parent, false);
     }
 
 
@@ -110,6 +113,22 @@ public abstract class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder> 
 
     @Override
     public V onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_HEADER)
+            return onCreateHeaderHolder(parent);
+        if (viewType == TYPE_FOOTER)
+            return onCreateFooterHolder(parent);
+        return createViewHolder(layoutId, parent);
+    }
+
+    protected V onCreateHeaderHolder(ViewGroup parent) {
+        return createViewHolder(headerId, parent);
+    }
+
+    protected V onCreateFooterHolder(ViewGroup parent) {
+        return createViewHolder(footerId, parent);
+    }
+
+    private V createViewHolder(int layoutId, ViewGroup parent) {
         View view = getViewForFlate(layoutId, parent);
         BaseViewHolder holder = new BaseViewHolder(view);
         ViewUtils.inject(holder, view);
@@ -126,10 +145,10 @@ public abstract class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
-            return headerId == 0 ? TYPE_NORMAL : TYPE_HEADER;
+            return headerId == 0 ? TYPE_CONTENT : TYPE_HEADER;
         } else if (position == getItemCount() - 1) {
-            return footerId == 0 ? TYPE_NORMAL : TYPE_FOOTER;
-        } else return TYPE_NORMAL;
+            return footerId == 0 ? TYPE_CONTENT : TYPE_FOOTER;
+        } else return TYPE_CONTENT;
     }
 
 
