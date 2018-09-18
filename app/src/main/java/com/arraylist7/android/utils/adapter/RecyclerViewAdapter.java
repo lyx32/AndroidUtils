@@ -17,17 +17,15 @@ import java.util.List;
  * Created by Administrator on 2017/6/19 0019.
  */
 
-public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends RecyclerView.Adapter<V> {
-
+public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseViewHolder> {
     protected List<T> data = new ArrayList<T>();
     protected Context context;
-    protected LayoutInflater flater;
 
-    private int TYPE_HEADER = 0;
-    private int TYPE_CONTENT = 1;
-    private int TYPE_FOOTER = 2;
+    protected int TYPE_HEADER = 0;
+    protected int TYPE_NORMAL = 1;
+    protected int TYPE_FOOTER = 2;
 
-    private int layoutId;
+    protected int layoutId;
     protected int headerId;
     protected int footerId;
 
@@ -36,10 +34,13 @@ public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends R
         this(layoutId, context, null);
     }
 
+    public RecyclerViewAdapter(Context context, List<T> data) {
+        this(0, context, data);
+    }
+
     public RecyclerViewAdapter(int layoutId, Context context, List<T> data) {
         this.layoutId = layoutId;
         this.context = context;
-        this.flater = LayoutInflater.from(context);
         if (data != null)
             this.data.addAll(data);
         setHeader(onCreateHeader());
@@ -48,17 +49,21 @@ public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends R
 
 
     public View getViewForFlate(int layoutId, ViewGroup parent) {
-        return flater.inflate(layoutId, parent, false);
+        return LayoutInflater.from(context).inflate(layoutId, parent, false);
     }
 
 
     public boolean isHeaderOrFooter(int position) {
-        if ((position == 0 && headerId != 0) || (position == getItemCount() - 1 && footerId != 0)) {
-            return true;
-        } else
-            return false;
+        return ((position == 0 && headerId != 0) || (position == getItemCount() - 1 && footerId != 0));
     }
 
+    public int getLayoutId() {
+        return layoutId;
+    }
+
+    public void setLayoutId(int layoutId) {
+        this.layoutId = layoutId;
+    }
 
     /**
      * 设置头
@@ -112,45 +117,30 @@ public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends R
 
 
     @Override
-    public V onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_HEADER)
-            return onCreateHeaderHolder(parent);
-        if (viewType == TYPE_FOOTER)
-            return onCreateFooterHolder(parent);
-        return createViewHolder(layoutId, parent);
-    }
-
-    protected V onCreateHeaderHolder(ViewGroup parent) {
-        return createViewHolder(headerId, parent);
-    }
-
-    protected V onCreateFooterHolder(ViewGroup parent) {
-        return createViewHolder(footerId, parent);
-    }
-
-    private V createViewHolder(int layoutId, ViewGroup parent) {
-        View view = getViewForFlate(layoutId, parent);
-        BaseViewHolder holder = new BaseViewHolder(view);
-        ViewUtils.inject(holder, view);
-        return (V) holder;
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (TYPE_HEADER == viewType)
+            return new BaseViewHolder(BaseViewHolder.TAG_HEADER, getViewForFlate(headerId, parent));
+        if (TYPE_FOOTER == viewType)
+            return new BaseViewHolder(BaseViewHolder.TAG_FOOTER, getViewForFlate(footerId, parent));
+        return new BaseViewHolder(getViewForFlate(layoutId, parent));
     }
 
     @Override
-    public void onBindViewHolder(V holder, int position) {
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         onBindView(position, holder, getItem(position));
     }
 
-    public abstract void onBindView(int position, V holder, T model);
+    public abstract void onBindView(int position, BaseViewHolder holder, T model);
+
 
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
-            return headerId == 0 ? TYPE_CONTENT : TYPE_HEADER;
+            return headerId == 0 ? TYPE_NORMAL : TYPE_HEADER;
         } else if (position == getItemCount() - 1) {
-            return footerId == 0 ? TYPE_CONTENT : TYPE_FOOTER;
-        } else return TYPE_CONTENT;
+            return footerId == 0 ? TYPE_NORMAL : TYPE_FOOTER;
+        } else return TYPE_NORMAL;
     }
-
 
     /**
      * 除去header，footer后获取item的位置
@@ -228,17 +218,19 @@ public abstract class RecyclerViewAdapter<T, V extends BaseViewHolder> extends R
      */
     public void remove(int position) {
         int index = getItemPosition(position);
-        data.remove(index);
-        notifyItemRemoved(index);
-        notifyItemChanged(index);
+        if (-1 != index && getItemCount()> index) {
+            data.remove(index);
+            notifyItemRemoved(index);
+//            notifyItemChanged(index);
+        }
     }
 
     public void removeAfter(int position) {
         int index = getItemPosition(position);
-        if (data.size() > index) {
+        if (-1 != index && getItemCount()> index)  {
             data = data.subList(0, index);
             notifyItemRemoved(0);
-            notifyItemChanged(0);
+//            notifyItemChanged(0);
         }
     }
 

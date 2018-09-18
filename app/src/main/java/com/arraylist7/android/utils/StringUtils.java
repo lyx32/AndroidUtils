@@ -28,7 +28,9 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,13 +53,7 @@ public final class StringUtils {
     private final static SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
-    private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
-    private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>"; // 定义style的正则表达式
-    private static final String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
-    private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
-
     private final static Pattern URL = Pattern.compile("^(https|http)://.*?$(net|com|.com.cn|org|me|info|top|cn|cc|tv|)");
-
 
     private static DecimalFormat df = new DecimalFormat("#.##");
     private static DecimalFormat df1 = new DecimalFormat("0.0");
@@ -66,89 +62,91 @@ public final class StringUtils {
     StringUtils() {
     }
 
-    public static String trim(Object val){
-        if(isNullOrEmpty(val))
+    public static String trim(Object val) {
+        if (isNullOrEmpty(val))
             return "";
         return val.toString().trim();
     }
 
-    public static boolean isInt(Object obj){
-        if(!isNullOrEmpty(obj)){
+    public static boolean isInt(Object obj) {
+        if (!isNullOrEmpty(obj)) {
             return obj.toString().matches("^\\d+$");
         }
         return false;
     }
-    public static boolean isDouble(Object obj,boolean hasDecimal){
-        if(!isNullOrEmpty(obj)){
+
+    public static boolean isDouble(Object obj, boolean hasDecimal) {
+        if (!isNullOrEmpty(obj)) {
             String regex = "^\\d+$";
-            if(hasDecimal)
-                regex="^\\d+(\\.\\d+)?$";
+            if (hasDecimal)
+                regex = "^\\d+(\\.\\d+)?$";
             return obj.toString().matches(regex);
         }
         return false;
     }
 
-    public static int getInt(Object obj,int def){
-        if(!isNullOrEmpty(obj))
+    public static int getInt(Object obj, int def) {
+        if (!isNullOrEmpty(obj))
             obj = obj.toString().trim();
-        if(isInt(obj)){
+        if (isInt(obj)) {
             return Integer.parseInt(obj.toString());
-        }else{
-            String val = obj.toString().replaceAll("\\D","");
-            if(isInt(val))
+        } else {
+            String val = obj.toString().replaceAll("\\D", "");
+            if (isInt(val))
                 return Integer.parseInt(val);
         }
         return def;
     }
-    public static double getDouble(Object obj,double def){
-        if(!isNullOrEmpty(obj))
+
+    public static double getDouble(Object obj, double def) {
+        if (!isNullOrEmpty(obj))
             obj = obj.toString().trim();
-        if(isDouble(obj,false)){
+        if (isDouble(obj, false)) {
             return Integer.parseInt(obj.toString());
         }
-        if(isDouble(obj,true)){
+        if (isDouble(obj, true)) {
             return Double.parseDouble(obj.toString());
         }
         return def;
     }
 
-    public static float getFloat(Object obj,float def){
-        if(!isNullOrEmpty(obj))
+    public static float getFloat(Object obj, float def) {
+        if (!isNullOrEmpty(obj))
             obj = obj.toString().trim();
-        if(isDouble(obj,false)){
+        if (isDouble(obj, false)) {
             return Integer.parseInt(obj.toString());
         }
-        if(isDouble(obj,true)){
+        if (isDouble(obj, true)) {
             return Float.parseFloat(obj.toString());
         }
         return def;
     }
 
-    public static boolean equals(Object left,Object right){
-        if(isAllNullOrEmpty(left,right)) return true;
-        if(!isAllNotNullOrEmpty(left,right)) return false;
-        if(left instanceof String)
+    public static boolean equals(Object left, Object right) {
+        if (isAllNullOrEmpty(left, right)) return true;
+        if (!isAllNotNullOrEmpty(left, right)) return false;
+        if (left instanceof String)
             return left.toString().equalsIgnoreCase(right.toString());
         return left.equals(right);
     }
 
-    public static int len(Object value){
+    public static int len(Object value) {
         if (null == value)
             return 0;
-        if(value instanceof Map){
-            return ((Map)value).keySet().size();
-        }else if(value instanceof Dictionary){
-            return ((Dictionary)value).size();
-        }else if(value instanceof Collection){
-            return ((Collection)value).size();
-        }else if(value instanceof Iterable){
-            int j=0;
-            Iterator i = ((Iterable)value).iterator();
-            while(null != i.next()) {
+        if (value instanceof Map) {
+            return ((Map) value).keySet().size();
+        } else if (value instanceof Dictionary) {
+            return ((Dictionary) value).size();
+        } else if (value instanceof Collection) {
+            return ((Collection) value).size();
+        } else if (value instanceof Iterable) {
+            int j = 0;
+            Iterator i = ((Iterable) value).iterator();
+            while (null != i.next()) {
                 j++;
             }
             return j;
-        }else if(value.getClass().isArray()){
+        } else if (value.getClass().isArray()) {
             return Array.getLength(value);
         } else {
             return value.toString().length();
@@ -194,7 +192,7 @@ public final class StringUtils {
             return ((Dictionary) value).isEmpty();
         } else if (value instanceof Iterable) {
             return !((Iterable) value).iterator().hasNext();
-        }else if(value.getClass().isArray()){
+        } else if (value.getClass().isArray()) {
             return 0 == Array.getLength(value);
         } else {
             return "".equals(value.toString());
@@ -223,22 +221,39 @@ public final class StringUtils {
         return isAllNotNullOrEmpty;
     }
 
-    public static String putRightTrim(String val,int length){
-        return putTrim(val,false,length);
+    public static String putRightTrim(String val, int length) {
+        return putTrim(val, false, length);
     }
 
-    public static String putTrim(String val,boolean isLeft,int length){
-        if(isNullOrEmpty(val)) return "";
+    public static String putTrim(String val, boolean isLeft, int length) {
+        if (isNullOrEmpty(val)) return "";
         StringBuffer newVal = new StringBuffer(length);
         int end = val.length();
-        int len = length-end;
-        if(len > 0) {
+        int len = length - end;
+        if (len > 0) {
             for (int i = 0; i < len; i++) {
                 newVal.append(" ");
             }
             if (isLeft) newVal.append(val);
+            else newVal.insert(0, val);
+        } else {
+            newVal.append(val);
+        }
+        return newVal.toString();
+    }
+
+    public static String fillValue(String val, boolean isLeft, int fillLength, String fill) {
+        if (isNullOrEmpty(val)) return "";
+        int end = val.length();
+        int allLen = fillLength + end;
+        StringBuffer newVal = new StringBuffer(allLen);
+        if (fillLength > 0) {
+            for (int i = 0; i < fillLength; i++) {
+                newVal.append(fill);
+            }
+            if (isLeft) newVal.append(val);
             else newVal.insert(0,val);
-        }else{
+        } else {
             newVal.append(val);
         }
         return newVal.toString();
@@ -268,7 +283,7 @@ public final class StringUtils {
         try {
             new JSONObject(string);
         } catch (Exception e) {
-            return string.startsWith("{") && string.endsWith("}");
+            return false;
         }
         return true;
     }
@@ -279,7 +294,7 @@ public final class StringUtils {
         try {
             new JSONArray(string);
         } catch (Exception e) {
-            return string.startsWith("[") && string.endsWith("]");
+            return false;
         }
         return true;
     }
@@ -287,23 +302,23 @@ public final class StringUtils {
     public static boolean isJSONString(String string) {
         if (isNullOrEmpty(string))
             return false;
-       if(isJSONArray(string))
-           return true;
-        if(isJSONObject(string))
+        if (isJSONArray(string))
+            return true;
+        if (isJSONObject(string))
             return true;
         return false;
     }
 
-    public static <T> List<T> asList(T... t){
+    public static <T> List<T> asList(T... t) {
         return Arrays.asList(t);
     }
 
-    public static <T> T[] asArray(T... t){
+    public static <T> T[] asArray(T... t) {
         return t;
     }
 
-    public static <T> T[] asArray(List<T> list){
-        return (T[])list.toArray();
+    public static <T> T[] asArray(List<T> list) {
+        return (T[]) list.toArray();
     }
 
 
@@ -320,8 +335,6 @@ public final class StringUtils {
     public static long random(int min, int max) {
         return Math.round(Math.random() * (max - min) + min);
     }
-
-
 
     public static String encodeBase64(byte[] b) {
         return Base64.encodeToString(b, Base64.NO_WRAP);
@@ -437,7 +450,7 @@ public final class StringUtils {
     }
 
     public static String decode(String value) {
-        return decode(value,"UTF-8");
+        return decode(value, "UTF-8");
     }
 
     public static String decode(String value, String charsetName) {
@@ -450,34 +463,14 @@ public final class StringUtils {
     }
 
 
-    public static String getString(InputStream is) {
-        StringBuffer res = new StringBuffer();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader read = new BufferedReader(isr);
-        try {
-            String line;
-            while (null != (line = read.readLine())) {
-                res.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            IOUtils.close(isr);
-            IOUtils.close(read);
-            IOUtils.close(is);
-        }
-        return res.toString();
-    }
-
-
     public static String getDateTimeNow(String format) {
-        return new SimpleDateFormat(format).format(new Date());
+        return new SimpleDateFormat(format).format(Calendar.getInstance(Locale.CHINA).getTime());
     }
 
 
     public static int getWeek() {
         Calendar cal = Calendar.getInstance();
-        return cal.get(Calendar.DAY_OF_WEEK)-1;
+        return cal.get(Calendar.DAY_OF_WEEK) - 1;
     }
 
     public static String friendly_time(String dateStr, int day) {
@@ -544,13 +537,6 @@ public final class StringUtils {
     }
 
 
-    public static String trim(String value) {
-        if (isNullOrEmpty(value))
-            return "";
-        return value.trim();
-    }
-
-
     public static String numToHex(int n) {
         String s = Integer.toHexString(n);
         return n <= 15 ? "0" + s : s;
@@ -562,7 +548,7 @@ public final class StringUtils {
 
 
     public static String unicodeToString(String str) {
-    if(isNullOrEmpty(str)) return "";
+        if (isNullOrEmpty(str)) return "";
         Pattern pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))");
         Matcher matcher = pattern.matcher(str);
         char ch;
@@ -573,7 +559,7 @@ public final class StringUtils {
         return str;
     }
 
-   public static String stringToUnicode(String s) {
+    public static String stringToUnicode(String s) {
         try {
             StringBuffer out = new StringBuffer("");
             byte[] bytes = s.getBytes("unicode");
@@ -591,5 +577,4 @@ public final class StringUtils {
             return s;
         }
     }
-
 }

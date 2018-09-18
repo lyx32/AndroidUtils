@@ -1,6 +1,7 @@
 package com.arraylist7.android.utils;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,34 +24,54 @@ public class IOUtils {
     }
 
 
-    public static String reader(String path) throws IOException {
+    public static byte[] reader(String path) throws IOException {
         InputStream in = fileIn(path);
-        String val = getString(in).toString();
+        int len = in.available();
+        byte[] b = new byte[len];
+        in.read(b, 0, len);
         close(in);
-        return val;
+        return b;
     }
 
-    public static String[] readers(String path) throws IOException {
-        FileReader fileReader = new FileReader(path);
-        BufferedReader fr = new BufferedReader(fileReader);
-        String line = null;
-        List<String> list = new ArrayList<>();
-        while (null != (line = fr.readLine())) {
-            list.add(line);
-        }
-        close(fileReader);
-        return list.toArray(new String[]{});
+    public static void writerAndClose(String path, byte[] b) throws IOException {
+        writerAndClose(path, b, 0, b.length);
     }
 
-    public static void writer(String path, String content) throws IOException {
-        writer(path, content, "UTF-8");
-    }
-
-    public static void writer(String path, String content, String charset) throws IOException {
+    public static void writerAndClose(String path, byte[] b, int off, int len) throws IOException {
         OutputStream out = fileOut(path);
-        out.write(content.getBytes(charset));
+        out.write(b, off, len);
         close(out);
     }
+
+
+    public static void writerAndClose(OutputStream out, byte[] b) throws IOException {
+        writerAndClose(out, b, 0, b.length);
+    }
+
+
+    public static void writerAndClose(OutputStream out, byte[] b, int off, int len) throws IOException {
+        out.write(b, off, len);
+        close(out);
+    }
+
+    public static void writerAndNoClose(String path, byte[] b) throws IOException {
+        writerAndNoClose(path, b, 0, b.length);
+    }
+
+    public static void writerAndNoClose(String path, byte[] b, int off, int len) throws IOException {
+        OutputStream out = fileOut(path);
+        out.write(b, off, len);
+    }
+
+
+    public static void writerAndNoClose(OutputStream out, byte[] b) throws IOException {
+        writerAndNoClose(out, b, 0, b.length);
+    }
+
+    public static void writerAndNoClose(OutputStream out, byte[] b, int off, int len) throws IOException {
+        out.write(b, off, len);
+    }
+
 
     public static InputStream fileIn(String path) throws FileNotFoundException {
         return fileIn(new File(path));
@@ -68,20 +89,26 @@ public class IOUtils {
         return new FileOutputStream(file);
     }
 
-    public static long readAndWriter(InputStream in, OutputStream out) throws IOException {
-        if (null == in || null == out) return -1;
-        byte[] buf = new byte[65535];
+    public static void readAndWriteAndClose(InputStream in, OutputStream out) throws IOException {
+        if (null == in || null == out)
+            return;
+        byte[] b = new byte[65535];
         int len;
-        long bytesCount = 0;
-        while (-1 != (len = in.read(buf))) {
-            bytesCount += len;
-            out.write(buf, 0, len);
+        while (-1 != (len = in.read(b))) {
+            out.write(b, 0, len);
         }
-        if (0 == bytesCount) {
-            out.write(buf, 0, 0);
+        close(in);
+        close(out);
+    }
+
+    public static void readAndWriterAndNoClose(InputStream in, OutputStream out) throws IOException {
+        if (null == in || null == out)
+            return;
+        byte[] b = new byte[65535];
+        int len;
+        while (-1 != (len = in.read(b))) {
+            out.write(b, 0, len);
         }
-        out.flush();
-        return bytesCount;
     }
 
     /**
@@ -123,99 +150,12 @@ public class IOUtils {
         return res;
     }
 
-    /**
-     * 将文本输入流写入一个文本输出流。块大小为 65535
-     * <p>
-     * <b style=color:red>注意</b>，它并不会关闭输入/出流
-     *
-     * @param writer 输出流
-     * @param reader 输入流
-     * @throws IOException
-     */
-    public static void readAndWrite(Writer writer, Reader reader) throws IOException {
-        if (null == writer || null == reader)
-            return;
-
-        char[] cbuf = new char[65535];
-        int len;
-        while (-1 != (len = reader.read(cbuf))) {
-            writer.write(cbuf, 0, len);
-        }
-    }
-
-    public static void close(InputStream in) {
-        if (null != in) {
+    public static void close(Closeable io) {
+        if (null != io) {
             try {
-                in.close();
+                io.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-
-    public static void close(Socket socket) {
-        if (null != socket) {
-            if(!socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void close(ServerSocket socket) {
-        if (null != socket) {
-            if (!socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void close(OutputStream out) {
-        if (null != out) {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void close(Reader reader) {
-        if (null != reader) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void close(Writer writer) {
-        if (null != writer) {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void close(Channel channel) {
-        if (null != channel) {
-            if(channel.isOpen()) {
-                try {
-                    channel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }

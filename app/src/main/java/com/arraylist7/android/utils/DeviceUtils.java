@@ -5,8 +5,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+
+import java.util.UUID;
 
 public class DeviceUtils {
 
@@ -101,19 +104,28 @@ public class DeviceUtils {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String deviceId = tm.getSubscriberId();
         if (StringUtils.isNullOrEmpty(deviceId)) {
-            deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+            deviceId = tm.getDeviceId();
             if (StringUtils.isNullOrEmpty(deviceId)) {
-                deviceId = tm.getDeviceId();
+                deviceId = tm.getLine1Number();
                 if (StringUtils.isNullOrEmpty(deviceId)) {
-                    deviceId = tm.getLine1Number();
-                    if (StringUtils.isNullOrEmpty(deviceId)) {
-                        deviceId = getMacAddress(context);
+                    deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+                    if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
+                        String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
+                        String serial = "";
+                        try {
+                            serial = android.os.Build.class.getField("SERIAL").get(null).toString();
+                            return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+                        } catch (Exception e) {
+                            serial = "serial";
+                        }
+                        return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
                     }
                 }
             }
         }
         return deviceId;
     }
+
 
     /**
      * 得到手机唯一设备号
@@ -130,22 +142,10 @@ public class DeviceUtils {
         str.append(deviceId + "|");
         deviceId = tm.getDeviceId();
         str.append(deviceId + "|");
-        deviceId = tm.getLine1Number();
-        str.append(deviceId + "|");
-        deviceId = getMacAddress(context);
-        str.append(deviceId + "|");
         while (str.toString().endsWith("|")) {
             str.setLength(str.toString().length() - 1);
         }
         return str.toString();
     }
 
-    public static String getMacAddress(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        if (null == wifiInfo || null == wifiInfo.getMacAddress()) {
-            return "";
-        }
-        return wifiInfo.getMacAddress().replaceAll(":", "");
-    }
 }
