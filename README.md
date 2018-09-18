@@ -4,7 +4,7 @@
 
 1.StringUtils 一些String的处理，包含是否为空，是否小数，编码，解码等
 
-2.FIleUtils 一些File的操作，包括写入，读取，追加，删除，拷贝等
+2.FileUtils 一些File的操作，包括写入，读取，追加，删除，拷贝等
 
 3.HTMLUtils 来源于oschina的官方app
 
@@ -29,3 +29,5 @@
 13.ZIPUtils 来源于KJFrameForAndroid
 
 13.UiUtils 一些dp转px，获取屏幕宽高，toast等。
+
+13.CanvasUtils 一些兼容低版本的绘制方法。
