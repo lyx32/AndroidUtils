@@ -26,8 +26,8 @@
 
 12.BitmapUtils 主要是对Picasso的封装。及一些Bitmap的操作。
 
-13.ZIPUtils 来源于KJFrameForAndroid
+13.ZipUtils 来源于KJFrameForAndroid
 
-13.UiUtils 一些dp转px，获取屏幕宽高，toast等。
+14.UiUtils 一些dp转px，获取屏幕宽高，toast等。
 
-13.CanvasUtils 一些兼容低版本的绘制方法。
+15.CanvasUtils 一些兼容低版本的绘制方法。
