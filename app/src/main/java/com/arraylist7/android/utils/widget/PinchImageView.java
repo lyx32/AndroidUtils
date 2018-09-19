@@ -15,9 +15,10 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.ImageView;
 
 @SuppressLint("NewApi")
-public class PinchImageView extends NetworkImageView {
+public class PinchImageView extends ImageView {
 
 
     ////////////////////////////////配置参数////////////////////////////////

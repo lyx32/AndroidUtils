@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 
 import com.arraylist7.android.utils.R;
 
@@ -22,7 +23,7 @@ import com.arraylist7.android.utils.R;
  * 圆形ImageView组件
  *
  */
-public class CircleImageView extends NetworkImageView {
+public class CircleImageView extends ImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 

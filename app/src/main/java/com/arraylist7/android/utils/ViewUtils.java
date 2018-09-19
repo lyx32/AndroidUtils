@@ -1,6 +1,8 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -130,6 +132,7 @@ public final class ViewUtils {
                 }
             }
         }
+        vs.clear();
     }
 
 
@@ -165,5 +168,11 @@ class ViewSource {
 
     public Context getContext() {
         return context;
+    }
+
+    public void clear() {
+        context = null;
+        activity = null;
+        view = null;
     }
 }

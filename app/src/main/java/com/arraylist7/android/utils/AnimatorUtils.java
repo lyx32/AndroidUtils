@@ -1,20 +1,13 @@
 package com.arraylist7.android.utils;
 
-import android.animation.PropertyValuesHolder;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.AnticipateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-
-import com.arraylist7.android.utils.adapter.AnimationAdapter;
 
 public final class AnimatorUtils {
 
