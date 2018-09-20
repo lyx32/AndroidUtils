@@ -2,35 +2,38 @@ package com.arraylist7.android.utils.base;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.arraylist7.android.utils.IntentUtils;
+import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.StatusBarUtils;
-import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.broadcast.NetReceiver;
 import com.arraylist7.android.utils.handler.NHandler;
-import com.arraylist7.android.utils.inter.IData;
+import com.arraylist7.android.utils.inter.IActivity;
 import com.arraylist7.android.utils.inter.IHandler;
+import com.arraylist7.android.utils.inter.INetChange;
+import com.arraylist7.android.utils.inter.IOperator;
+import com.arraylist7.android.utils.inter.IScreen;
 import com.arraylist7.android.utils.listener.PermissionListener;
 
-import java.security.Permissions;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/6/29.
  */
-public abstract class BaseActivity extends Activity implements IData, IHandler {
+public abstract class BaseActivity extends Activity implements IActivity, IHandler,IOperator,INetChange,IScreen {
 
     protected Bundle bundle;
     protected NHandler handler;
@@ -40,8 +43,8 @@ public abstract class BaseActivity extends Activity implements IData, IHandler {
 
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         this.setContentView(getLayoutId());
+        super.onCreate(savedInstanceState);
         activity = this;
         handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
@@ -154,5 +157,30 @@ public abstract class BaseActivity extends Activity implements IData, IHandler {
             fail.clear();
             permissionMap.remove(requestCode + "");
         }
+    }
+
+    @Override
+    public void onLoginSuccess(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onLoginOut(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onReceivedData(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onNetChange(NetState state) {
+
+    }
+
+    @Override
+    public void onScreenOnOrOff(boolean isOn) {
+
     }
 }

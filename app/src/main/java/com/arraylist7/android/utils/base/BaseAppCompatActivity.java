@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils.base;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,20 +12,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.IntentUtils;
-import com.arraylist7.android.utils.R;
+import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.StatusBarUtils;
-import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.broadcast.NetReceiver;
 import com.arraylist7.android.utils.handler.NHandler;
-import com.arraylist7.android.utils.inter.IData;
+import com.arraylist7.android.utils.inter.IActivity;
 import com.arraylist7.android.utils.inter.IHandler;
+import com.arraylist7.android.utils.inter.INetChange;
+import com.arraylist7.android.utils.inter.IOperator;
+import com.arraylist7.android.utils.inter.IScreen;
 import com.arraylist7.android.utils.listener.PermissionListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public abstract class BaseAppCompatActivity extends AppCompatActivity implements IData,IHandler {
+public abstract class BaseAppCompatActivity extends AppCompatActivity implements IActivity, IHandler, IOperator, INetChange, IScreen {
 
 
     protected Bundle bundle;
@@ -34,8 +41,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         this.setContentView(getLayoutId());
+        super.onCreate(savedInstanceState);
         activity = this;
         handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
@@ -85,7 +92,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             for (int i = 0; i < permissions.length; i++) {
                 booleans[i] = PackageManager.PERMISSION_GRANTED == this.checkSelfPermission(permissions[i]);
             }
-        }else{
+        } else {
             for (int i = 0; i < permissions.length; i++) {
                 booleans[i] = true;
             }
@@ -146,5 +153,36 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             fail.clear();
             permissionMap.remove(requestCode + "");
         }
+    }
+
+    @Override
+    public void onLoginSuccess(Map<String, Serializable> data) {
+        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (android.support.v4.app.Fragment f : list){
+            if(f instanceof IActivity)
+                ((IOperator)f).onLoginSuccess(data);
+        }
+
+    }
+
+    @Override
+    public void onLoginOut(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onReceivedData(Map<String, Serializable> data) {
+
+    }
+
+
+    @Override
+    public void onNetChange(NetState state) {
+
+    }
+
+    @Override
+    public void onScreenOnOrOff(boolean isOn) {
+
     }
 }

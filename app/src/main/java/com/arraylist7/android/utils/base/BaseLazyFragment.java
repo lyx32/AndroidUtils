@@ -1,6 +1,5 @@
 package com.arraylist7.android.utils.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -12,14 +11,18 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.arraylist7.android.utils.ClassUtils;
-import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.handler.NHandler;
-import com.arraylist7.android.utils.inter.IData;
+import com.arraylist7.android.utils.inter.IActivity;
 import com.arraylist7.android.utils.inter.IHandler;
+import com.arraylist7.android.utils.inter.INetChange;
+import com.arraylist7.android.utils.inter.IOperator;
+import com.arraylist7.android.utils.inter.IScreen;
 
-import java.lang.reflect.Field;
+import java.io.Serializable;
+import java.util.Map;
 
-public abstract class BaseLazyFragment extends Fragment implements IData, IHandler {
+public abstract class BaseLazyFragment extends Fragment implements IActivity, IHandler, IOperator, INetChange, IScreen {
 
     private View rootView;
     private boolean isInit = false;
@@ -178,5 +181,30 @@ public abstract class BaseLazyFragment extends Fragment implements IData, IHandl
             ClassUtils.setValue(Fragment.class,"mChildFragmentManager",null);
         } catch (Throwable throwable) {
         }
+    }
+
+    @Override
+    public void onNetChange(NetState state) {
+
+    }
+
+    @Override
+    public void onLoginSuccess(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onLoginOut(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onReceivedData(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onScreenOnOrOff(boolean isOn) {
+
     }
 }

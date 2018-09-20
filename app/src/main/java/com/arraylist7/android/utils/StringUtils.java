@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -321,6 +322,9 @@ public final class StringUtils {
         return (T[]) list.toArray();
     }
 
+    public static <T> T[] asArray(Set<T> set) {
+        return (T[]) set.toArray();
+    }
 
     public static <T> Map<String, T> asMap(T... args) {
         Map<String, T> map = new HashMap<String, T>();

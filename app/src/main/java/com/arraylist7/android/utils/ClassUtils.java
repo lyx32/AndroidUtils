@@ -1,7 +1,12 @@
 package com.arraylist7.android.utils;
 
+import android.mtp.MtpConstants;
+
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 public class ClassUtils {
 
@@ -37,6 +42,18 @@ public class ClassUtils {
         return null;
     }
 
+    public static Method[] getMethods(Class clazz) {
+        if (null != clazz)
+            return clazz.getMethods();
+        return null;
+    }
+
+    public static Method[] getDeclaredMethods(Class clazz) {
+        if (null != clazz)
+            return clazz.getDeclaredMethods();
+        return null;
+    }
+
 
     public static Field getField(Class clazz, String name) {
         if (null != clazz) {
@@ -61,6 +78,37 @@ public class ClassUtils {
     }
 
 
+    public static Method getMethod(Class clazz, String name) {
+        return getMethod(clazz, name, null);
+    }
+
+    public static Method getMethod(Class clazz, String name, Class<?>... paramType) {
+        if (null != clazz) {
+            try {
+                return clazz.getMethod(name, paramType);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static Method getDeclaredMethod(Class clazz, String name) {
+        return getDeclaredMethod(clazz, name, null);
+    }
+
+    public static Method getDeclaredMethod(Class clazz, String name, Class<?>... paramType) {
+        if (null != clazz) {
+            try {
+                return clazz.getDeclaredMethod(name, paramType);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
     public static void setValue(Field field, Object object, Object value) throws IllegalAccessException {
         field.setAccessible(true);
         field.set(object, value);
@@ -70,9 +118,9 @@ public class ClassUtils {
         if (null == clazz)
             throw new NoSuchFieldError("clazz 不能为空");
         Object obj = clazz.newInstance();
-        Field field = getField(clazz, fieldName);
+        Field field = getDeclaredField(clazz, fieldName);
         if (null == field)
-            field = getDeclaredField(clazz, fieldName);
+            field = getField(clazz, fieldName);
         if (null == field) {
             throw new NoSuchFieldError(fieldName + " 不存在!");
         }
@@ -90,13 +138,28 @@ public class ClassUtils {
         if (null == obj)
             throw new NoSuchFieldError("obj 不能为空");
         Class clazz = obj.getClass();
-        Field field = getField(clazz, fieldName);
+        Field field = getDeclaredField(clazz, fieldName);
         if (null == field)
-            field = getDeclaredField(clazz, fieldName);
+            field = getField(clazz, fieldName);
         if (null == field)
             throw new NoSuchFieldError(fieldName + " 不存在!");
         return getValue(field, obj);
     }
 
 
+    public static Object invoke(Object obj, String methodName) throws InvocationTargetException, IllegalAccessException {
+        return invoke(obj, methodName, null);
+    }
+
+    public static Object invoke(Object obj, String methodName, Object... params) throws InvocationTargetException, IllegalAccessException {
+        if (null == obj)
+            throw new NoSuchFieldError("obj 不能为空");
+        Method method = getDeclaredMethod(obj.getClass(), methodName);
+        if (null == method)
+            method = getMethod(obj.getClass(), methodName);
+        if (null == method)
+            throw new NoSuchFieldError(obj.getClass().getName() + "." + methodName + " 方法不存在!");
+        method.setAccessible(true);
+        return method.invoke(obj, params);
+    }
 }

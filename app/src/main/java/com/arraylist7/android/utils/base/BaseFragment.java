@@ -11,19 +11,22 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.arraylist7.android.utils.ClassUtils;
-import com.arraylist7.android.utils.IntentUtils;
-import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.handler.NHandler;
-import com.arraylist7.android.utils.inter.IData;
+import com.arraylist7.android.utils.inter.IActivity;
 import com.arraylist7.android.utils.inter.IHandler;
+import com.arraylist7.android.utils.inter.INetChange;
+import com.arraylist7.android.utils.inter.IOperator;
+import com.arraylist7.android.utils.inter.IScreen;
 
-import java.lang.reflect.Field;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/6/16 0016.
  */
 
-public abstract class BaseFragment extends Fragment implements IData,IHandler {
+public abstract class BaseFragment extends Fragment implements IActivity,IHandler, IOperator, INetChange, IScreen {
     protected BaseFragment that;
     protected NHandler hanlder;
     protected Bundle bundle;
@@ -73,4 +76,28 @@ public abstract class BaseFragment extends Fragment implements IData,IHandler {
         }
     }
 
+    @Override
+    public void onNetChange(NetState state) {
+
+    }
+
+    @Override
+    public void onLoginSuccess(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onLoginOut(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onReceivedData(Map<String, Serializable> data) {
+
+    }
+
+    @Override
+    public void onScreenOnOrOff(boolean isOn) {
+
+    }
 }

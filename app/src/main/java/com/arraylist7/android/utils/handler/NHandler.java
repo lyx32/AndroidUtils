@@ -24,8 +24,7 @@ public class NHandler extends Handler {
     public final void handleMessage(Message msg) {
         IHandler handler = handlers.get();
         if (handler != null) {
-            handler.handlerMsg(this,msg);
+            handler.handlerMsg(this, msg);
         }
     }
-
 }

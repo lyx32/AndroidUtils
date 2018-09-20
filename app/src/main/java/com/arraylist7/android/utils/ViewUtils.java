@@ -51,7 +51,7 @@ public final class ViewUtils {
             return;
         }
         Class<?> clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = ClassUtils.getDeclaredFields(clazz);
         Bundle bundle = getBundle(object);
         Set<String> keys = null;
         if (null != bundle) {

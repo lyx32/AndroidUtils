@@ -28,9 +28,9 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
         super();
         this.recyclerView = recyclerView;
         this.listener = listener;
-        handler = new NHandler(recyclerView.getContext(), new IHandler() {
+        handler = new NHandler(new IHandler() {
             @Override
-            public void handlerMsg(Message msg) {
+            public void handlerMsg(NHandler handler, Message msg) {
                 if (200 == msg.what) {
                     BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 } else if (201 == msg.what) {

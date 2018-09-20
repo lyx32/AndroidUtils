@@ -8,49 +8,33 @@ import android.net.ConnectivityManager;
 
 import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.UiUtils;
+import com.arraylist7.android.utils.inter.INetChange;
+import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
+
+import java.io.Serializable;
+import java.util.Map;
 
 
 /**
  * Created by Administrator on 2016/5/23.
  */
-public class NetReceiver extends BroadcastReceiver {
+public class NetReceiver extends BaseBroadcastReceiver {
 
-    private NetChangeListener netChangeListener;
 
     public NetReceiver() {
 
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
-            if (null != netChangeListener) {
-                NetState netState = UiUtils.isConnected(context);
-                netChangeListener.onNetChange(netState);
+    public void registerNetReceiver(Context context, final INetChange netChangeListener) {
+        registerReceiver(context, ConnectivityManager.CONNECTIVITY_ACTION, new BaseBroadcastReceiverListener() {
+            @Override
+            public void onReceiver(Context context, String action, Map<String, Serializable> data) {
+                if (null != netChangeListener) {
+                    NetState netState = UiUtils.isConnected(context);
+                    netChangeListener.onNetChange(netState);
+                }
             }
-        }
+        });
     }
 
-    public void registerScreenReceiver(Context context, NetChangeListener netChangeListener) {
-        try {
-            this.netChangeListener = netChangeListener;
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            context.registerReceiver(this, filter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void unRegisterScreenReceiver(Context context) {
-        try {
-            context.unregisterReceiver(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static interface NetChangeListener {
-        public void onNetChange(NetState state);
-    }
 }
