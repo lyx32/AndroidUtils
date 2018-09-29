@@ -1,9 +1,11 @@
 package com.arraylist7.android.utils;
 
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
@@ -62,21 +64,33 @@ public final class AnimatorUtils {
      * @return
      */
     public static void clickAnimation(View view) {
-        clickAnimation(view,1.15F,200L);
+        clickAnimation(view,1.15F);
     }
 
     /**
      * 点击动画
      * @param scaleXY
-     * @param durationMillis
      * @return
      */
-    public static void clickAnimation(View view,float scaleXY, long durationMillis) {
+    public static void clickAnimation(View view,float scaleXY) {
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0.5F,1F);
+        alphaAnimation.setDuration(200);
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0.7F,scaleXY,0.7F,scaleXY, Animation.RELATIVE_TO_SELF,0.5F,Animation.RELATIVE_TO_SELF,0.5F);
+        scaleAnimation.setDuration(200);
+        scaleAnimation.setInterpolator(new AccelerateInterpolator());
+        ScaleAnimation scaleAnimation2 = new ScaleAnimation(scaleXY,0.8F,scaleXY,0.8F, Animation.RELATIVE_TO_SELF,0.5F,Animation.RELATIVE_TO_SELF,0.5F);
+        scaleAnimation2.setDuration(300);
+        scaleAnimation.setInterpolator(new DecelerateInterpolator());
+        ScaleAnimation scaleAnimation3= new ScaleAnimation(0.8F,1F,0.8F,1F, Animation.RELATIVE_TO_SELF,0.5F,Animation.RELATIVE_TO_SELF,0.5F);
+        scaleAnimation3.setDuration(100);
+        scaleAnimation.setInterpolator(new DecelerateInterpolator());
+
         AnimationSet set = new AnimationSet(true);
-        set.addAnimation(getScaleAnimation(scaleXY, durationMillis));
-        set.setInterpolator(new LinearInterpolator());
-        set.setDuration(durationMillis);
-        set.setFillAfter(false);
+        set.addAnimation(alphaAnimation);
+        set.addAnimation(scaleAnimation);
+        set.addAnimation(scaleAnimation2);
+        set.addAnimation(scaleAnimation3);
+        set.setInterpolator(new AccelerateInterpolator());
         view.clearAnimation();
         view.startAnimation(set);
     }
@@ -87,22 +101,22 @@ public final class AnimatorUtils {
      * @return
      */
     public static void shakeAnimation(View view){
-        shakeAnimation(view,7,70L);
+        shakeAnimation(view,10);
     }
 
     /**
      * /**
      * 抖动动画
      * @param repeatCount
-     * @param durationMillis
      * @return
      */
-    public static void shakeAnimation(View view,int repeatCount,long durationMillis){
-        TranslateAnimation animation = new TranslateAnimation(0, -15, 0, 0);
+    public static void shakeAnimation(View view,int repeatCount){
+        TranslateAnimation animation = new TranslateAnimation(-10, 10, 0, 0);
         animation.setInterpolator(new LinearInterpolator());
-        animation.setDuration(durationMillis);
+        animation.setDuration(37);
         animation.setRepeatCount(repeatCount);
         animation.setRepeatMode(Animation.REVERSE);
+        animation.setFillAfter(false);
         view.clearAnimation();
         view.startAnimation(animation);
     }
