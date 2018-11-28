@@ -89,7 +89,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return getView(id, View.class);
     }
 
-    public <T> T getView(int id, Class c) {
+    public <T> T getView(int id, Class<T> c) {
         View view = null;
         WeakReference<View> soft = caches.get(id + "");
         if (null != soft && null != soft.get())

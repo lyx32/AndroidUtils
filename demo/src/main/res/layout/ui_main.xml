@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".ui.Main">
+
+
+    <TextView
+        android:id="@+id/ui_main_textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:padding="@dimen/_7dp"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_middle" />
+
+
+    <com.arraylist7.android.utils.widget.NEditText
+        android:id="@+id/ui_main_editText_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:background="@drawable/border_bottom"
+        android:gravity="center_vertical"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:lines="1"
+        android:padding="@dimen/_7dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_middle" />
+
+    <com.arraylist7.android.utils.widget.NEditText
+        android:id="@+id/ui_main_editText_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:background="@drawable/border_bottom"
+        android:drawablePadding="@dimen/_7dp"
+        android:gravity="center_vertical"
+        android:imeOptions="actionSend"
+        android:inputType="text"
+        android:lines="1"
+        android:padding="@dimen/_5dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_middle" />
+
+    <Button
+        android:id="@+id/ui_main_button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:text="点击请求拍照权限（SDK>=23）" />
+
+    <Button
+        android:id="@+id/ui_main_button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:text="点击请求多个权限（SDK>=23）" />
+
+    <Button
+        android:id="@+id/ui_main_button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:text="发通用广播" />
+
+    <com.arraylist7.android.utils.widget.NRecyclerView
+        android:id="@+id/ui_main_recyclerView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/_12dp"></com.arraylist7.android.utils.widget.NRecyclerView>
+</LinearLayout>

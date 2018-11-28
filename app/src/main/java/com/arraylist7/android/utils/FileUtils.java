@@ -3,19 +3,14 @@ package com.arraylist7.android.utils;
 
 import android.os.Environment;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 功能：使用NIO的文件工具类<br>
@@ -75,22 +70,32 @@ public final class FileUtils {
         }
         long dirSize = 0;
         File[] files = dir.listFiles();
+        if (StringUtils.isNullOrEmpty(files))
+            return 0L;
         for (File file : files) {
             if (file.isFile()) {
                 dirSize += file.length();
             } else if (file.isDirectory()) {
                 dirSize += file.length();
-                dirSize += getDirSize(file);
+                dirSize += getDirSize(file); // 递归调用继续统计
             }
         }
         return dirSize;
     }
 
-    public static String reader(String path) throws IOException {
-        return reader(new File(path));
+    public static String readerFile(String path) throws IOException {
+        return readerFile(new File(path), Charset.defaultCharset().name());
     }
 
-    public static String reader(File file) throws IOException {
+    public static String readerFile(String path, String charset) throws IOException {
+        return readerFile(new File(path), charset);
+    }
+
+    public static String readerFile(File file) throws IOException {
+        return readerFile(file, Charset.defaultCharset().name());
+    }
+
+    public static String readerFile(File file, String charset) throws IOException {
         if (null == file) {
             throw new NullPointerException();
         }
@@ -110,7 +115,7 @@ public final class FileUtils {
         long end = channel.size();
         byte[] bt = buffer.array();
         buffer.clear();
-        String str = new String(bt, 0, (int) end);
+        String str = new String(bt, 0, (int) end, Charset.forName(charset));
         bt = null;
         buffer.clear();
         buffer = null;
@@ -120,45 +125,43 @@ public final class FileUtils {
     }
 
 
-    public static String[] readers(String path) throws IOException {
-        return readers(new File(path));
+    public static void writeFile(String path, String content) throws Exception {
+        writeFile(path, content, Charset.defaultCharset().name(), false);
     }
 
-    public static String[] readers(File file) throws IOException {
-        FileReader fileReader = new FileReader(file);
-        BufferedReader fr = new BufferedReader(fileReader);
-        String line = null;
-        List<String> list = new ArrayList<>();
-        while (null != (line = fr.readLine())) {
-            list.add(line);
-        }
-        IOUtils.close(fileReader);
-        return list.toArray(new String[]{});
+    public static void writeFile(String path, String content, String charset) throws Exception {
+        writeFile(path, content, charset, false);
     }
 
-    public static void writer(String path, String content) throws Exception {
-        writer(path, content, "UTF-8");
+    public static void writeFile(String path, String content, boolean isAppend) throws Exception {
+        writeFile(path, content, Charset.defaultCharset().name(), isAppend);
     }
 
-    public static void writer(String path, String content,boolean isAppend) throws Exception {
-        writer(path, content, "UTF-8",isAppend);
+    public static void writeFile(String path, String content, String charset, boolean isAppend) throws Exception {
+        writeFile(path, content.getBytes(charset), isAppend);
     }
 
-    public static void writer(String path, String content, String charset) throws Exception {
-        writer(path, content, charset, true);
+    public static void writeFile(String path, byte[] content) throws Exception {
+        writeFile(path, content, false);
     }
 
-
-    public static void writer(String path, String content, String charset, boolean isAppend) throws Exception {
+    public static void writeFile(String path, byte[] content, boolean isAppend)
+            throws Exception {
         File file = new File(path);
         if (!file.getParentFile().exists())
             file.mkdirs();
         if (!file.exists()) {
             file.createNewFile();
         }
+        if (!file.canWrite()) {
+            throw new RuntimeException(path + "没有写入权限");
+        }
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            throw new RuntimeException("没有挂载SD卡");
+        }
         FileOutputStream fos = new FileOutputStream(file, isAppend);
         FileChannel channel = fos.getChannel();
-        ByteBuffer buffer = ByteBuffer.wrap(content.getBytes(charset));
+        ByteBuffer buffer = ByteBuffer.wrap(content);
         channel.write(buffer);
         fos.flush();
         IOUtils.close(fos);
@@ -166,6 +169,9 @@ public final class FileUtils {
     }
 
     public static void copyFile(String path, String newPath) {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            throw new RuntimeException(path + "没有挂载SD卡");
+        }
         File source = new File(path);
         File newFile = new File(newPath);
         if (!newFile.exists()) {
@@ -203,9 +209,12 @@ public final class FileUtils {
             fileOrDir.delete();
         } else if (fileOrDir.isDirectory()) {
             File[] files = fileOrDir.listFiles();
+            if (StringUtils.isNullOrEmpty(files))
+                return;
             for (File file : files)
                 deleteFile(file);
         }
     }
+
 
 }

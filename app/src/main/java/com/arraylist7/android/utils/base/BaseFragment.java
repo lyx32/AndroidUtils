@@ -97,7 +97,7 @@ public abstract class BaseFragment extends Fragment implements IActivity,IHandle
     }
 
     @Override
-    public void onScreenOnOrOff(boolean isOn) {
+    public void onScreenLock(boolean isLock) {
 
     }
 }

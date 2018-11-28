@@ -55,9 +55,9 @@ public final class BitmapUtils {
         }
         final RequestCreator pc = picasso.load(urlOrPath);
         if (0 != width && 0 != height) {
-            pc.resize(width, height);
+            pc.resize(width, height).centerCrop();
         }
-        pc.centerCrop().into(view);
+        pc.into(view);
     }
 
     public static void loadBitmap(String urlOrPath, int width, int height, final Target callback) {

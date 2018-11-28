@@ -57,7 +57,7 @@ public class BaseBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    public void registerReceiver(Context context, String action, BaseBroadcastReceiverListener baseListener) {
+    public void registerReceiver(Context context, String action,BaseBroadcastReceiverListener baseListener) {
         registerReceiver(context, StringUtils.asArray(action), baseListener);
     }
 

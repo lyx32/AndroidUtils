@@ -204,7 +204,7 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
     }
 
     @Override
-    public void onScreenOnOrOff(boolean isOn) {
+    public void onScreenLock(boolean isLock) {
 
     }
 }

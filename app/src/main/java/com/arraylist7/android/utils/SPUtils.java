@@ -1,11 +1,9 @@
 package com.arraylist7.android.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import java.util.Map;
 
 /**
  * 功能：共享数据工具包<br>
@@ -167,9 +165,7 @@ public class SPUtils {
         try {
             ClassUtils.invoke(editor, "apply");
             return;
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
         }
         editor.commit();
     }

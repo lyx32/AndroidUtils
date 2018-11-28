@@ -3,10 +3,14 @@ package com.arraylist7.android.utils;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 
-import com.arraylist7.android.utils.broadcast.ActivityReceiver;
+import com.arraylist7.android.utils.base.BaseActivity;
+import com.arraylist7.android.utils.base.BaseAppCompatActivity;
+import com.arraylist7.android.utils.broadcast.ActivityBroadcast;
 import com.arraylist7.android.utils.broadcast.BaseBroadcastReceiver;
 import com.arraylist7.android.utils.broadcast.NetReceiver;
 import com.arraylist7.android.utils.broadcast.ScreenReceiver;
@@ -23,8 +27,10 @@ import java.util.Map;
 
 public final class AppUtils {
 
-    private static Map<String, List<BaseBroadcastReceiver>> activityMap = new HashMap<>();
+    private static NetState netState = null;
     private static NetReceiver appNetReceiver = new NetReceiver();
+    private static Map<String, List<BaseBroadcastReceiver>> activityMap = new HashMap<>();
+    private static Map<String, BaseAppCompatActivity> netMap = new HashMap<>();
 
     AppUtils() {
     }
@@ -33,19 +39,20 @@ public final class AppUtils {
         init(app, null);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public static void init(@NonNull final Application app, final ActivityLifecycleAdapter adapter) {
+
+
+        BitmapUtils.init(app.getApplicationContext());
 
         ThrowableUtils.setDefaultExceptionHandler(app.getApplicationContext());
 
         appNetReceiver.registerNetReceiver(app.getApplicationContext(), new INetChange() {
             @Override
             public void onNetChange(NetState state) {
-                Collection<List<BaseBroadcastReceiver>> allList = activityMap.values();
-                for (List<BaseBroadcastReceiver> list : allList) {
-                    for (BaseBroadcastReceiver receiver : list) {
-                        if (receiver instanceof INetChange)
-                            ((INetChange) receiver).onNetChange(state);
-                    }
+                Collection<BaseAppCompatActivity> allList = netMap.values();
+                for (BaseAppCompatActivity activity : allList) {
+                    activity.onNetChange(state);
                 }
             }
         });
@@ -62,18 +69,15 @@ public final class AppUtils {
                     }
                     List<BaseBroadcastReceiver> list = activityMap.get(key);
                     // 绑定activity广播
-                    ActivityReceiver activityReceiver = new ActivityReceiver();
+                    ActivityBroadcast activityReceiver = new ActivityBroadcast();
                     activityReceiver.registerActivityReceiver(activity, (IOperator) activity);
                     list.add(activityReceiver);
                     // 绑定网络改变广播
-                    NetReceiver netReceiver = new NetReceiver();
-                    netReceiver.registerNetReceiver(activity, (INetChange) activity);
-                    list.add(netReceiver);
+                    netMap.put(key, (BaseAppCompatActivity) activity);
                     // 绑定屏幕锁定广播
                     ScreenReceiver screenReceiver = new ScreenReceiver();
                     screenReceiver.registerScreenReceiver(activity, (IScreen) activity);
                     list.add(screenReceiver);
-
                     activityMap.put(key, list);
                 }
                 finalAdapter.onActivityCreated(activity, savedInstanceState);
@@ -119,6 +123,7 @@ public final class AppUtils {
                         receiver.unRegisterReceiver(activity);
                     activityMap.remove(key);
                 }
+                netMap.remove(key);
                 finalAdapter.onActivityDestroyed(activity);
             }
         });

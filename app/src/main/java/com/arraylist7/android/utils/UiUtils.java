@@ -4,22 +4,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
+import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.arraylist7.android.utils.adapter.holder.BaseViewHolder;
 
 public final class UiUtils {
 
@@ -44,6 +43,7 @@ public final class UiUtils {
     public static float pxTosp(Context context, float pxVal) {
         return (pxVal / context.getResources().getDisplayMetrics().scaledDensity);
     }
+
 
     /**
      * 获得屏幕高度
@@ -174,7 +174,6 @@ public final class UiUtils {
             toast = null;
         }
         toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
@@ -189,8 +188,34 @@ public final class UiUtils {
             toast = null;
         }
         toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+
+    private static AlertDialog dialog = null;
+
+    public static void showLoading(Activity activity) {
+        showLoading(activity, null);
+    }
+
+    public static void showLoading(Activity activity, String msg) {
+        if (null != dialog) {
+            dialog.cancel();
+            dialog.dismiss();
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(false);
+        final BaseViewHolder holder = new BaseViewHolder(activity, R.layout.dialog_progress);
+        holder.setText(R.id.dialog_progress_msg, StringUtils.isNullOrEmpty(msg) ? "请稍等..." : msg);
+        holder.getView(R.id.dialog_progress, ProgressBar.class).setIndeterminate(true);
+        dialog = builder.setTitle(null).setView(holder.getItemView()).show();
+    }
+
+    public static void closeLoading() {
+        if (null != dialog) {
+            dialog.cancel();
+            dialog.dismiss();
+        }
     }
 
     /**

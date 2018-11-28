@@ -33,9 +33,9 @@ public class OnListViewScrollListener implements OnScrollListener {
             @Override
             public void handlerMsg(NHandler handler,Message msg) {
                 if (200 == msg.what) {
-                    BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
+//                    BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
                 } else if (201 == msg.what) {
-                    BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
+//                    BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
                 }
             }
         });

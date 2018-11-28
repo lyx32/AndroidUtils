@@ -48,15 +48,16 @@ public abstract class BaseActivity extends Activity implements IActivity, IHandl
         activity = this;
         handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
-        onCreate2(savedInstanceState);
-        initWidget();
-        initStatusBar();
-        readerDatabase();
-        initListener();
-        initData();
+        if(onCreate2(savedInstanceState)) {
+            initWidget();
+            initStatusBar();
+            readerDatabase();
+            initListener();
+            initData();
+        }
     }
 
-    public abstract void onCreate2(Bundle savedInstanceState);
+    public abstract boolean onCreate2(Bundle savedInstanceState);
 
     @Override
     public void readerDatabase() {
@@ -180,7 +181,7 @@ public abstract class BaseActivity extends Activity implements IActivity, IHandl
     }
 
     @Override
-    public void onScreenOnOrOff(boolean isOn) {
+    public void onScreenLock(boolean isLock) {
 
     }
 }

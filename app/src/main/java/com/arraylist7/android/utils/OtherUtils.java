@@ -2,7 +2,6 @@ package com.arraylist7.android.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
@@ -23,7 +22,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static android.content.pm.PackageManager.*;
+import static android.content.pm.PackageManager.GET_ACTIVITIES;
+import static android.content.pm.PackageManager.NameNotFoundException;
 
 /**
  * 功能：一些其他工具包<br>
@@ -184,7 +184,7 @@ public final class OtherUtils {
                 }
             }
             return sgin.toString();
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NameNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

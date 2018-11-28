@@ -38,12 +38,12 @@ public class ScreenReceiver extends BaseBroadcastReceiver {
                 if (action.equals(Intent.ACTION_SCREEN_ON)) {
                     LogUtils.d("屏幕解锁广播...");
                     if (screenListener != null) {
-                        screenListener.onScreenOnOrOff(true);
+                        screenListener.onScreenLock(false);
                     }
                 } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                     LogUtils.d("屏幕加锁广播...");
                     if (screenListener != null) {
-                        screenListener.onScreenOnOrOff(false);
+                        screenListener.onScreenLock(true);
                     }
                 }
             }

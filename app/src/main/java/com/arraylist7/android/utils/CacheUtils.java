@@ -1,8 +1,5 @@
 package com.arraylist7.android.utils;
 
-import java.io.File;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -10,6 +7,9 @@ import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * 

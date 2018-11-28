@@ -2,68 +2,107 @@ package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.arraylist7.android.utils.ClassUtils;
+import com.arraylist7.android.utils.StringUtils;
+import com.arraylist7.android.utils.adapter.RecyclerViewAdapter;
+import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;
 import com.arraylist7.android.utils.listener.OnRecyclerViewScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Administrator on 2017/11/30 0030.
- */
-
 public class NRecyclerView extends RecyclerView {
 
-    private List<OnRecyclerViewScrollListener> scrollListeners = new ArrayList<>();
+    private List<OnRecyclerViewScrollListener> listeners = new ArrayList<>();
 
     public NRecyclerView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public NRecyclerView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public NRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setMaxFlingVelocity(60);
+        setVertical();
+        addOnScrollListener(new OnScrollListener() {});
+    }
+
+
+    public void setVertical() {
+        setVertical(true);
+    }
+
+    public void setHorizontal() {
+        setHorizontal(true);
+    }
+
+    public void setVertical(final boolean isCanScroll) {
+        LinearLayoutManager manager = new LinearLayoutManager(this.getContext()) {
+            public boolean canScrollVertically() {
+                return isCanScroll;
             }
-        },600);
-        this.addOnScrollListener(null);
+        };
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        this.setLayoutManager(manager);
+    }
+
+    public void setHorizontal(final boolean isCanScroll) {
+        LinearLayoutManager manager = new LinearLayoutManager(this.getContext()) {
+            public boolean canScrollVertically() {
+                return isCanScroll;
+            }
+        };
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        this.setLayoutManager(manager);
+    }
+
+    public <T> void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
+        Adapter adapter = this.getAdapter();
+        if (null == adapter)
+            return;
+        if (adapter instanceof RecyclerViewAdapter) {
+            RecyclerViewAdapter<T> recyclerViewAdapter = (RecyclerViewAdapter<T>) adapter;
+            recyclerViewAdapter.setOnItemClickListener(listener);
+        }
     }
 
     @Override
     public void addOnScrollListener(OnScrollListener listener) {
-        OnRecyclerViewScrollListener newListener = new OnRecyclerViewScrollListener(this,listener);
-        scrollListeners.add(newListener);
-        super.addOnScrollListener(newListener);
+        if (null != listener) {
+            OnRecyclerViewScrollListener l = new OnRecyclerViewScrollListener(this, listener);
+            listeners.add(l);
+            super.addOnScrollListener(l);
+        }
     }
 
     @Override
     public void removeOnScrollListener(OnScrollListener listener) {
-        synchronized (scrollListeners) {
-            OnRecyclerViewScrollListener remove =null;
-            for (OnRecyclerViewScrollListener newListener : scrollListeners) {
-                if(newListener.getListener().equals(listener)) {
-                    remove = newListener;
-                    break;
+        if (null != listener) {
+            if (listener instanceof OnRecyclerViewScrollListener) {
+                super.removeOnScrollListener(listener);
+            } else {
+                OnRecyclerViewScrollListener remove = null;
+                for (OnRecyclerViewScrollListener l : listeners) {
+                    if (l.getListener() == listener) {
+                        remove = l;
+                        this.removeOnScrollListener(l);
+                        break;
+                    }
                 }
+                if (null != remove)
+                    listeners.remove(remove);
             }
-            scrollListeners.remove(remove);
-            super.removeOnScrollListener(remove);
         }
     }
 
-    public void setMaxFlingVelocity(int velocity){
-        try {
-            ClassUtils.setValue(this.getClass(),"mMaxFlingVelocity",velocity);
-        } catch (Throwable throwable) {
-        }
+
+    @Override
+    public void setOnScrollListener(OnScrollListener listener) {
+        addOnScrollListener(listener);
     }
 }

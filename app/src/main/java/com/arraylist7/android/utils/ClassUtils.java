@@ -1,12 +1,8 @@
 package com.arraylist7.android.utils;
 
-import android.mtp.MtpConstants;
-
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 public class ClassUtils {
 
@@ -79,13 +75,9 @@ public class ClassUtils {
 
 
     public static Method getMethod(Class clazz, String name) {
-        return getMethod(clazz, name, null);
-    }
-
-    public static Method getMethod(Class clazz, String name, Class<?>... paramType) {
         if (null != clazz) {
             try {
-                return clazz.getMethod(name, paramType);
+                return clazz.getMethod(name);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
@@ -94,13 +86,9 @@ public class ClassUtils {
     }
 
     public static Method getDeclaredMethod(Class clazz, String name) {
-        return getDeclaredMethod(clazz, name, null);
-    }
-
-    public static Method getDeclaredMethod(Class clazz, String name, Class<?>... paramType) {
         if (null != clazz) {
             try {
-                return clazz.getDeclaredMethod(name, paramType);
+                return clazz.getDeclaredMethod(name);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
@@ -148,18 +136,15 @@ public class ClassUtils {
 
 
     public static Object invoke(Object obj, String methodName) throws InvocationTargetException, IllegalAccessException {
-        return invoke(obj, methodName, null);
-    }
-
-    public static Object invoke(Object obj, String methodName, Object... params) throws InvocationTargetException, IllegalAccessException {
         if (null == obj)
             throw new NoSuchFieldError("obj 不能为空");
         Method method = getDeclaredMethod(obj.getClass(), methodName);
         if (null == method)
             method = getMethod(obj.getClass(), methodName);
-        if (null == method)
-            throw new NoSuchFieldError(obj.getClass().getName() + "." + methodName + " 方法不存在!");
-        method.setAccessible(true);
-        return method.invoke(obj, params);
+        if (null != method) {
+            method.setAccessible(true);
+            return method.invoke(obj);
+        }
+        return null;
     }
 }

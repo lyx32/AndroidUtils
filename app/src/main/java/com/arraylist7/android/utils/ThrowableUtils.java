@@ -1,17 +1,11 @@
 package com.arraylist7.android.utils;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 
 public final class ThrowableUtils {
 

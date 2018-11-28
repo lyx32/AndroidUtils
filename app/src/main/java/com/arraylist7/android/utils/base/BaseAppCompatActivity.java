@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.IntentUtils;
+import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.broadcast.NetReceiver;
@@ -46,15 +47,16 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         activity = this;
         handler = new NHandler(this);
         bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
-        onCreate2(savedInstanceState);
-        initWidget();
-        initStatusBar();
-        readerDatabase();
-        initListener();
-        initData();
+        if(onCreate2(savedInstanceState)) {
+            initWidget();
+            initStatusBar();
+            readerDatabase();
+            initListener();
+            initData();
+        }
     }
 
-    public abstract void onCreate2(Bundle savedInstanceState);
+    public abstract boolean onCreate2(Bundle savedInstanceState);
 
     @Override
     public void readerDatabase() {
@@ -182,7 +184,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onScreenOnOrOff(boolean isOn) {
+    public void onScreenLock(boolean isLock) {
 
     }
 }

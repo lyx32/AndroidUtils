@@ -1,16 +1,16 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class IntentUtils {
     public static final String DATA_BUNDLE_KEY = "androd_utils_intent_data";
@@ -27,10 +27,14 @@ public class IntentUtils {
         if (null != bundle) {
             intent.putExtra(DATA_BUNDLE_KEY, bundle);
         }
-        form.startActivity(intent);
-        form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
-        if (isFinish) {
-            finish(form);
+        try {
+            form.startActivity(intent);
+            form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
+            if (isFinish) {
+                finish(form);
+            }
+        } catch (ActivityNotFoundException exception) {
+            LogUtils.e("没有找到" + to.getClass().getName() + " ", exception);
         }
     }
 
@@ -47,6 +51,19 @@ public class IntentUtils {
         form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
     }
 
+    public static void setResult(Activity form, int resultCode, boolean isFinish) {
+        setResult(form, resultCode, null, isFinish);
+    }
+
+    public static void setResult(Activity form, int resultCode, Bundle bundle, boolean isFinish) {
+        Intent intent = new Intent();
+        if (null != bundle) {
+            intent.putExtra(DATA_BUNDLE_KEY, bundle);
+        }
+        form.setResult(resultCode, intent);
+        if (isFinish) finish(form);
+    }
+
     public static void finish(Activity activity) {
         activity.finish();
         activity.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
@@ -58,6 +75,16 @@ public class IntentUtils {
         context.startActivity(installIntent);
     }
 
+    public static void openWifi(Activity form) {
+        form.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
+    }
+
+    public static void open4G(Activity form) {
+        form.startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+        form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
+    }
+
     public static void openBrowser(Activity activity, Uri uri) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(uri);
@@ -67,7 +94,7 @@ public class IntentUtils {
 
     public static void openPhone(Activity activity, String phone) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:" + phone));
+        intent.setData(Uri.parse(phone.startsWith("tel:") ? phone : "tel:" + phone));
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
     }

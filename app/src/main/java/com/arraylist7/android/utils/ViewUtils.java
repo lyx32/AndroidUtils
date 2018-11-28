@@ -1,8 +1,6 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
-import android.app.Application;
-import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +14,7 @@ import com.arraylist7.android.utils.annotation.Views;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Set;
 
 public final class ViewUtils {
@@ -79,16 +78,18 @@ public final class ViewUtils {
             }
             // 注入参数
             if (null != params) {
-                for (String key : keys) {
-                    if (key.equalsIgnoreCase(params.value())) {
-                        try {
-                            Object val = bundle.get(key);
-                            if (!StringUtils.isNullOrEmpty(val))
-                                ClassUtils.setValue(field, object, val);
-                        } catch (Throwable e) {
-                            LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                if(null != keys && null != keys.iterator()) {
+                    for (String key : keys) {
+                        if (key.equalsIgnoreCase(params.value())) {
+                            try {
+                                Object val = bundle.get(key);
+                                if (!StringUtils.isNullOrEmpty(val))
+                                    ClassUtils.setValue(field, object, val);
+                            } catch (Throwable e) {
+                                LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }

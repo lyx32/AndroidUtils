@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_12dp">
+
+    <TextView
+        android:id="@+id/ui_main_item_id"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#abc123"
+        android:gravity="center"
+        android:textColor="@color/text_text"
+        android:textSize="@dimen/text_middle" />
+
+    <ImageView
+        android:id="@+id/ui_main_item_img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:id="@+id/ui_main_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:layout_toLeftOf="@id/ui_main_item_img"
+        android:layout_toRightOf="@id/ui_main_item_id"
+        android:textColor="@color/text_text"
+        android:textSize="@dimen/text_middle" />
+
+    <TextView
+        android:id="@+id/ui_main_item_datetime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ui_main_item_id"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:layout_toLeftOf="@id/ui_main_item_img"
+        android:layout_toRightOf="@id/ui_main_item_id"
+        android:textColor="@color/text_text"
+        android:textSize="@dimen/text_middle" />
+</RelativeLayout>
