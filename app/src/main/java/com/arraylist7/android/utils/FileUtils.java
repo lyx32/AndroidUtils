@@ -145,8 +145,7 @@ public final class FileUtils {
         writeFile(path, content, false);
     }
 
-    public static void writeFile(String path, byte[] content, boolean isAppend)
-            throws Exception {
+    public static void writeFile(String path, byte[] content, boolean isAppend) throws Exception {
         File file = new File(path);
         if (!file.getParentFile().exists())
             file.mkdirs();

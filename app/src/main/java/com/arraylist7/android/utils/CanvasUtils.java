@@ -17,12 +17,30 @@ public final class CanvasUtils {
     }
 
 
-    // 绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+    /**
+     *  绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+     * @param canvas 画布
+     * @param rect 矩形大小
+     * @param rx x圆角大小
+     * @param ry y圆角大小
+     * @param paint 画笔
+     */
     public static void drawRoundRect(Canvas canvas, @NonNull RectF rect, float rx, float ry, @NonNull Paint paint) {
         drawRoundRect(canvas, rect.left, rect.top, rect.right, rect.bottom, rx, ry, paint);
     }
 
-    // 绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+    /**
+     * 绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+     *
+     * @param canvas 画布
+     * @param left 左边起点
+     * @param top 上面起点
+     * @param right 矩形宽度
+     * @param bottom 矩形高度
+     * @param rx x圆角大小
+     * @param ry y圆角大小
+     * @param paint 画笔
+     */
     public static void drawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, @NonNull Paint paint) {
         if (Build.VERSION.SDK_INT >= 21) {
             canvas.drawRoundRect(left, top, right, bottom, rx, ry, paint);

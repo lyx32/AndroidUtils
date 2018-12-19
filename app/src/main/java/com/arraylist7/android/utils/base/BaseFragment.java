@@ -1,6 +1,7 @@
 package com.arraylist7.android.utils.base;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -26,7 +27,7 @@ import java.util.Map;
  * Created by Administrator on 2017/6/16 0016.
  */
 
-public abstract class BaseFragment extends Fragment implements IActivity,IHandler, IOperator, INetChange, IScreen {
+public abstract class BaseFragment extends Fragment implements IActivity, IHandler, IOperator, INetChange, IScreen {
     protected BaseFragment that;
     protected NHandler hanlder;
     protected Bundle bundle;
@@ -39,7 +40,7 @@ public abstract class BaseFragment extends Fragment implements IActivity,IHandle
         that = this;
         hanlder = new NHandler(this);
         context = getActivity().getApplicationContext();
-        bundle = savedInstanceState;
+        bundle = getArguments();
         onCreate(root);
         initWidget();
         readerDatabase();
@@ -71,7 +72,7 @@ public abstract class BaseFragment extends Fragment implements IActivity,IHandle
     public void onDetach() {
         super.onDetach();
         try {
-            ClassUtils.setValue(Fragment.class,"mChildFragmentManager",null);
+            ClassUtils.setValue(Fragment.class, this, "mChildFragmentManager", null);
         } catch (Throwable throwable) {
         }
     }

@@ -3,15 +3,25 @@ package com.arraylist7.android.utils.demo.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.arraylist7.android.utils.CacheUtils;
+import com.arraylist7.android.utils.ClassUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
+import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StringUtils;
+import com.arraylist7.android.utils.TypefaceUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
 import com.arraylist7.android.utils.annotation.Params;
@@ -23,13 +33,16 @@ import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.adapter.DemoAdapter;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
-import com.arraylist7.android.utils.inter.IOperator;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
 import com.arraylist7.android.utils.listener.PermissionListener;
 import com.arraylist7.android.utils.widget.NEditText;
 import com.arraylist7.android.utils.widget.NRecyclerView;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +129,7 @@ public class Main extends Base {
             model.id = i + "";
             model.name = "name-" + i;
             model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
-            model.picUrl = img[i % img.length]+"?random="+i;
+            model.picUrl = img[i % img.length] + "?random=" + i;
             list.add(model);
             model = null;
         }
@@ -129,17 +142,15 @@ public class Main extends Base {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.requestPermission(1001, new String[]{Manifest.permission.CAMERA}, new PermissionListener() {
-                    @Override
-                    public void permissionRequestSuccess(String[] permissions) {
-                        UiUtils.showLong(App.getContext(), "你同意了相机权限");
-                    }
-
-                    @Override
-                    public void permissionRequestFail(String[] permissions) {
-                        UiUtils.showLong(App.getContext(), "你拒绝了相机权限");
-                    }
-                });
+                Object tag = button1.getTag();
+                if((tag+"").contains("1"))
+                    tag="fonts/2.ttf";
+                else if((tag+"").contains("2"))
+                    tag="fonts/3.ttf";
+                else
+                    tag="fonts/1.ttf";
+                button1.setTag(tag);
+                TypefaceUtils.applyFont(App.getContext(),button1,tag+"");
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +197,7 @@ public class Main extends Base {
                         }
                     });
                 }
-                ActivityBroadcast.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value1");
+                ActivityBroadcast.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value"+StringUtils.random(100000,999999));
             }
         });
     }

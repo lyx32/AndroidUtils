@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -45,24 +44,37 @@ public final class BitmapUtils {
     }
 
     public static void loadBitmap(String urlOrPath, ImageView view) {
-        loadBitmap(urlOrPath, view, 0, 0);
+        loadBitmap(urlOrPath, 0, 0, view);
     }
 
-    public static void loadBitmap(String urlOrPath, ImageView view, int width, int height) {
+    public static void loadBitmap(String urlOrPath, int width, int height, ImageView view) {
         if (StringUtils.isNullOrEmpty(urlOrPath)) {
             LogUtils.d("请求地址：" + urlOrPath + " 为空");
             return;
         }
-        final RequestCreator pc = picasso.load(urlOrPath);
+        RequestCreator pc = picasso.load(urlOrPath);
         if (0 != width && 0 != height) {
-            pc.resize(width, height).centerCrop();
+            pc.resize(width, height).onlyScaleDown().centerCrop();
         }
         pc.into(view);
     }
 
-    public static void loadBitmap(String urlOrPath, int width, int height, final Target callback) {
-        picasso.load(urlOrPath).resize(width, height).centerCrop().config(Config.ARGB_8888).into(callback);
-    }
+
+//    public static void loadBitmap(String urlOrPath, Target callback) {
+//        loadBitmap(urlOrPath,0,0,callback);
+//    }
+//
+//    public static void loadBitmap(String urlOrPath, int width, int height, Target callback) {
+//        if (StringUtils.isNullOrEmpty(urlOrPath)) {
+//            LogUtils.d("请求地址：" + urlOrPath + " 为空");
+//            return;
+//        }
+//        RequestCreator pc = picasso.load(urlOrPath);
+//        if (0 != width && 0 != height) {
+//            pc.resize(width, height).onlyScaleDown().centerCrop();
+//        }
+//        pc.into(callback);
+//    }
 
 
     public static int caculateInSampleSize(File file, Options options, int reqWidth, int reqHeight) {

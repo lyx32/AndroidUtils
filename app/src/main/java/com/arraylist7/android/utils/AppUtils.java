@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
-import com.arraylist7.android.utils.base.BaseActivity;
 import com.arraylist7.android.utils.base.BaseAppCompatActivity;
 import com.arraylist7.android.utils.broadcast.ActivityBroadcast;
 import com.arraylist7.android.utils.broadcast.BaseBroadcastReceiver;
@@ -29,8 +28,8 @@ public final class AppUtils {
 
     private static NetState netState = null;
     private static NetReceiver appNetReceiver = new NetReceiver();
-    private static Map<String, List<BaseBroadcastReceiver>> activityMap = new HashMap<>();
     private static Map<String, BaseAppCompatActivity> netMap = new HashMap<>();
+    private static Map<String, List<BaseBroadcastReceiver>> activityMap = new HashMap<>();
 
     AppUtils() {
     }
@@ -124,16 +123,17 @@ public final class AppUtils {
                     activityMap.remove(key);
                 }
                 netMap.remove(key);
+                if(0 == netMap.size())
+                    appNetReceiver.unRegisterReceiver(app.getApplicationContext());
                 finalAdapter.onActivityDestroyed(activity);
             }
         });
     }
 
-    public static void onTerminate(Application app) {
-        appNetReceiver.unRegisterReceiver(app.getApplicationContext());
+
+    public static void clearCache(Context context){
+        CacheUtils.getInternalCacheDir(context, "picasso-cache");
     }
 
-    public static void log(Context context, String msg) {
-        LogUtils.file(StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss") + " # " + msg, DeviceUtils.appName(context), "log", StringUtils.getDateTimeNow("yyyy-MM") + ".log");
-    }
+
 }

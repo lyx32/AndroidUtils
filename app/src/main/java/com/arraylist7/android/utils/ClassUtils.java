@@ -18,7 +18,7 @@ public class ClassUtils {
         return obj;
     }
 
-    public static String getClassAndPackageName(Class clazz) {
+    public static String getPackageNameAndClassName(Class clazz) {
         return clazz.getName();
     }
 
@@ -96,54 +96,138 @@ public class ClassUtils {
         return null;
     }
 
-
-    public static void setValue(Field field, Object object, Object value) throws IllegalAccessException {
-        field.setAccessible(true);
-        field.set(object, value);
-    }
-
-    public static void setValue(Class clazz, String fieldName, Object val) throws Throwable {
+    /**
+     * 反射设置属性
+     *
+     * @param clazz     要设置的class
+     * @param instance  要设置的对象，如果是静态类则为null
+     * @param fieldName 属性名
+     * @param val       值
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    public static void setValue(Class clazz, Object instance, String fieldName, Object val) throws IllegalAccessException, InstantiationException {
         if (null == clazz)
-            throw new NoSuchFieldError("clazz 不能为空");
-        Object obj = clazz.newInstance();
+            throw new NullPointerException("clazz 不能为空");
         Field field = getDeclaredField(clazz, fieldName);
         if (null == field)
             field = getField(clazz, fieldName);
         if (null == field) {
             throw new NoSuchFieldError(fieldName + " 不存在!");
         }
-        setValue(field, obj, val);
-    }
-
-
-    public static Object getValue(Field field, Object object) throws IllegalAccessException {
         field.setAccessible(true);
-        return field.get(object);
+        field.set(instance, val);
     }
 
-
-    public static Object getValue(Object obj, String fieldName) throws Throwable {
-        if (null == obj)
-            throw new NoSuchFieldError("obj 不能为空");
-        Class clazz = obj.getClass();
+    /**
+     * 反射获取属性值
+     *
+     * @param clazz     要获取的class
+     * @param obj       要或者的实例 静态类则为null
+     * @param fieldName 属性名
+     * @return
+     * @throws IllegalAccessException
+     */
+    public static Object getValue(Class clazz, Object obj, String fieldName) throws IllegalAccessException {
+        if (null == clazz)
+            throw new NoSuchFieldError("clazz 不能为空");
         Field field = getDeclaredField(clazz, fieldName);
         if (null == field)
             field = getField(clazz, fieldName);
         if (null == field)
             throw new NoSuchFieldError(fieldName + " 不存在!");
-        return getValue(field, obj);
+        field.setAccessible(true);
+        return field.get(obj);
     }
 
 
+    /**
+     * 反射调用方法
+     * @param clazz 要调用的class
+     * @param obj 要调用的实例，静态类则为null
+     * @param methodName 方法名
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static Object invoke(Class clazz, Object obj, String methodName) throws InvocationTargetException, IllegalAccessException {
+        return invoke(clazz, obj, methodName, null);
+    }
+
+
+    /**
+     * 反射调用静态方法
+     * @param clazz 要调用的class
+     * @param methodName 方法名
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static Object invoke(Class clazz, String methodName) throws InvocationTargetException, IllegalAccessException {
+        return invoke(clazz, null, methodName, null);
+    }
+
+    /**
+     * 反射调用静态方法
+     * @param clazz 要调用的class
+     * @param methodName 方法名
+     * @param params 方法参数
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static Object invoke(Class clazz, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException {
+        return invoke(clazz, null, methodName, params);
+    }
+
+
+    /**
+     * 反射调用实例方法
+     * @param obj 要调用的实例
+     * @param methodName 方法名
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     public static Object invoke(Object obj, String methodName) throws InvocationTargetException, IllegalAccessException {
-        if (null == obj)
-            throw new NoSuchFieldError("obj 不能为空");
+        return invoke(obj.getClass(), obj, methodName, null);
+    }
+
+    /**
+     * 反射调用实例方法
+     * @param obj 要调用的实例
+     * @param methodName 方法名
+     * @param params 方法参数
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static Object invoke(Object obj, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException {
+        return invoke(obj.getClass(), obj, methodName,  params);
+    }
+
+    /**
+     * 反射调用方法
+     * @param clazz 要调用的class
+     * @param obj 要调用的实例，静态类则为null
+     * @param methodName 方法名
+     * @param params 方法参数
+     * @return
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static Object invoke(Class clazz, Object obj, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException {
+        if (null == clazz)
+            throw new NoSuchFieldError("clazz 不能为空");
         Method method = getDeclaredMethod(obj.getClass(), methodName);
         if (null == method)
             method = getMethod(obj.getClass(), methodName);
         if (null != method) {
             method.setAccessible(true);
-            return method.invoke(obj);
+            if (null != params && 0 != params.length)
+                return method.invoke(obj, params);
+            else
+                return method.invoke(obj);
         }
         return null;
     }

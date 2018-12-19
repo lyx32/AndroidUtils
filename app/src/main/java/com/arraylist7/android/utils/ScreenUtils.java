@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
+import com.arraylist7.android.utils.listener.ActivityLifecycleAdapter;
+
 public final class ScreenUtils {
     ScreenUtils() {
     }
@@ -91,7 +93,12 @@ public final class ScreenUtils {
     public static void init(@NonNull final Application application, float width) {
         appDisplayMetrics = application.getResources().getDisplayMetrics();
         WIDTH = width;
-        registerActivityLifecycleCallbacks(application);
+        application.registerActivityLifecycleCallbacks(new ActivityLifecycleAdapter(){
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                setAppOrientation(activity);
+            }
+        });
         if (appDensity == 0) {
             appDensity = appDisplayMetrics.density;
             appScaledDensity = appDisplayMetrics.scaledDensity;
@@ -112,11 +119,6 @@ public final class ScreenUtils {
         }
     }
 
-
-    private static void setDefault(Activity activity) {
-        setAppOrientation(activity);
-    }
-
     private static void setAppOrientation(@Nullable Activity activity) {
         float targetDensity = 0;
         try {
@@ -133,46 +135,10 @@ public final class ScreenUtils {
          *
          * 只修改Activity的density值
          */
-
         DisplayMetrics activityDisplayMetrics = activity.getResources().getDisplayMetrics();
         activityDisplayMetrics.density = targetDensity;
         activityDisplayMetrics.scaledDensity = targetScaledDensity;
         activityDisplayMetrics.densityDpi = targetDensityDpi;
     }
-
-
-    private static void registerActivityLifecycleCallbacks(Application application) {
-        application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                setDefault(activity);
-            }
-
-            @Override
-            public void onActivityStarted(Activity activity) {
-            }
-
-            @Override
-            public void onActivityResumed(Activity activity) {
-            }
-
-            @Override
-            public void onActivityPaused(Activity activity) {
-            }
-
-            @Override
-            public void onActivityStopped(Activity activity) {
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-            }
-
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-            }
-        });
-    }
-
 
 }

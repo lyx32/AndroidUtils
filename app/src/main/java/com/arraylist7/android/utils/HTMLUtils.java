@@ -12,13 +12,11 @@ public class HTMLUtils {
     private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
 
     public static String delHTMLTag(String htmlStr) {
-        Pattern p_script = Pattern.compile(regEx_script,
-                Pattern.CASE_INSENSITIVE);
+        Pattern p_script = Pattern.compile(regEx_script, Pattern.CASE_INSENSITIVE);
         Matcher m_script = p_script.matcher(htmlStr);
         htmlStr = m_script.replaceAll(""); // 过滤script标签
 
-        Pattern p_style = Pattern
-                .compile(regEx_style, Pattern.CASE_INSENSITIVE);
+        Pattern p_style = Pattern.compile(regEx_style, Pattern.CASE_INSENSITIVE);
         Matcher m_style = p_style.matcher(htmlStr);
         htmlStr = m_style.replaceAll(""); // 过滤style标签
 
@@ -59,7 +57,6 @@ public class HTMLUtils {
                 default:
                     filtered.append(c);
             }
-
         }
         return (filtered.toString());
     }
@@ -160,8 +157,7 @@ public class HTMLUtils {
      * @return String
      * @如：替换img标签的src属性值为[img]属性值[/img]
      */
-    public static String replaceHtmlTag(String str, String beforeTag,
-                                        String tagAttrib, String startTag, String endTag) {
+    public static String replaceHtmlTag(String str, String beforeTag, String tagAttrib, String startTag, String endTag) {
         String regxpForTag = "<\\s*" + beforeTag + "\\s+([^>]*)\\s*>";
         String regxpForTagAttrib = tagAttrib + "=\"([^\"]+)\"";
         Pattern patternForTag = Pattern.compile(regxpForTag);
@@ -171,11 +167,9 @@ public class HTMLUtils {
         boolean result = matcherForTag.find();
         while (result) {
             StringBuffer sbreplace = new StringBuffer();
-            Matcher matcherForAttrib = patternForAttrib.matcher(matcherForTag
-                    .group(1));
+            Matcher matcherForAttrib = patternForAttrib.matcher(matcherForTag.group(1));
             if (matcherForAttrib.find()) {
-                matcherForAttrib.appendReplacement(sbreplace, startTag
-                        + matcherForAttrib.group(1) + endTag);
+                matcherForAttrib.appendReplacement(sbreplace, startTag + matcherForAttrib.group(1) + endTag);
             }
             matcherForTag.appendReplacement(sb, sbreplace.toString());
             result = matcherForTag.find();

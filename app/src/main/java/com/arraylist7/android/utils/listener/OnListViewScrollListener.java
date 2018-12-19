@@ -33,9 +33,9 @@ public class OnListViewScrollListener implements OnScrollListener {
             @Override
             public void handlerMsg(NHandler handler,Message msg) {
                 if (200 == msg.what) {
-//                    BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
+                    BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
                 } else if (201 == msg.what) {
-//                    BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
+                    BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
                 }
             }
         });
@@ -45,16 +45,14 @@ public class OnListViewScrollListener implements OnScrollListener {
     public void onScrollStateChanged(AbsListView absListView, int state) {
         if (state == SCROLL_STATE_IDLE || state == SCROLL_STATE_TOUCH_SCROLL) {
             if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                handler.removeMessages(200);
-                handler.removeMessages(201);
+                handler.removeCallbacksAndMessages(null);
                 handler.sendEmptyMessageDelayed(200, 300);
             } else {
                 handler.sendEmptyMessage(200);
             }
         } else {
             if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                handler.removeMessages(200);
-                handler.removeMessages(201);
+                handler.removeCallbacksAndMessages(null);
                 handler.sendEmptyMessageDelayed(201, 300);
             } else {
                 handler.sendEmptyMessage(201);

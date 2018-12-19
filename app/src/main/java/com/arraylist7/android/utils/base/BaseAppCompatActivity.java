@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils.base;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -17,6 +20,7 @@ import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
 import com.arraylist7.android.utils.StatusBarUtils;
+import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.broadcast.NetReceiver;
 import com.arraylist7.android.utils.handler.NHandler;
 import com.arraylist7.android.utils.inter.IActivity;
@@ -46,8 +50,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         activity = this;
         handler = new NHandler(this);
-        bundle = getIntent().getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
-        if(onCreate2(savedInstanceState)) {
+        bundle = getIntent().getExtras();
+        if (onCreate2(savedInstanceState)) {
             initWidget();
             initStatusBar();
             readerDatabase();
@@ -102,6 +106,22 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         return booleans;
     }
 
+    /**
+     * 动态请求权限
+     * @param requestCode 请求的requestCode
+     * @param permission  Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了权限才能弹出请求权限的dialog）
+     * @param listener
+     */
+    public void requestPermission(@NonNull int requestCode, @NonNull String permission, @Nullable PermissionListener listener) {
+        requestPermission(requestCode, StringUtils.asArray(permission), listener);
+    }
+
+    /**
+     * 动态请求权限
+     * @param requestCode 请求的requestCode
+     * @param permissions  Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了权限才能弹出请求权限的dialog）
+     * @param listener
+     */
     public void requestPermission(@NonNull int requestCode, @NonNull String[] permissions, @Nullable PermissionListener listener) {
         if (null == listener)
             listener = new PermissionListener() {
@@ -133,6 +153,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         }
     }
 
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissionMap.containsKey(requestCode + "")) {
@@ -160,9 +182,9 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     @Override
     public void onLoginSuccess(Map<String, Serializable> data) {
         List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list){
-            if(f instanceof IActivity)
-                ((IOperator)f).onLoginSuccess(data);
+        for (android.support.v4.app.Fragment f : list) {
+            if (f instanceof IActivity)
+                ((IOperator) f).onLoginSuccess(data);
         }
 
     }

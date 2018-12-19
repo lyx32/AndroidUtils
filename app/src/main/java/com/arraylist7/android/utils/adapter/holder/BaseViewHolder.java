@@ -164,7 +164,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
     public ImageView loadBitmap(int viewId, String url, int width, int height) {
         ImageView imageView = getImageView(viewId);
-        BitmapUtils.loadBitmap(url, imageView, width, height);
+        BitmapUtils.loadBitmap(url, width, height, imageView);
         return imageView;
     }
 

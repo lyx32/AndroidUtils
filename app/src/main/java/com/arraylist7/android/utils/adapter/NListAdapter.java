@@ -266,7 +266,7 @@ public abstract class NListAdapter<T> extends BaseAdapter {
 	 */
 	public ImageView setImage(int viewId, String url, int width, int height) {
 		ImageView imgView = getView(viewId, ImageView.class);
-		BitmapUtils.loadBitmap(url, imgView, width, height);
+		BitmapUtils.loadBitmap(url, width, height, imgView);
 		return imgView;
 	}
 

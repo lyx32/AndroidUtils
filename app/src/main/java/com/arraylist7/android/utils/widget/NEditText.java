@@ -102,8 +102,9 @@ public class NEditText extends EditText {
                     if (actionId == action) {
                         if (null != listener) {
                             listener.onClick(v);
-                            if (action != EditorInfo.IME_ACTION_NEXT)
+                            if (action != EditorInfo.IME_ACTION_NEXT) {
                                 OtherUtils.hideKeyboard(getContext(), NEditText.this);
+                            }
                             return true;
                         }
                     }

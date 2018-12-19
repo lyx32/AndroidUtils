@@ -18,7 +18,7 @@ public final class ThrowableUtils {
             public void uncaughtException(Thread thread, Throwable throwable) {
                 synchronized (context) {
                     throwable.printStackTrace();
-                    String appName = DeviceUtils.appName(context);
+                    String appName = OtherUtils.getAppName(context);
                     ThrowableUtils.saveThrowable(context, appName, "log", throwable);
                 }
             }

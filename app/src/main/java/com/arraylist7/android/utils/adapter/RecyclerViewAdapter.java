@@ -50,15 +50,16 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
 
 
     public View getViewForFlate(int layoutId, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(layoutId, parent,false);
+        return LayoutInflater.from(context).inflate(layoutId, parent, false);
     }
 
 
     public boolean isHeaderOrFooter(int position) {
         if ((position == 0 && headerId != 0) || (position == getItemCount() - 1 && footerId != 0)) {
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     public int getLayoutId() {
@@ -131,11 +132,11 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         onBindView(position, holder, getItem(position));
-        if(null != listener) {
+        if (null != listener) {
             holder.getItemView().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(that,getItem(position),position);
+                    listener.onItemClick(that, getItem(position), position, getItemPosition(position));
                 }
             });
         }
@@ -248,8 +249,7 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
     }
 
 
-
-    public  void setOnItemClickListener(OnRecyclerViewItemClickListener listener){
+    public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.listener = listener;
     }
 }

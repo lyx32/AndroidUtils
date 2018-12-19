@@ -51,48 +51,6 @@ public class DeviceUtils {
         return Build.VERSION.RELEASE;
     }
 
-    /**
-     * 当前应用程序的名称
-     */
-    public static String appName(Context context) {
-        String appName = "";
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            appName = info.applicationInfo.loadLabel(context.getPackageManager()).toString();
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return appName;
-    }
-
-    /**
-     * 当前应用程序的版本号
-     */
-    public static String appVerName(Context context) {
-        String appVerName = "";
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            appVerName = info.versionName;
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return appVerName;
-    }
-
-    /**
-     * 当前应用程序的版本号
-     */
-    public static int appVerCode(Context context) {
-        int appVerCode = 0;
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            appVerCode = info.versionCode;
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return appVerCode;
-    }
-
 
     /**
      * 得到手机唯一设备号
@@ -115,7 +73,7 @@ public class DeviceUtils {
                             String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
                             String serial = "";
                             try {
-                                serial = Build.class.getField("SERIAL").get(null).toString();
+                                serial =  ClassUtils.getValue(Build.class,null,"SERIAL").toString();
                                 return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
                             } catch (Exception e) {
                                 serial = "serial";
@@ -129,7 +87,7 @@ public class DeviceUtils {
             String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
             String serial = "";
             try {
-                serial = Build.class.getField("SERIAL").get(null).toString();
+                serial =  ClassUtils.getValue(Build.class,null,"SERIAL").toString();
                 return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
             } catch (Exception e) {
                 serial = "serial";
@@ -137,28 +95,6 @@ public class DeviceUtils {
             return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
         }
         return deviceId;
-    }
-
-
-    /**
-     * 得到手机唯一设备号
-     *
-     * @param context
-     * @return
-     */
-    public static String getAllDeviceId(Context context) {
-        StringBuffer str = new StringBuffer();
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = tm.getSubscriberId();
-        str.append(deviceId + "|");
-        deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-        str.append(deviceId + "|");
-        deviceId = tm.getDeviceId();
-        str.append(deviceId + "|");
-        while (str.toString().endsWith("|")) {
-            str.setLength(str.toString().length() - 1);
-        }
-        return str.toString();
     }
 
     /**
@@ -172,8 +108,8 @@ public class DeviceUtils {
         if (StringUtils.isNullOrEmpty(deviceId)) {
             if (StringUtils.isNullOrEmpty(deviceId)) {
                 if (StringUtils.isNullOrEmpty(deviceId)) {
-                    String path1 = CacheUtils.createAppOtherDir(".#%/\\hqls", ".*%^~a");
-                    String path2 = CacheUtils.createAppOtherDir("hqls", "uuid");
+                    String path1 = CacheUtils.createAppOtherDir(".#%/\\au", ".*%^~a");
+                    String path2 = CacheUtils.createAppOtherDir("au", "uuid");
                     File deviceFile = new File(path1, "device");
                     if (!deviceFile.getParentFile().exists()) {
                         if (!deviceFile.mkdirs()) {

@@ -13,7 +13,6 @@ import android.provider.Settings;
 import java.io.File;
 
 public class IntentUtils {
-    public static final String DATA_BUNDLE_KEY = "androd_utils_intent_data";
 
     IntentUtils() {
     }
@@ -25,7 +24,7 @@ public class IntentUtils {
     public static void activity(Activity form, Class<? extends Activity> to, Bundle bundle, boolean isFinish) {
         Intent intent = new Intent(form, to);
         if (null != bundle) {
-            intent.putExtra(DATA_BUNDLE_KEY, bundle);
+            intent.putExtras(bundle);
         }
         try {
             form.startActivity(intent);
@@ -45,7 +44,7 @@ public class IntentUtils {
     public static void activityForResult(Activity form, Class<? extends Activity> to, Bundle bundle, int requestCode) {
         Intent intent = new Intent(form, to);
         if (null != bundle) {
-            intent.putExtra(DATA_BUNDLE_KEY, bundle);
+            intent.putExtras(bundle);
         }
         form.startActivityForResult(intent, requestCode);
         form.overridePendingTransition(R.anim.anim_in_right, R.anim.anim_out_left);
@@ -58,7 +57,7 @@ public class IntentUtils {
     public static void setResult(Activity form, int resultCode, Bundle bundle, boolean isFinish) {
         Intent intent = new Intent();
         if (null != bundle) {
-            intent.putExtra(DATA_BUNDLE_KEY, bundle);
+            intent.putExtras(bundle);
         }
         form.setResult(resultCode, intent);
         if (isFinish) finish(form);

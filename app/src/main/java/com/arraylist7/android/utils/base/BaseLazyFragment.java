@@ -178,7 +178,7 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
     public void onDetach() {
         super.onDetach();
         try {
-            ClassUtils.setValue(Fragment.class,"mChildFragmentManager",null);
+            ClassUtils.setValue(Fragment.class, this, "mChildFragmentManager", null);
         } catch (Throwable throwable) {
         }
     }

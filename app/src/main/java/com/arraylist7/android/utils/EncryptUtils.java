@@ -103,6 +103,9 @@ public class EncryptUtils {
      */
     public static String complexEncrypt(String content, String key) {
         if (StringUtils.isNullOrEmpty(content)) return "";
+        if (StringUtils.isNullOrEmpty(key)) return "";
+        if (key.length() > 8)
+            key = key.substring(0, 8);
         byte[] contentData = encryptData(content, key);
         byte[] noiseData_before = new byte[(int) StringUtils.random(NOISE_DATA_MIN, NOISE_DATA_MAX)];
         byte[] noiseData_after = new byte[NOISE_DATA_MIN];
@@ -121,7 +124,7 @@ public class EncryptUtils {
             7（1+6+4判断长度是单数还是双数。单数在使用6的前16位作为加密key。双数则使用6的后16位作为加密key）
             8（1+6+4的组合在加密，加密key使用7）（加密后：7的key+（1+6+4）加密后的内容）
             9（base64编码）
-            加密的内容会不定的增加2K——5K。所以此处只建议用做内容加密
+            加密的内容会增加2K——5K。
          */
         SecureRandom secureRandom = new SecureRandom();
         // 3
@@ -167,16 +170,20 @@ public class EncryptUtils {
         System.arraycopy(headerAndNoiseAndContentEncrypt, 0, allData, headerData.length, headerAndNoiseAndContentEncrypt.length);
         System.arraycopy(noiseData_after, 0, allData, headerData.length + headerAndNoiseAndContentEncrypt.length, noiseData_after.length);
         byte[] encryptData = encryptData(allData, encryptKey_7);
-        byte[] endEncryptData = new byte[encryptData.length+COMPLEX_ENCRYPT_KEY_LENGTH];
+        byte[] endEncryptData = new byte[encryptData.length + COMPLEX_ENCRYPT_KEY_LENGTH];
         System.arraycopy(encryptKey_7, 0, endEncryptData, 0, COMPLEX_ENCRYPT_KEY_LENGTH);
         System.arraycopy(encryptData, 0, endEncryptData, COMPLEX_ENCRYPT_KEY_LENGTH, encryptData.length);
-        noiseData_after = noiseData_before = headerAndNoiseAndContent = headerAndNoiseAndContentEncrypt = encryptByte_6 = encryptKey_7 = encryptKey_5 = contentData = headerData = allData = null;
-        return encodeBase64(endEncryptData);
+        String result =  encodeBase64(endEncryptData);
+        endEncryptData = noiseData_after = noiseData_before = headerAndNoiseAndContent = headerAndNoiseAndContentEncrypt = encryptByte_6 = encryptKey_7 = encryptKey_5 = contentData = headerData = allData = null;
+        return result;
     }
 
 
     public static String complexDecrypt(String content, String key) {
         if (StringUtils.isNullOrEmpty(content)) return "";
+        if (StringUtils.isNullOrEmpty(key)) return "";
+        if (key.length() > 8)
+            key = key.substring(0, 8);
         byte[] allData = null;
         byte[] headerData = new byte[ENCRYPT_HEADER];
         byte[] encryptLength = new byte[ENCRYPT_NOISE_LENGTH];
@@ -187,22 +194,23 @@ public class EncryptUtils {
         byte[] encryptContent = null;
         byte[] key_7 = new byte[COMPLEX_ENCRYPT_KEY_LENGTH];
         byte[] key_5 = new byte[COMPLEX_ENCRYPT_KEY_LENGTH];
+        String result = "";
         try {
             byte[] allDatas = decodeBase64(content);
             System.arraycopy(allDatas, 0, key_7, 0, COMPLEX_ENCRYPT_KEY_LENGTH);
             allData = new byte[allDatas.length - COMPLEX_ENCRYPT_KEY_LENGTH];
             System.arraycopy(allDatas, COMPLEX_ENCRYPT_KEY_LENGTH, allData, 0, allData.length);
-            allData = decryptData(allData,key_7);
+            allData = decryptData(allData, key_7);
             // 读取加密头
             System.arraycopy(allData, 0, headerData, 0, headerData.length);
             encryptData_8 = new byte[allData.length - ENCRYPT_HEADER - NOISE_DATA_MIN];
             // 读取噪音和真实内容组合（加密的）
-            System.arraycopy(allData, ENCRYPT_HEADER , encryptData_8, 0, encryptData_8.length);
+            System.arraycopy(allData, ENCRYPT_HEADER, encryptData_8, 0, encryptData_8.length);
 
-            encryptData_6 = new byte[encryptData_8.length-COMPLEX_ENCRYPT_KEY_LENGTH];
+            encryptData_6 = new byte[encryptData_8.length - COMPLEX_ENCRYPT_KEY_LENGTH];
             System.arraycopy(encryptData_8, 0, key_5, 0, COMPLEX_ENCRYPT_KEY_LENGTH);
             System.arraycopy(encryptData_8, COMPLEX_ENCRYPT_KEY_LENGTH, encryptData_6, 0, encryptData_6.length);
-            decryptData_6 = decryptData(encryptData_6,key_5);
+            decryptData_6 = decryptData(encryptData_6, key_5);
 
             System.arraycopy(decryptData_6, 0, headerData, 0, headerData.length);
             System.arraycopy(headerData, ENCRYPT_HEADER - ENCRYPT_NOISE_LENGTH - ENCRYPT_TYPE_LENGTH, encryptLength, 0, ENCRYPT_NOISE_LENGTH);
@@ -210,14 +218,14 @@ public class EncryptUtils {
 
             encryptContent = new byte[decryptData_6.length - ENCRYPT_HEADER - noiseLength];
             System.arraycopy(decryptData_6, ENCRYPT_HEADER + noiseLength, encryptContent, 0, encryptContent.length);
-            decryptContent = decryptData(encryptContent,key);
-            return new String(decryptContent, CHARSET);
+            decryptContent = decryptData(encryptContent, key);
+            result =  new String(decryptContent, CHARSET);
         } catch (Exception e) {
             LogUtils.e("解密失败", e);
         } finally {
             encryptData_6 = decryptData_6 = encryptData_8 = allData = headerData = encryptLength = decryptContent = encryptContent = key_7 = key_5 = null;
         }
-        return "";
+        return result;
     }
 
 
@@ -231,11 +239,15 @@ public class EncryptUtils {
 
     public static String mediumEncrypt(String content, String key) {
         if (StringUtils.isNullOrEmpty(content)) return "";
+        if (StringUtils.isNullOrEmpty(key)) return "";
+        if (key.length() > 8)
+            key = key.substring(0, 8);
         byte[] contentData = encryptData(content, key);
         byte[] noiseData = new byte[(int) StringUtils.random(NOISE_DATA_MIN, NOISE_DATA_MAX)];
         byte[] noiseAndContentData = new byte[noiseData.length + contentData.length];
         byte[] headerData = new byte[ENCRYPT_HEADER];
         byte[] allData = null;
+        String result = "";
         /*
             加密流程：
             1（31位加密头，25位无效数据+4位噪音数据+1位加密方式数据）
@@ -244,7 +256,7 @@ public class EncryptUtils {
             4（2+3的内容组合在加密）
             5（1+4的组合在加密）
             6（base64编码）
-            加密的内容会不定的增加1K——4K。所以此处只建议用做内容加密
+            加密的内容会增加1K——4K。
          */
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(noiseData);
@@ -265,8 +277,9 @@ public class EncryptUtils {
         System.arraycopy(headerData, 0, allData, 0, headerData.length);
         System.arraycopy(noiseAndContentencryptData, 0, allData, headerData.length, noiseAndContentencryptData.length);
         byte[] encryptData = encryptData(allData, key);
-        noiseAndContentencryptData = noiseData = headerData = allData = null;
-        return encodeBase64(encryptData);
+        result = encodeBase64(encryptData);
+        encryptData = noiseAndContentencryptData = noiseData = headerData = allData = null;
+        return result;
     }
 
 
@@ -279,12 +292,16 @@ public class EncryptUtils {
      */
     public static String mediumDecrypt(String content, String key) {
         if (StringUtils.isNullOrEmpty(content)) return "";
+        if (StringUtils.isNullOrEmpty(key)) return "";
+        if (key.length() > 8)
+            key = key.substring(0, 8);
         byte[] allData = null;
         byte[] headerData = new byte[ENCRYPT_HEADER];
         byte[] encryptLength = new byte[ENCRYPT_NOISE_LENGTH];
         byte[] noiseAndContentEncrypt = null;
         byte[] noiseAndContent = null;
         byte[] decryptData = null;
+        String result = "";
         try {
             allData = decryptData(decodeBase64(content), key);
             // 读取加密头
@@ -301,13 +318,13 @@ public class EncryptUtils {
             decryptData = new byte[noiseAndContent.length - noiseLength];
             System.arraycopy(noiseAndContent, 0, decryptData, 0, decryptData.length);
             decryptData = decryptData(decryptData, key);
-            return new String(decryptData, CHARSET);
+            result =  new String(decryptData, CHARSET);
         } catch (Exception e) {
             LogUtils.e("解密失败", e);
         } finally {
             allData = headerData = encryptLength = noiseAndContentEncrypt = noiseAndContent = decryptData = null;
         }
-        return "";
+        return result;
     }
 
     /**
@@ -320,13 +337,14 @@ public class EncryptUtils {
         byte[] keyBytes = null;
         byte[] encrypt = null;
         byte[] allData = null;
+        String result = "";
         /*
             加密流程
             1（判断加密key的字节是否有16位，不足随机补上，超过则只取16位）
             2（将内容加密）
             3（用于加密的key加上加密之后的内容组合在一起）
             4（base64编码）
-            因为加密力度不是很大，所以此处建议用作签名或者对安全要求不高的加密
+            加密力度不是很大，
          */
         try {
             keyBytes = key.getBytes(CHARSET);
@@ -346,13 +364,13 @@ public class EncryptUtils {
             allData = new byte[encrypt.length + keyBytes.length];
             System.arraycopy(keyBytes, 0, allData, 0, keyBytes.length);
             System.arraycopy(encrypt, 0, allData, keyBytes.length, encrypt.length);
-            return encodeBase64(allData);
+            result =  encodeBase64(allData);
         } catch (Exception e) {
             LogUtils.e("加密失败", e);
         } finally {
             keyBytes = encrypt = allData = null;
         }
-        return "";
+        return result;
     }
 
     /**
@@ -367,6 +385,7 @@ public class EncryptUtils {
         byte[] decrypt = null;
         byte[] encrypt = null;
         byte[] allData = null;
+        String result = "";
         try {
             allData = decodeBase64(content);
             encrypt = new byte[allData.length - keyBytes.length];
@@ -382,14 +401,14 @@ public class EncryptUtils {
             IvParameterSpec IVSpec = new IvParameterSpec(keyBytes);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, 0, keyBytes.length, "AES"), IVSpec);
             decrypt = cipher.doFinal(encrypt);
-            return new String(decrypt, CHARSET);
+            result = new String(decrypt, CHARSET);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.e("解密失败", e);
         } finally {
             keyBytes = decrypt = encrypt = allData = null;
         }
-        return "";
+        return result;
     }
 
 

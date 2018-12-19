@@ -35,7 +35,7 @@ public final class ViewUtils {
         if (object instanceof Activity) {
             Intent intent = ((Activity) object).getIntent();
             if (null != intent)
-                bundle = intent.getBundleExtra(IntentUtils.DATA_BUNDLE_KEY);
+                bundle = intent.getExtras();
         } else if (object instanceof android.app.Fragment) {
             bundle = ((android.app.Fragment) object).getArguments();
         } else if (object instanceof android.support.v4.app.Fragment) {
@@ -70,21 +70,24 @@ public final class ViewUtils {
                     continue;
                 }
                 try {
-                    ClassUtils.setValue(field, object, findView);
+                    field.setAccessible(true);
+                    field.set(object, findView);
                 } catch (Throwable e) {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
-                    LogUtils.e(getFieldInfo(field) + " 将要注入" + injectViewName);
+                    LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName+" 失败");
                 }
             }
             // 注入参数
             if (null != params) {
-                if(null != keys && null != keys.iterator()) {
+                if (null != keys && null != keys.iterator()) {
                     for (String key : keys) {
                         if (key.equalsIgnoreCase(params.value())) {
                             try {
                                 Object val = bundle.get(key);
-                                if (!StringUtils.isNullOrEmpty(val))
-                                    ClassUtils.setValue(field, object, val);
+                                if (!StringUtils.isNullOrEmpty(val)) {
+                                    field.setAccessible(true);
+                                    field.set(object, val);
+                                }
                             } catch (Throwable e) {
                                 LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
                             }
@@ -101,7 +104,8 @@ public final class ViewUtils {
                     continue;
                 }
                 try {
-                    ClassUtils.setValue(field, object, arrays);
+                    field.setAccessible(true);
+                    field.set(object, arrays);
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.array：" + array.value() + " 失败");
                 }
@@ -114,7 +118,8 @@ public final class ViewUtils {
                     continue;
                 }
                 try {
-                    ClassUtils.setValue(field, object, strings);
+                    field.setAccessible(true);
+                    field.set(object, strings);
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.string：" + string.value() + " 失败");
                 }
@@ -127,7 +132,8 @@ public final class ViewUtils {
                     continue;
                 }
                 try {
-                    ClassUtils.setValue(field, object, colors);
+                    field.setAccessible(true);
+                    field.set(object, colors);
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.color：" + color.value() + " 失败");
                 }

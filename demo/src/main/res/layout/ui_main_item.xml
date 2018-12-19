@@ -40,5 +40,5 @@
         android:layout_toLeftOf="@id/ui_main_item_img"
         android:layout_toRightOf="@id/ui_main_item_id"
         android:textColor="@color/text_text"
-        android:textSize="@dimen/text_middle" />
+        android:textSize="@dimen/text_small" />
 </RelativeLayout>
