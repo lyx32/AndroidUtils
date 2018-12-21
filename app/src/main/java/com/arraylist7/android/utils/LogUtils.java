@@ -19,7 +19,7 @@ public class LogUtils {
         StackTraceElement caller = Thread.currentThread().getStackTrace()[4];
         String callerClazzName = caller.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
-        return callerClazzName + "." + caller.getMethodName() + "-L:" + caller.getLineNumber();
+        return "androidUtils.LogUtils --> "+callerClazzName + "." + caller.getMethodName() + "-L:" + caller.getLineNumber();
     }
 
     public static void e(String message) {

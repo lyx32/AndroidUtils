@@ -24,4 +24,5 @@ public abstract class Base extends BaseAppCompatActivity {
     public void handlerMsg(NHandler handler, Message msg) {
 
     }
+
 }

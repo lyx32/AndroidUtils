@@ -2,6 +2,8 @@ package com.arraylist7.android.utils;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,9 +11,15 @@ public class HTMLUtils {
     private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
     private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>"; // 定义style的正则表达式
     private static final String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
-    private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
 
-    public static String delHTMLTag(String htmlStr) {
+
+    /**
+     * 替换所有html标签保留标签内容（不包括script及style）
+     *
+     * @param htmlStr
+     * @return
+     */
+    public static String replaceAllHTMLTag(String htmlStr) {
         Pattern p_script = Pattern.compile(regEx_script, Pattern.CASE_INSENSITIVE);
         Matcher m_script = p_script.matcher(htmlStr);
         htmlStr = m_script.replaceAll(""); // 过滤script标签
@@ -23,158 +31,176 @@ public class HTMLUtils {
         Pattern p_html = Pattern.compile(regEx_html, Pattern.CASE_INSENSITIVE);
         Matcher m_html = p_html.matcher(htmlStr);
         htmlStr = m_html.replaceAll(""); // 过滤html标签
-
         return htmlStr.trim(); // 返回文本字符串
-    }
-
-    /**
-     * 基本功能：替换标记以正常显示
-     *
-     * @param input
-     * @return String
-     */
-    public static String replaceTag(String input) {
-        if (!hasSpecialChars(input)) {
-            return input;
-        }
-        StringBuffer filtered = new StringBuffer(input.length());
-        char c;
-        for (int i = 0; i <= input.length() - 1; i++) {
-            c = input.charAt(i);
-            switch (c) {
-                case '<':
-                    filtered.append("&lt;");
-                    break;
-                case '>':
-                    filtered.append("&gt;");
-                    break;
-                case '"':
-                    filtered.append("&quot;");
-                    break;
-                case '&':
-                    filtered.append("&amp;");
-                    break;
-                default:
-                    filtered.append(c);
-            }
-        }
-        return (filtered.toString());
-    }
-
-    /**
-     * 呵呵
-     *
-     * @param input
-     * @return
-     */
-    public static String rollbackReplaceTag(String input) {
-        if (TextUtils.isEmpty(input)) return input;
-        return input.replace("&lt;", "<")
-                .replace("&gt;", ">")
-                .replace("&quot;", "\"")
-                .replace("&amp;", "&");
-    }
-
-    /**
-     * 基本功能：判断标记是否存在
-     *
-     * @param input
-     * @return boolean
-     */
-    public static boolean hasSpecialChars(String input) {
-        boolean flag = false;
-        if ((input != null) && (input.length() > 0)) {
-            char c;
-            for (int i = 0; i <= input.length() - 1; i++) {
-                c = input.charAt(i);
-                switch (c) {
-                    case '>':
-                        flag = true;
-                        break;
-                    case '<':
-                        flag = true;
-                        break;
-                    case '"':
-                        flag = true;
-                        break;
-                    case '&':
-                        flag = true;
-                        break;
-                }
-            }
-        }
-        return flag;
-    }
-
-    /**
-     * 基本功能：过滤所有以"<"开头以">"结尾的标签
-     *
-     * @param str
-     * @return String
-     */
-    public static String filterHtml(String str) {
-        Pattern pattern = Pattern.compile(regxpForHtml);
-        Matcher matcher = pattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        boolean result1 = matcher.find();
-        while (result1) {
-            matcher.appendReplacement(sb, "");
-            result1 = matcher.find();
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
     }
 
     /**
      * 基本功能：过滤指定标签
      *
      * @param str
-     * @param tag 指定标签
+     * @param tag               指定标签
+     * @param isContainsContent 是否包含内容
      * @return String
      */
-    public static String fiterHtmlTag(String str, String tag) {
-        String regxp = "<\\s*" + tag + "\\s+([^>]*)\\s*>";
-        Pattern pattern = Pattern.compile(regxp);
+    public static String replaceHTMLTag(String str, String tag, boolean isContainsContent) {
+        String patternString = "<\\s*" + tag + "\\s*([^>]*)>";
+        if (isContainsContent)
+            patternString = "<\\s*" + tag + "[^>]*?\\s*>.*?</\\s*" + tag + "\\s*>";
+        Pattern pattern = Pattern.compile(patternString);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
-        boolean result1 = matcher.find();
-        while (result1) {
+        while (matcher.find()) {
             matcher.appendReplacement(sb, "");
-            result1 = matcher.find();
         }
         matcher.appendTail(sb);
         return sb.toString();
     }
 
     /**
-     * 基本功能：替换指定的标签
+     * 找到html指定标签
      *
-     * @param str
-     * @param beforeTag 要替换的标签
-     * @param tagAttrib 要替换的标签属性值
-     * @param startTag  新标签开始标记
-     * @param endTag    新标签结束标记
-     * @return String
-     * @如：替换img标签的src属性值为[img]属性值[/img]
+     * @param val               要查找的内容
+     * @param tag               标签名
+     * @param isContainsContent 是否包含内容
+     * @return
      */
-    public static String replaceHtmlTag(String str, String beforeTag, String tagAttrib, String startTag, String endTag) {
-        String regxpForTag = "<\\s*" + beforeTag + "\\s+([^>]*)\\s*>";
-        String regxpForTagAttrib = tagAttrib + "=\"([^\"]+)\"";
-        Pattern patternForTag = Pattern.compile(regxpForTag);
-        Pattern patternForAttrib = Pattern.compile(regxpForTagAttrib);
-        Matcher matcherForTag = patternForTag.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        boolean result = matcherForTag.find();
-        while (result) {
-            StringBuffer sbreplace = new StringBuffer();
-            Matcher matcherForAttrib = patternForAttrib.matcher(matcherForTag.group(1));
-            if (matcherForAttrib.find()) {
-                matcherForAttrib.appendReplacement(sbreplace, startTag + matcherForAttrib.group(1) + endTag);
+    public static List<String> findHtmlTag(String val, String tag, boolean isContainsContent) {
+        return findHtmlTag(val, tag, null, null, isContainsContent);
+    }
+
+    /**
+     * 根据标签和属性找到指定标签
+     *
+     * @param val               要查找的内容
+     * @param tag               标签名
+     * @param attrs             属性名（尽量可以的少）
+     * @param attrVals          属性值
+     * @param isContainsContent 是否包含内容
+     * @return
+     */
+    public static List<String> findHtmlTag(String val, String tag, String[] attrs, String[] attrVals, boolean isContainsContent) {
+        List<String> list = new ArrayList<>();
+        StringBuffer patternString = new StringBuffer("<\\s*" + tag + "\\s*");
+        if (StringUtils.len(attrs) > 0) {
+            for (int i = 0; i < attrs.length; i++) {
+                String attr = attrs[i];
+                String attrVal = null;
+                if (null != attrVals)
+                    attrVal = attrVals[i];
+                if (!StringUtils.isNullOrEmpty(attr))
+                    patternString.append("[^<>]*?\\s+" + attr);
+                if (null != attrVal)
+                    patternString.append("=\\s*[\"']" + attrVal + "[\"']\\s*");
             }
-            matcherForTag.appendReplacement(sb, sbreplace.toString());
-            result = matcherForTag.find();
         }
-        matcherForTag.appendTail(sb);
-        return sb.toString();
+        if (isContainsContent)
+            patternString.append("[^>]*?\\s*>.*?</\\s*" + tag + "\\s*>");
+        else
+            patternString.append("([^>]*)>");
+        Pattern pattern = Pattern.compile(patternString.toString());
+        Matcher matcher = pattern.matcher(val);
+        while (matcher.find()) {
+            list.add(matcher.group());
+        }
+        return list;
+    }
+
+    /**
+     * 找到A标签
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> findATag(String val) {
+        return findHtmlTag(val, "a", false);
+    }
+
+    /**
+     * 找到img标签
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> findIMGTag(String val) {
+        return findHtmlTag(val, "img", false);
+    }
+
+    /**
+     * 找到Script标签
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> findScriptTag(String val) {
+        return findHtmlTag(val, "script", null, null, true);
+    }
+
+    /**
+     * 找到input标签
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> findInputTag(String val) {
+        return findHtmlTag(val, "input", null, null, false);
+    }
+
+
+    /**
+     * 通过指定属性及属性值找到input标签
+     *
+     * @param val 要查找的内容
+     * @param attrs 指定的属性
+     * @param attrVals 指定的值
+     * @return
+     */
+    public static List<String> findInputTag(String val,String[] attrs,String[] attrVals) {
+        return findHtmlTag(val, "input", attrs, attrVals, false);
+    }
+
+    /**
+     * 提取img标签的src值
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> filterImg_Src(String val) {
+        return filterHtmlTag(val, "img", new String[]{"src"});
+    }
+
+    /**
+     * 提取a标签的href值
+     *
+     * @param val 要查找的内容
+     * @return
+     */
+    public static List<String> filterA_Href(String val) {
+        return filterHtmlTag(val, "a", new String[]{"href"});
+    }
+
+    /**
+     * 根据标签提取指定属性
+     *
+     * @param val   要查找的内容
+     * @param tag   标签名
+     * @param attrs 属性名（尽量可以的少）
+     * @return
+     */
+    public static List<String> filterHtmlTag(String val, String tag, String[] attrs) {
+        List<String> list = new ArrayList<>();
+        String patternString = "<\\s*" + tag + "\\s*([^>]*)>";
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(val);
+        while (matcher.find()) {
+            String htmlTag = (matcher.group());
+            for (String attr : attrs) {
+                Pattern attrPattern = Pattern.compile("\\s+" + attr + "\\s*=\\s*[\"'](.*?)[\"']");
+                Matcher attrMatcher = attrPattern.matcher(htmlTag);
+                if (attrMatcher.find() && attrMatcher.groupCount() > 1) {
+                    list.add(attrMatcher.group(1));
+                }
+            }
+        }
+        return list;
     }
 }

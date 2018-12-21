@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.arraylist7.android.utils.CacheUtils;
 import com.arraylist7.android.utils.ClassUtils;
+import com.arraylist7.android.utils.FileUtils;
+import com.arraylist7.android.utils.HTMLUtils;
+import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
@@ -61,6 +64,8 @@ public class Main extends Base {
     private Button button2;
     @Views(R.id.ui_main_button3)
     private Button button3;
+    @Views(R.id.ui_main_button4)
+    private Button button4;
     @Views(R.id.ui_main_recyclerView1)
     private NRecyclerView recyclerView1;
 
@@ -100,7 +105,6 @@ public class Main extends Base {
                 UiUtils.showLong(App.getContext(), "点击了键盘右下角按钮");
             }
         });
-
         recyclerView1.setVertical(true);
         recyclerView1.setAdapter(adapter = new DemoAdapter(R.layout.ui_main_item, this));
     }
@@ -134,7 +138,52 @@ public class Main extends Base {
             model = null;
         }
         adapter.addData(list);
-        adapter.updataUI();
+        adapter.updateUI();
+
+
+
+
+        try {
+            String cq_qq_com = IOUtils.getString(App.getContext().getAssets().open("cq.qq.com_2018-12-21.html"),"GBK").toString();
+            // 找到所有type="text" 的input标签
+            List<String> inputs = HTMLUtils.findInputTag(cq_qq_com,new String[]{"type"},new String[]{"text"});
+            // 找到class="channel-title"的h3节点及h3节点下的内容
+            List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
+            // 提取所有img的src值
+            List<String> srcs = HTMLUtils.filterHtmlTag(cq_qq_com,"img",new String[]{"src"});
+            for (String item : inputs){
+                LogUtils.e("input="+item);
+            }
+            for (String item : h3_class) {
+                LogUtils.e("h3_class=" + item);
+            }
+            for (String item : srcs) {
+                LogUtils.e("srcs=" + item);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            String cq_qq_com = IOUtils.getString(App.getContext().getAssets().open("cq.qq.com_2018-12-21.html"),"GBK").toString();
+            // 找到所有type="text" 的input标签
+            List<String> inputs = HTMLUtils.findInputTag(cq_qq_com,new String[]{"type"},new String[]{"text"});
+            // 找到class="channel-title"的h3节点及h3节点下的内容
+            List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
+            // 提取所有img的src值
+            List<String> srcs = HTMLUtils.filterHtmlTag(cq_qq_com,"img",new String[]{"src"});
+            for (String item : inputs){
+                LogUtils.e("input="+item);
+            }
+            for (String item : h3_class) {
+                LogUtils.e("h3_class=" + item);
+            }
+            for (String item : srcs) {
+                LogUtils.e("srcs=" + item);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -143,14 +192,23 @@ public class Main extends Base {
             @Override
             public void onClick(View v) {
                 Object tag = button1.getTag();
-                if((tag+"").contains("1"))
-                    tag="fonts/2.ttf";
-                else if((tag+"").contains("2"))
-                    tag="fonts/3.ttf";
+                if (StringUtils.contains(tag, "1"))
+                    tag = "fonts/2.ttf";
+                else if (StringUtils.contains(tag, "2"))
+                    tag = "fonts/3.ttf";
                 else
-                    tag="fonts/1.ttf";
+                    tag = "fonts/1.ttf";
                 button1.setTag(tag);
-                TypefaceUtils.applyFont(App.getContext(),button1,tag+"");
+                TypefaceUtils.setAssetsDefaultFont(App.getContext(), tag + "");
+                Fonts.instance(activity, false);
+            }
+        });
+
+        button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TypefaceUtils.clearDefaultFont(App.getContext());
+                Fonts.instance(activity, false);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
@@ -162,7 +220,6 @@ public class Main extends Base {
                         StringBuffer buffer = new StringBuffer("你同意了以下权限：");
                         for (String permission : permissions) {
                             buffer.append("[" + permission + "]，");
-
                         }
                         UiUtils.showLong(App.getContext(), buffer.toString());
                     }
@@ -197,7 +254,7 @@ public class Main extends Base {
                         }
                     });
                 }
-                ActivityBroadcast.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value"+StringUtils.random(100000,999999));
+                ActivityBroadcast.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value" + StringUtils.random(100000, 999999));
             }
         });
     }

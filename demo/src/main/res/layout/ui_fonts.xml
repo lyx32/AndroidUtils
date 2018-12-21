@@ -10,7 +10,7 @@
 
 
     <TextView
-        android:id="@+id/ui_main_textView1"
+        android:id="@+id/ui_fonts_textView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_12dp"
@@ -18,13 +18,13 @@
         android:layout_marginRight="@dimen/_12dp"
         android:padding="@dimen/_7dp"
         android:singleLine="true"
-        android:text=""
+        android:text="这是一段测试文字abcdefg1234567890"
         android:textColor="@color/black"
         android:textSize="@dimen/text_middle" />
 
 
     <com.arraylist7.android.utils.widget.NEditText
-        android:id="@+id/ui_main_editText_1"
+        android:id="@+id/ui_fonts_editText_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_12dp"
@@ -32,74 +32,46 @@
         android:layout_marginRight="@dimen/_12dp"
         android:background="@drawable/border_bottom"
         android:gravity="center_vertical"
-        android:imeOptions="actionNext"
-        android:nextFocusForward="@id/ui_main_editText_2"
         android:inputType="text"
         android:lines="1"
         android:padding="@dimen/_7dp"
         android:singleLine="true"
+        android:text="这是一段测试文字abcdefg1234567890"
         android:textColor="@color/black"
         android:textSize="@dimen/text_middle" />
 
-    <com.arraylist7.android.utils.widget.NEditText
-        android:id="@+id/ui_main_editText_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_12dp"
-        android:layout_marginTop="@dimen/_12dp"
-        android:layout_marginRight="@dimen/_12dp"
-        android:background="@drawable/border_bottom"
-        android:drawablePadding="@dimen/_7dp"
-        android:gravity="center_vertical"
-        android:imeOptions="actionSend"
-        android:inputType="text"
-        android:lines="1"
-        android:padding="@dimen/_5dp"
-        android:singleLine="true"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_middle" />
 
     <Button
-        android:id="@+id/ui_main_button1"
+        android:id="@+id/ui_fonts_button1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:typeface="normal"
         android:layout_marginLeft="@dimen/_12dp"
         android:layout_marginTop="@dimen/_12dp"
         android:layout_marginRight="@dimen/_12dp"
-        android:text="设置字体看效果" />
+        android:text="因为单独设置了typeface所以字体不会生效"/>
 
-    <Button
-        android:id="@+id/ui_main_button4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:typeface="normal"
-        android:layout_marginLeft="@dimen/_12dp"
-        android:layout_marginTop="@dimen/_12dp"
-        android:layout_marginRight="@dimen/_12dp"
-        android:text="还原字体看效果" />
-
-    <Button
-        android:id="@+id/ui_main_button2"
+    <RadioButton
+        android:id="@+id/ui_fonts_button2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_12dp"
         android:layout_marginTop="@dimen/_12dp"
         android:layout_marginRight="@dimen/_12dp"
-        android:text="点击请求多个权限（SDK>=23）" />
+        android:text="这是一段测试文字abcdefg1234567890" />
 
-    <Button
-        android:id="@+id/ui_main_button3"
+    <CheckBox
+        android:id="@+id/ui_fonts_button3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_12dp"
         android:layout_marginTop="@dimen/_12dp"
         android:layout_marginRight="@dimen/_12dp"
-        android:text="发通用广播" />
+        android:text="这是一段测试文字abcdefg1234567890"/>
 
-    <com.arraylist7.android.utils.widget.NRecyclerView
-        android:id="@+id/ui_main_recyclerView1"
+    <ListView
+        android:id="@+id/ui_fonts_recyclerView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/_12dp"></com.arraylist7.android.utils.widget.NRecyclerView>
+        android:layout_margin="@dimen/_12dp"></ListView>
 </LinearLayout>

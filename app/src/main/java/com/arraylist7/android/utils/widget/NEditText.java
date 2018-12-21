@@ -34,15 +34,14 @@ public class NEditText extends EditText {
 
     public NEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        // 这里为了避免没有设置setOnSubmitListener时，软键盘不消失的bug
+        setOnSubmitListener(null,null);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (MotionEvent.ACTION_UP == event.getAction()) {
-            this.setFocusableInTouchMode(true);
-            this.requestFocus();
-            this.setSelectAllOnFocus(true);
-            this.selectAll();
+            setFocusAndSelectAll();
         }
         return super.onTouchEvent(event);
     }
@@ -50,6 +49,7 @@ public class NEditText extends EditText {
     public void setFocus() {
         this.setFocusableInTouchMode(true);
         this.requestFocus();
+        this.setSelection(getText().length());
     }
 
     public void setFocusAndSelectAll() {
@@ -89,6 +89,10 @@ public class NEditText extends EditText {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 // 如果是在未弹出键盘时触发了setOnEditorActionListener，在某些pda上actionId会以IME_ACTION_UNSPECIFIED来触发，并且会触发多次
+                if (StringUtils.isNullOrEmpty(actions) || null == listener) {
+                    OtherUtils.hideKeyboard(getContext(), NEditText.this);
+                    return false;
+                }
                 LogUtils.d("触发actionId=" + actionId);
                 if (EditorInfo.IME_ACTION_UNSPECIFIED == actionId) {
                     synchronized (NEditText.this) {
@@ -109,6 +113,7 @@ public class NEditText extends EditText {
                         }
                     }
                 }
+                OtherUtils.hideKeyboard(getContext(), NEditText.this);
                 return false;
             }
         });

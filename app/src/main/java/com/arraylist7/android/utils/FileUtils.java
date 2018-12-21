@@ -3,11 +3,14 @@ package com.arraylist7.android.utils;
 
 import android.os.Environment;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -101,9 +104,6 @@ public final class FileUtils {
         }
         if (!file.exists()) {
             throw new FileNotFoundException(file.getAbsolutePath());
-        }
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new RuntimeException("没有挂载SD卡");
         }
         if (!file.canRead()) {
             throw new RuntimeException(file.getAbsolutePath() + "没有读取权限");

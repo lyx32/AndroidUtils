@@ -133,8 +133,21 @@ public class IOUtils {
      * @throws IOException
      */
     public static StringBuilder getString(InputStream is) throws IOException {
+        return getString(is,"UTF-8");
+    }
+
+    /**
+     * 从一个文本流中读取全部内容并返回
+     * <p>
+     * <b style=color:red>注意</b>，它并不会关闭输出流
+     *
+     * @param is 文本输出流
+     * @return 文本内容
+     * @throws IOException
+     */
+    public static StringBuilder getString(InputStream is,String charset) throws IOException {
         StringBuilder res = new StringBuilder();
-        InputStreamReader isr = new InputStreamReader(is);
+        InputStreamReader isr = new InputStreamReader(is,charset);
         BufferedReader read = new BufferedReader(isr);
         String line;
         while (null != (line = read.readLine())) {

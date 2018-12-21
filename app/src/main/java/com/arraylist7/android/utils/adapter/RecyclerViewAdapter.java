@@ -244,7 +244,7 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
         }
     }
 
-    public void updataUI() {
+    public void updateUI() {
         notifyDataSetChanged();
     }
 

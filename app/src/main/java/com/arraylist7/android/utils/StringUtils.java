@@ -37,9 +37,6 @@ public final class StringUtils {
 
     private final static Pattern URL = Pattern.compile("^(https|http)://.*?$(net|com|.com.cn|org|me|info|top|cn|cc|tv|)");
 
-    private static DecimalFormat df = new DecimalFormat("#.##");
-    private static DecimalFormat df1 = new DecimalFormat("0.0");
-    private static DecimalFormat df2 = new DecimalFormat("0.00");
 
     StringUtils() {
     }
@@ -112,6 +109,16 @@ public final class StringUtils {
         return left.equals(right);
     }
 
+    public static boolean contains(Object left, Object right) {
+        if (isAllNullOrEmpty(left, right)) return true;
+        if (!isAllNotNullOrEmpty(left, right)) return false;
+        if (left instanceof String)
+            return left.toString().contains(right.toString());
+        if (left instanceof  Collection)
+            return ((Collection)left).contains(right);
+        return left.equals(right);
+    }
+
     public static int len(Object value) {
         if (null == value)
             return 0;
@@ -136,33 +143,14 @@ public final class StringUtils {
     }
 
     /**
-     * 取消小数
+     * 格式化
      *
      * @param val
+     * @param formart # 表示有则显示没有则不显示 0 表示有就显示没有则显示0
      * @return
      */
-    public static String doubleFormat0(double val) {
-        return df.format(val);
-    }
-
-    /**
-     * 保留1位小数。不足用0补位
-     *
-     * @param val
-     * @return
-     */
-    public static String doubleFormat1(double val) {
-        return df1.format(val);
-    }
-
-    /**
-     * 保留2位小数。不足用0补位
-     *
-     * @param val
-     * @return
-     */
-    public static String doubleFormat2(double val) {
-        return df2.format(val);
+    public static String format(double val,String formart) {
+        return new DecimalFormat(formart).format(val);
     }
 
     public static boolean isNullOrEmpty(Object value) {
@@ -224,6 +212,14 @@ public final class StringUtils {
         return newVal.toString();
     }
 
+    /**
+     * 补位
+     * @param val 要补位的val
+     * @param isLeft true 从前面补，false 从后面补
+     * @param fillLength 补位数量
+     * @param fill 补位字符
+     * @return
+     */
     public static String fillValue(String val, boolean isLeft, int fillLength, String fill) {
         if (isNullOrEmpty(val)) return "";
         int end = val.length();
@@ -452,12 +448,6 @@ public final class StringUtils {
         return new SimpleDateFormat(format).format(Calendar.getInstance(Locale.CHINA).getTime());
     }
 
-
-    public static int getWeek() {
-        Calendar cal = Calendar.getInstance();
-        return cal.get(Calendar.DAY_OF_WEEK) - 1;
-    }
-
     public static String friendly_time(String dateStr, int day) {
         if (1 > day)
             day = 1;
@@ -488,14 +478,19 @@ public final class StringUtils {
         return ftime;
     }
 
+    /**
+     * 获取某年某月有多少天
+     * @param year
+     * @param month
+     * @return
+     */
     public static int getMonthLastDay(int year, int month) {
         Calendar a = Calendar.getInstance();
         a.set(Calendar.YEAR, year);
         a.set(Calendar.MONTH, month);
         a.set(Calendar.DATE, 1);// 把日期设置为当月第一天
         a.roll(Calendar.DATE, -1);// 日期回滚一天，也就是最后一天
-        int maxDate = a.get(Calendar.DATE);
-        return maxDate;
+        return a.get(Calendar.DATE);
     }
 
     /**

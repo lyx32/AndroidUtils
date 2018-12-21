@@ -1,6 +1,9 @@
 package com.arraylist7.android.utils.adapter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,16 +12,22 @@ import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.arraylist7.android.utils.BitmapUtils;
+import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.LogUtils;
 
 /**
@@ -37,6 +46,7 @@ public abstract class NListAdapter<T> extends BaseAdapter {
 	protected View currView;
 	protected int layoutId = -1;
 	protected Map<Integer, SoftReference<View>> viewCaches;
+	private Map<String, WeakReference<Bitmap>> assetsCaches = new HashMap<>();
 
 	public NListAdapter(Context context) {
 		super();
@@ -244,9 +254,43 @@ public abstract class NListAdapter<T> extends BaseAdapter {
 		return textView;
 	}
 
+
+
+	public LinearLayout getLinearLayout(int id) {
+		return getView(id, LinearLayout.class);
+	}
+
+	public RelativeLayout getRelativeLayout(int id) {
+		return getView(id, RelativeLayout.class);
+	}
+
+	public Button getButton(int id) {
+		return getView(id, Button.class);
+	}
+
+	public TextView getTextView(int id) {
+		return getView(id, TextView.class);
+	}
+
+	public ImageView getImageView(int id) {
+		return getView(id, ImageView.class);
+	}
+
+	public View visibility(int viewId) {
+		View view = getView(viewId);
+		view.setVisibility(View.VISIBLE);
+		return view;
+	}
+
+	public View gone(int viewId) {
+		View view = getView(viewId);
+		view.setVisibility(View.GONE);
+		return view;
+	}
+
 	/**
 	 * 加载图片
-	 * 
+	 *
 	 * @param viewId
 	 * @param url
 	 * @return
@@ -256,7 +300,6 @@ public abstract class NListAdapter<T> extends BaseAdapter {
 		BitmapUtils.loadBitmap(url, imgView);
 		return imgView;
 	}
-
 	/**
 	 * 加载图片
 	 * 
@@ -268,6 +311,45 @@ public abstract class NListAdapter<T> extends BaseAdapter {
 		ImageView imgView = getView(viewId, ImageView.class);
 		BitmapUtils.loadBitmap(url, width, height, imgView);
 		return imgView;
+	}
+
+	public ImageView setImageResource(int viewId, int resId) {
+		ImageView imageView = getView(viewId, ImageView.class);
+		imageView.setImageResource(resId);
+		return imageView;
+	}
+
+	public ImageView setImageBitmap(int viewId, Bitmap bitmap) {
+		ImageView imageView = getView(viewId, ImageView.class);
+		imageView.setImageBitmap(bitmap);
+		return imageView;
+	}
+
+
+	public ImageView setImageAssets(int viewId, String fileName) {
+		ImageView imageView = getView(viewId, ImageView.class);
+		synchronized (imageView) {
+			WeakReference<Bitmap> soft = assetsCaches.get(viewId + "_" + fileName);
+			if (null != soft && null != soft.get()) {
+				LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") reader cache!");
+				imageView.setImageBitmap(soft.get());
+			} else {
+				LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") no cache load assets file !");
+				InputStream in = null;
+				try {
+					in = imageView.getContext().getAssets().open(fileName);
+					Bitmap bitmap = BitmapFactory.decodeStream(in);
+					imageView.setImageBitmap(bitmap);
+					assetsCaches.remove(viewId + "_" + fileName);
+					assetsCaches.put(viewId + "_" + fileName, new WeakReference<Bitmap>(bitmap));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					IOUtils.close(in);
+				}
+			}
+		}
+		return imageView;
 	}
 
 	public View getView(int itemViewId) {
