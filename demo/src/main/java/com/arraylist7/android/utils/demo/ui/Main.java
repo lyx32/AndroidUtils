@@ -163,27 +163,6 @@ public class Main extends Base {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            String cq_qq_com = IOUtils.getString(App.getContext().getAssets().open("cq.qq.com_2018-12-21.html"),"GBK").toString();
-            // 找到所有type="text" 的input标签
-            List<String> inputs = HTMLUtils.findInputTag(cq_qq_com,new String[]{"type"},new String[]{"text"});
-            // 找到class="channel-title"的h3节点及h3节点下的内容
-            List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
-            // 提取所有img的src值
-            List<String> srcs = HTMLUtils.filterHtmlTag(cq_qq_com,"img",new String[]{"src"});
-            for (String item : inputs){
-                LogUtils.e("input="+item);
-            }
-            for (String item : h3_class) {
-                LogUtils.e("h3_class=" + item);
-            }
-            for (String item : srcs) {
-                LogUtils.e("srcs=" + item);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override

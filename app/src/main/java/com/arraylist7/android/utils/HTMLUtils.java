@@ -196,7 +196,7 @@ public class HTMLUtils {
             for (String attr : attrs) {
                 Pattern attrPattern = Pattern.compile("\\s+" + attr + "\\s*=\\s*[\"'](.*?)[\"']");
                 Matcher attrMatcher = attrPattern.matcher(htmlTag);
-                if (attrMatcher.find() && attrMatcher.groupCount() > 1) {
+                if (attrMatcher.find()) {
                     list.add(attrMatcher.group(1));
                 }
             }
