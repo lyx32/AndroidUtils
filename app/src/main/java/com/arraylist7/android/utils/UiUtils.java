@@ -1,6 +1,7 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,10 +16,18 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arraylist7.android.utils.adapter.holder.BaseViewHolder;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public final class UiUtils {
 
@@ -217,6 +226,69 @@ public final class UiUtils {
             dialog.dismiss();
         }
     }
+
+
+    /**
+     * 显示日期选择
+     *
+     * @param v
+     */
+    public static void showDateDialog(View v) {
+        showDateDialog(v, null, null);
+    }
+
+    /**
+     * 显示日期选择
+     *
+     * @param v
+     * @param start
+     * @param end
+     */
+    public static void showDateDialog(final View v, TextView start, TextView end) {
+        TextView tv = (TextView) v;
+        String datetime = tv.getText().toString();
+        Calendar now = Calendar.getInstance(Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (!StringUtils.isNullOrEmpty(datetime)) {
+            try {
+                now.setTime(sdf.parse(datetime + " 12:12:12"));
+            } catch (ParseException e) {
+            }
+        }
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog dpd = new DatePickerDialog(v.getContext(), android.R.style.Widget_Material_DatePicker, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                monthOfYear += 1;
+                String str = year + "" + (10 > monthOfYear ? "0" + monthOfYear : "" + monthOfYear) + "" + (10 > dayOfMonth ? "0" + dayOfMonth : "" + dayOfMonth);
+                ((TextView) v).setText(year + "-" + (10 > monthOfYear ? "0" + monthOfYear : "" + monthOfYear) + "-" + (10 > dayOfMonth ? "0" + dayOfMonth : "" + dayOfMonth));
+                v.setTag(str);
+            }
+        }, year, month, day);
+        if (v == end) {
+            String startStr = start.getText().toString();
+            if (!StringUtils.isNullOrEmpty(startStr)) {
+                try {
+                    Date startDate = sdf.parse(startStr + " 00:00:01");
+                    dpd.getDatePicker().setMinDate(startDate.getTime());
+                } catch (ParseException e) {
+                }
+            }
+        } else if (v == start) {
+            String endStr = end.getText().toString();
+            if (!StringUtils.isNullOrEmpty(endStr)) {
+                try {
+                    Date endDate = sdf.parse(endStr + " 23:59:59");
+                    dpd.getDatePicker().setMaxDate(endDate.getTime());
+                } catch (ParseException e) {
+                }
+            }
+        }
+        dpd.show();
+    }
+
 
     /**
      * 判断当前是否网络连接

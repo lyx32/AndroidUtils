@@ -14,7 +14,6 @@ import com.arraylist7.android.utils.annotation.Views;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.Set;
 
 public final class ViewUtils {
@@ -74,7 +73,7 @@ public final class ViewUtils {
                     field.set(object, findView);
                 } catch (Throwable e) {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
-                    LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName+" 失败");
+                    LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName + " 失败");
                 }
             }
             // 注入参数
@@ -98,14 +97,21 @@ public final class ViewUtils {
             }
             // 注入r.array
             if (null != array) {
-                String[] arrays = vs.getContext().getResources().getStringArray(array.value());
-                if (null == arrays && 0 != StringUtils.len(arrays)) {
+                boolean isStringArray = field.getGenericType().toString().contains("String");
+                String[] array_string = null;
+                int[] array_int = null;
+                if (isStringArray) {
+                    array_string = vs.getContext().getResources().getStringArray(array.value());
+                } else {
+                    array_int = vs.getContext().getResources().getIntArray(array.value());
+                }
+                if (0 == StringUtils.len(array_string) || 0 == StringUtils.len(array_int)) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.array无效");
                     continue;
                 }
                 try {
                     field.setAccessible(true);
-                    field.set(object, arrays);
+                    field.set(object, (0 == StringUtils.len(array_string) ? array_int : array_string));
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.array：" + array.value() + " 失败");
                 }

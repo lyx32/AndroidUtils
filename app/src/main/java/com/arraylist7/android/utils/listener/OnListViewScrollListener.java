@@ -31,11 +31,13 @@ public class OnListViewScrollListener implements OnScrollListener {
         this.listener = listener;
         handler = new NHandler(new IHandler() {
             @Override
-            public void handlerMsg(NHandler handler,Message msg) {
+            public void handlerMsg(NHandler handler, Message msg) {
                 if (200 == msg.what) {
-                    BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
+                    if (null != BitmapUtils.getPicasso())
+                        BitmapUtils.getPicasso().resumeTag(OnListViewScrollListener.this.listView.getContext());
                 } else if (201 == msg.what) {
-                    BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
+                    if (null != BitmapUtils.getPicasso())
+                        BitmapUtils.getPicasso().pauseTag(OnListViewScrollListener.this.listView.getContext());
                 }
             }
         });

@@ -32,9 +32,11 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
             @Override
             public void handlerMsg(NHandler handler, Message msg) {
                 if (200 == msg.what) {
-                    BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
+                    if (null != BitmapUtils.getPicasso())
+                        BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 } else if (201 == msg.what) {
-                    BitmapUtils.getPicasso().pauseTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
+                    if (null != BitmapUtils.getPicasso())
+                        BitmapUtils.getPicasso().pauseTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 }
             }
         });
