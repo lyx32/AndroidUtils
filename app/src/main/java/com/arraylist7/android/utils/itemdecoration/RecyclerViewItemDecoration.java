@@ -7,16 +7,20 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 
 public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
 
-    private Drawable mDivider;
-    private int strokeWidth = 5;
+    protected Drawable mDivider;
+    protected int strokeWidth = 5;
 
     public RecyclerViewItemDecoration(int javaColor) {
-        this(javaColor,5);
+        this(javaColor, 5);
     }
+
     public RecyclerViewItemDecoration(int javaColor, int strokeWidth) {
         mDivider = new ColorDrawable(javaColor);
         this.strokeWidth = strokeWidth;
@@ -44,14 +48,17 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
             int left = child.getLeft();//- params.leftMargin;
-            int right = child.getRight() /*+ params.rightMargin*/;
+            // 绘制横向时多绘制一点，这样避免4个item相交点会有空白
+            int right = child.getRight() + ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).rightMargin + strokeWidth; /*+ params.rightMargin*/
             int top = child.getBottom();// + params.bottomMargin;
-            int bottom = top + strokeWidth;
-
+            // 绘制是算上margin距离，这样避免分割线高度差异
+            int bottom = top + ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).bottomMargin + strokeWidth;
             int spanCount = getSpanCount(parent);
             boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (isLastRow) {
-                bottom -= strokeWidth;
+                bottom = top;
+                // 如果最后一行则不多绘制，避免横向分割线超出View宽度
+                right = child.getRight();
             }
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(c);
@@ -63,21 +70,26 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         for (int i = 0; i < childCount; i++) {
             View child = parent.getChildAt(i);
             int top = child.getTop();
-            int bottom = child.getBottom();
+            // 绘制纵向时多绘制一点，这样避免4个item相交点会有空白
+            int bottom = child.getBottom() + ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).bottomMargin + strokeWidth;
             int left = child.getRight();
-            int right = left + strokeWidth;
-
+            int right = left + ((ViewGroup.MarginLayoutParams) child.getLayoutParams()).rightMargin + strokeWidth;
             int spanCount = getSpanCount(parent);
             boolean isLastColumn = isLastColum(parent, i, spanCount, childCount);
+            boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (isLastColumn) {
                 right -= strokeWidth;
+            }
+            // 如果最后一行则不多绘制，避免纵向分割线超出View高度
+            if(isLastRow){
+                bottom = child.getBottom();
             }
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(c);
         }
     }
 
-    private boolean isLastColum(RecyclerView parent, int pos, int spanCount, int childCount) {
+    public boolean isLastColum(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
             return ((pos + 1) % spanCount == 0);
@@ -92,7 +104,7 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         return false;
     }
 
-    private boolean isLastRow(RecyclerView parent, int pos, int spanCount, int childCount) {
+    public boolean isLastRow(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
             return childCount - pos <= spanCount;
