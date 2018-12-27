@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.adapter.RecyclerViewAdapter;
+import com.arraylist7.android.utils.itemdecoration.RecyclerViewItemDecoration;
 import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;
 import com.arraylist7.android.utils.listener.OnRecyclerViewScrollListener;
 
@@ -29,7 +30,8 @@ public class NRecyclerView extends RecyclerView {
     public NRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setVertical();
-        addOnScrollListener(new OnScrollListener() {});
+        addOnScrollListener(new OnScrollListener() {
+        });
     }
 
 
@@ -69,6 +71,10 @@ public class NRecyclerView extends RecyclerView {
             RecyclerViewAdapter<T> recyclerViewAdapter = (RecyclerViewAdapter<T>) adapter;
             recyclerViewAdapter.setOnItemClickListener(listener);
         }
+    }
+
+    public void setListDivider(int javaColor, int strokeWidth) {
+        this.addItemDecoration(new RecyclerViewItemDecoration(javaColor, strokeWidth));
     }
 
     @Override

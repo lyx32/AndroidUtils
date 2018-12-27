@@ -63,7 +63,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void initStatusBar() {
-        StatusBarUtils.setTranslucent(this);
+        StatusBarUtils.setTranslucent(this,false);
     }
 
     @Override

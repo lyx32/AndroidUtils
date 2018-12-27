@@ -3,6 +3,7 @@ package com.arraylist7.android.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
 
@@ -103,7 +104,16 @@ public final class ViewUtils {
                 if (isStringArray) {
                     array_string = vs.getContext().getResources().getStringArray(array.value());
                 } else {
-                    array_int = vs.getContext().getResources().getIntArray(array.value());
+                    if (array.isResources()) {
+                        TypedArray typedArray = vs.getContext().getResources().obtainTypedArray(array.value());
+                        int end = typedArray.length();
+                        array_int = new int[end];
+                        for (int i = 0; i < end; i++) {
+                            array_int[i] = typedArray.getResourceId(i, 0);
+                        }
+                    } else {
+                        array_int = vs.getContext().getResources().getIntArray(array.value());
+                    }
                 }
                 if (0 == StringUtils.len(array_string) || 0 == StringUtils.len(array_int)) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.array无效");

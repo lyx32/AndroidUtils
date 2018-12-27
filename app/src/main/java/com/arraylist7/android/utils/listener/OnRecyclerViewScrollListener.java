@@ -32,11 +32,9 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
             @Override
             public void handlerMsg(NHandler handler, Message msg) {
                 if (200 == msg.what) {
-                    if (null != BitmapUtils.getPicasso())
-                        BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
+                    BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 } else if (201 == msg.what) {
-                    if (null != BitmapUtils.getPicasso())
-                        BitmapUtils.getPicasso().pauseTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
+                    BitmapUtils.getPicasso().pauseTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 }
             }
         });
@@ -44,19 +42,21 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-            if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                handler.removeCallbacksAndMessages(null);
-                handler.sendEmptyMessageDelayed(200, 300);
+        if (null != BitmapUtils.getPicasso()) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (handler.hasMessages(200) && handler.hasMessages(201)) {
+                    handler.removeCallbacksAndMessages(null);
+                    handler.sendEmptyMessageDelayed(200, 300);
+                } else {
+                    handler.sendEmptyMessage(200);
+                }
             } else {
-                handler.sendEmptyMessage(200);
-            }
-        } else {
-            if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                handler.removeCallbacksAndMessages(null);
-                handler.sendEmptyMessageDelayed(201, 300);
-            } else {
-                handler.sendEmptyMessage(201);
+                if (handler.hasMessages(200) && handler.hasMessages(201)) {
+                    handler.removeCallbacksAndMessages(null);
+                    handler.sendEmptyMessageDelayed(201, 300);
+                } else {
+                    handler.sendEmptyMessage(201);
+                }
             }
         }
         if (null != listener) listener.onScrollStateChanged(recyclerView, newState);

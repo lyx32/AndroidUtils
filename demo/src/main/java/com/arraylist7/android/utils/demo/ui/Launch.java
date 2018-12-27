@@ -58,8 +58,8 @@ public class Launch extends Base {
             public void onClick(View v) {
                 if (System.currentTimeMillis() - backClickTime > 1000) {
                     AnimatorUtils.shakeAnimation(button);
-                    backClickTime= System.currentTimeMillis();
-                }else {
+                    backClickTime = System.currentTimeMillis();
+                } else {
                     Main.instance(activity, "随机数：" + StringUtils.random(100000, 999999), true);
                 }
             }
