@@ -15,23 +15,47 @@ import android.widget.LinearLayout;
 public class StatusBarUtils {
 
     /**
-     * 设置状态栏颜色(自定义一个状态，并设置颜色)
+     * 设置状态栏颜色
      *
-     * @param activity 需要设置的activity
-     * @param color    状态栏颜色值
+     * @param activity   需要设置的activity
+     * @param color 状态栏颜色值(不是R.color.xxx)
      */
     public static void setColor(Activity activity, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // 生成一个状态栏大小的矩形
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            activity.getWindow().setStatusBarColor(color);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             View statusView = createStatusView(activity, color);
-            // 添加 statusView 到布局中
             ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+            int end = decorView.getChildCount();
+            for (int i = 0; i < end; i++) {
+                View v = decorView.getChildAt(i);
+                if (StringUtils.equals("createStatusView", v.getTag())) {
+                    decorView.removeView(v);
+                    break;
+                }
+            }
             decorView.addView(statusView);
-            // 设置根布局的参数
             ViewGroup rootView = (ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
             rootView.setFitsSystemWindows(true);
             rootView.setClipToPadding(true);
         }
+    }
+
+
+    /**
+     * 设置状态栏颜色(会比预期颜色更深一些)
+     *
+     * @param activity   需要设置的activity
+     * @param color 状态栏颜色值(不是R.color.xxx)
+     */
+    public static void setDeepColor(Activity activity, int color) {
+        int r = (int) (Color.red(color) * 0.7);
+        int g = (int) (Color.green(color) * 0.7);
+        int b = (int) (Color.blue(color) * 0.7);
+        color = Color.rgb(r, g, b);
+        setColor(activity,color);
     }
 
 
@@ -41,7 +65,7 @@ public class StatusBarUtils {
      * 适用于图片作为背景的界面,此时需要图片填充到状态栏
      *
      * @param activity 需要设置的activity
-     * @param isFully 是否完全透明
+     * @param isFully  是否完全透明
      */
     public static void setTranslucent(Activity activity, boolean isFully) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -69,6 +93,7 @@ public class StatusBarUtils {
         int statusBarHeight = UiUtils.getStatusHeight(activity);
         // 绘制一个和状态栏一样高的矩形
         View statusView = new View(activity);
+        statusView.setTag("createStatusView");
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight);
         statusView.setLayoutParams(params);
         statusView.setBackgroundColor(color);

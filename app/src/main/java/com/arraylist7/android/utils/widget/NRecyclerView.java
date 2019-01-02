@@ -29,7 +29,9 @@ public class NRecyclerView extends RecyclerView {
 
     public NRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        // 默认上下滑动
         setVertical();
+        // 默认添加一个滚动事件
         addOnScrollListener(new OnScrollListener() {
         });
     }
@@ -73,8 +75,8 @@ public class NRecyclerView extends RecyclerView {
         }
     }
 
-    public void setListDivider(int javaColor, int strokeWidth) {
-        this.addItemDecoration(new RecyclerViewItemDecoration(javaColor, strokeWidth));
+    public void setListDivider(int color, int strokeWidth) {
+        this.addItemDecoration(new RecyclerViewItemDecoration(color, strokeWidth));
     }
 
     @Override

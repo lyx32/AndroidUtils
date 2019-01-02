@@ -12,7 +12,7 @@ public abstract class Base extends BaseAppCompatActivity {
 
     @Override
     public void initStatusBar() {
-        StatusBarUtils.setColor(this, getResources().getColor(R.color.colorPrimary));
+        StatusBarUtils.setColor(this,getResources().getColor( R.color.colorPrimary));
     }
 
     @Override

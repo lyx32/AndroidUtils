@@ -35,11 +35,18 @@
 
 
 > 1.项目根目录 build.gradle
+
 > 1.1        allprojects {
+
 > 1.2            repositories {
+
 > 1.3                maven { url 'https://jitpack.io' }
+
 > 1.4            }
+
 > 1.5        }
 
+
 > 2.项目 module 下的 build.gradle
+
 > 2.1        implementation 'com.github.lyx32:AndroidUtils:x.x.x'

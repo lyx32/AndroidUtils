@@ -17,12 +17,12 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     protected Drawable mDivider;
     protected int strokeWidth = 5;
 
-    public RecyclerViewItemDecoration(int javaColor) {
-        this(javaColor, 5);
+    public RecyclerViewItemDecoration(int color) {
+        this(color, 5);
     }
 
-    public RecyclerViewItemDecoration(int javaColor, int strokeWidth) {
-        mDivider = new ColorDrawable(javaColor);
+    public RecyclerViewItemDecoration(int color, int strokeWidth) {
+        mDivider = new ColorDrawable(color);
         this.strokeWidth = strokeWidth;
     }
 
