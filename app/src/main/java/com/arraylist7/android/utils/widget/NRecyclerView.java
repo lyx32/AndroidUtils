@@ -2,6 +2,7 @@ package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -57,6 +58,21 @@ public class NRecyclerView extends RecyclerView {
 
     public void setHorizontal(final boolean isCanScroll) {
         LinearLayoutManager manager = new LinearLayoutManager(this.getContext()) {
+            public boolean canScrollVertically() {
+                return isCanScroll;
+            }
+        };
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        this.setLayoutManager(manager);
+    }
+
+
+    public void setGrid(int spanCount) {
+        setGrid(spanCount, true);
+    }
+
+    public void setGrid(int spanCount, final boolean isCanScroll) {
+        GridLayoutManager manager = new GridLayoutManager(this.getContext(), spanCount) {
             public boolean canScrollVertically() {
                 return isCanScroll;
             }

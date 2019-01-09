@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -56,9 +57,9 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             int spanCount = getSpanCount(parent);
             boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (isLastRow) {
-                bottom = top;
+                bottom -= strokeWidth;
                 // 如果最后一行则不多绘制，避免横向分割线超出View宽度
-                right = child.getRight();
+                right -= strokeWidth;
             }
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(c);
@@ -81,8 +82,8 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
                 right -= strokeWidth;
             }
             // 如果最后一行则不多绘制，避免纵向分割线超出View高度
-            if(isLastRow){
-                bottom = child.getBottom();
+            if (isLastRow) {
+                bottom -= strokeWidth;
             }
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(c);
@@ -100,6 +101,11 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             } else {
                 return (pos + 1 == childCount);
             }
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            if (LinearLayoutManager.VERTICAL == ((LinearLayoutManager) layoutManager).getOrientation())
+                return true;
+            else
+                return (pos + 1 == childCount);
         }
         return false;
     }
@@ -115,6 +121,11 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             } else {
                 return true;
             }
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            if (LinearLayoutManager.HORIZONTAL == ((LinearLayoutManager) layoutManager).getOrientation())
+                return true;
+            else
+                return childCount == pos + 1;
         }
         return false;
     }

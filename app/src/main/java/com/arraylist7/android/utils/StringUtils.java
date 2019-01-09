@@ -306,10 +306,18 @@ public final class StringUtils {
     public static <T> Map<String, T> asMap(T... args) {
         Map<String, T> map = new HashMap<String, T>();
         int i = 0;
-        for (T t : args) {
-            map.put(i + "", t);
-            i++;
+        if(null != args) {
+            for (T t : args) {
+                map.put(i + "", t);
+                i++;
+            }
         }
+        return map;
+    }
+
+    public static <T> Map<String, T> asMap(String key,T val) {
+        Map<String, T> map = new HashMap<String, T>();
+        map.put(key,val);
         return map;
     }
 
@@ -443,6 +451,10 @@ public final class StringUtils {
         }
     }
 
+
+    public static String getDateTime(Calendar calendar,String format) {
+        return new SimpleDateFormat(format).format(calendar.getTime());
+    }
 
     public static String getDateTimeNow(String format) {
         return new SimpleDateFormat(format).format(Calendar.getInstance(Locale.CHINA).getTime());

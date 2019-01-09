@@ -32,6 +32,7 @@ import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.listener.WebViewListener;
 
+import java.io.File;
 import java.util.Map;
 
 
@@ -290,21 +291,28 @@ public class NWebView extends WebView {
         return isCanDownload;
     }
 
+    public void setCanDownload(boolean download) {
+        setCanDownload(download, null, null);
+    }
+
     /**
      * 设置是否允许下载
      *
      * @param download        是否允许下载
      * @param canDownloadType 允许下载的文件后缀名 （优先判断mimetype，在判断后缀名）
-     * @param canDownloadMime 允许下载的文件mimetype
+     * @param canDownloadMime 允许下载的文件mimetype（注：有些文件下载是使用流方式下载，所以最好配套canDownloadType一起）
      */
     public void setCanDownload(boolean download, String[] canDownloadType, String[] canDownloadMime) {
-        Map<String, String> map = StringUtils.asMap(canDownloadMime);
-        if (!map.values().contains("application/octet-stream")) {
-            map.put(System.currentTimeMillis() + "", "application/octet-stream");
-        }
         this.isCanDownload = download;
-        this.canDownloadType = canDownloadType;
-        this.canDownloadMime = map.values().toArray(new String[]{});
+        if (!StringUtils.isNullOrEmpty(canDownloadType))
+            this.canDownloadType = canDownloadType;
+        if (!StringUtils.isNullOrEmpty(canDownloadMime)) {
+            Map<String, String> map = StringUtils.asMap(canDownloadMime);
+            if (!map.values().contains("application/octet-stream")) {
+                map.put(System.currentTimeMillis() + "", "application/octet-stream");
+            }
+            this.canDownloadMime = map.values().toArray(new String[]{});
+        }
     }
 
 
@@ -316,6 +324,9 @@ public class NWebView extends WebView {
 
     public void clearDeepData() {
         clearData();
+        this.clearData();
+        this.clearCache(true);
+        FileUtils.deleteFile(new File(CacheUtils.getWebCachePath(this.getContext())));
     }
 
 

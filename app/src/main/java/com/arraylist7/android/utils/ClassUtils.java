@@ -6,7 +6,22 @@ import java.lang.reflect.Method;
 
 public class ClassUtils {
 
-    public static Object forClass(Class clazz) {
+    public static <T> T newInstance(String clazz) {
+        Object obj = null;
+        try {
+            Class cls = Class.forName(clazz);
+            obj = cls.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return (T)obj;
+    }
+
+    public static <T> T newInstance(Class clazz) {
         Object obj = null;
         try {
             obj = clazz.newInstance();
@@ -15,7 +30,7 @@ public class ClassUtils {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return obj;
+        return (T)obj;
     }
 
     public static String getPackageNameAndClassName(Class clazz) {

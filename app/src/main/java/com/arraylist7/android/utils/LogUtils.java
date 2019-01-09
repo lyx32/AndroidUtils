@@ -4,22 +4,27 @@ import android.util.Log;
 
 public class LogUtils {
 
-    private static boolean debug = true;
+    private static boolean DEBUG = true;
+    private static String TAG = "androidUtils.LogUtils";
 
 
     public static boolean isDebug() {
-        return debug;
+        return DEBUG;
+    }
+
+    public static void setTAG(String TAG) {
+        LogUtils.TAG = TAG;
     }
 
     public static void setDebug(boolean debug) {
-        LogUtils.debug = debug;
+        LogUtils.DEBUG = debug;
     }
 
     private static String getTag() {
         StackTraceElement caller = Thread.currentThread().getStackTrace()[4];
         String callerClazzName = caller.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
-        return "androidUtils.LogUtils --> "+callerClazzName + "." + caller.getMethodName() + "-L:" + caller.getLineNumber();
+        return TAG + " --> " + callerClazzName + "." + caller.getMethodName() + "-L:" + caller.getLineNumber();
     }
 
     public static void e(String message) {
@@ -35,7 +40,7 @@ public class LogUtils {
     }
 
     public static void e(String tag, String message, Throwable tr) {
-        if (debug) Log.e(tag, message, tr);
+        if (DEBUG) Log.e(tag, message, tr);
     }
 
     public static void d(String message) {
@@ -51,7 +56,7 @@ public class LogUtils {
     }
 
     public static void d(String tag, String message, Throwable tr) {
-        if (debug) Log.d(tag, message, tr);
+        if (DEBUG) Log.d(tag, message, tr);
     }
 
     public static void i(String message) {
@@ -67,7 +72,7 @@ public class LogUtils {
     }
 
     public static void i(String tag, String message, Throwable tr) {
-        if (debug) Log.i(tag, message, tr);
+        if (DEBUG) Log.i(tag, message, tr);
     }
 
     public static void v(String message) {
@@ -83,7 +88,7 @@ public class LogUtils {
     }
 
     public static void v(String tag, String message, Throwable tr) {
-        if (debug) Log.v(tag, message, tr);
+        if (DEBUG) Log.v(tag, message, tr);
     }
 
     /**
