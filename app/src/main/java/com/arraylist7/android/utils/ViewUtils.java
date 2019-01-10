@@ -3,6 +3,7 @@ package com.arraylist7.android.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
@@ -102,20 +103,20 @@ public final class ViewUtils {
                 String[] array_string = null;
                 int[] array_int = null;
                 if (isStringArray) {
-                    array_string = vs.getContext().getResources().getStringArray(array.value());
+                    array_string = vs.getResources().getStringArray(array.value());
                 } else {
                     if (array.isResources()) {
-                        TypedArray typedArray = vs.getContext().getResources().obtainTypedArray(array.value());
+                        TypedArray typedArray = vs.getResources().obtainTypedArray(array.value());
                         int end = typedArray.length();
                         array_int = new int[end];
                         for (int i = 0; i < end; i++) {
                             array_int[i] = typedArray.getResourceId(i, 0);
                         }
                     } else {
-                        array_int = vs.getContext().getResources().getIntArray(array.value());
+                        array_int = vs.getResources().getIntArray(array.value());
                     }
                 }
-                if (0 == StringUtils.len(array_string) || 0 == StringUtils.len(array_int)) {
+                if (0 == StringUtils.len(array_string) && 0 == StringUtils.len(array_int)) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.array无效");
                     continue;
                 }
@@ -128,7 +129,7 @@ public final class ViewUtils {
             }
             // 注入r.string
             if (null != string) {
-                String strings = vs.getContext().getResources().getString(string.value());
+                String strings = vs.getResources().getString(string.value());
                 if (null == strings) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.string无效");
                     continue;
@@ -142,7 +143,7 @@ public final class ViewUtils {
             }
             // 注入r.color
             if (null != color) {
-                int colors = vs.getContext().getResources().getColor(color.value());
+                int colors = vs.getResources().getColor(color.value());
                 if (0 >= colors) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.color无效");
                     continue;
@@ -191,6 +192,10 @@ class ViewSource {
 
     public Context getContext() {
         return context;
+    }
+
+    public Resources getResources() {
+        return activity == null ? context.getResources() : activity.getResources();
     }
 
     public void clear() {

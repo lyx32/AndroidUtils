@@ -2,6 +2,7 @@ package com.arraylist7.android.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
@@ -172,6 +173,21 @@ public final class OtherUtils {
             }
         }
         return null;
+    }
+
+
+    public static void hideKeyboard(Activity activity) {
+        if(null != activity) {
+            InputMethodManager im = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    public static void showKeyboard(Activity activity) {
+        if(null != activity) {
+            InputMethodManager im = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.SHOW_FORCED);
+        }
     }
 
     public static void hideKeyboard(Context context, View view) {

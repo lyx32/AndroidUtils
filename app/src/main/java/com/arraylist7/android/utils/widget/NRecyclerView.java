@@ -66,18 +66,17 @@ public class NRecyclerView extends RecyclerView {
         this.setLayoutManager(manager);
     }
 
-
-    public void setGrid(int spanCount) {
-        setGrid(spanCount, true);
+    public void setGridLayout(int spanCount) {
+        setGridLayout(spanCount, true);
     }
 
-    public void setGrid(int spanCount, final boolean isCanScroll) {
+    public void setGridLayout(int spanCount, final boolean isCanScroll) {
         GridLayoutManager manager = new GridLayoutManager(this.getContext(), spanCount) {
             public boolean canScrollVertically() {
                 return isCanScroll;
             }
         };
-        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.setLayoutManager(manager);
     }
 
