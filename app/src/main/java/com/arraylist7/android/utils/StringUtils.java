@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils;
 
+import android.graphics.Color;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -114,8 +116,8 @@ public final class StringUtils {
         if (!isAllNotNullOrEmpty(left, right)) return false;
         if (left instanceof String)
             return left.toString().contains(right.toString());
-        if (left instanceof  Collection)
-            return ((Collection)left).contains(right);
+        if (left instanceof Collection)
+            return ((Collection) left).contains(right);
         return left.equals(right);
     }
 
@@ -149,7 +151,7 @@ public final class StringUtils {
      * @param formart # 表示有则显示没有则不显示 0 表示有就显示没有则显示0
      * @return
      */
-    public static String format(double val,String formart) {
+    public static String format(double val, String formart) {
         return new DecimalFormat(formart).format(val);
     }
 
@@ -214,10 +216,11 @@ public final class StringUtils {
 
     /**
      * 补位
-     * @param val 要补位的val
-     * @param isLeft true 从前面补，false 从后面补
+     *
+     * @param val        要补位的val
+     * @param isLeft     true 从前面补，false 从后面补
      * @param fillLength 补位数量
-     * @param fill 补位字符
+     * @param fill       补位字符
      * @return
      */
     public static String fillValue(String val, boolean isLeft, int fillLength, String fill) {
@@ -230,7 +233,7 @@ public final class StringUtils {
                 newVal.append(fill);
             }
             if (isLeft) newVal.append(val);
-            else newVal.insert(0,val);
+            else newVal.insert(0, val);
         } else {
             newVal.append(val);
         }
@@ -288,7 +291,15 @@ public final class StringUtils {
     }
 
     public static <T> List<T> asList(T... t) {
+        if (null == t)
+            return new ArrayList<T>();
         return Arrays.asList(t);
+    }
+
+    public static <T> List<T> asList(Set<T> t) {
+        if (null == t)
+           return new ArrayList<T>();
+        return asList((T[]) t.toArray());
     }
 
     public static <T> T[] asArray(T... t) {
@@ -296,17 +307,21 @@ public final class StringUtils {
     }
 
     public static <T> T[] asArray(List<T> list) {
+        if(null == list)
+            return null;
         return (T[]) list.toArray();
     }
 
     public static <T> T[] asArray(Set<T> set) {
+        if(null == set)
+            return null;
         return (T[]) set.toArray();
     }
 
     public static <T> Map<String, T> asMap(T... args) {
         Map<String, T> map = new HashMap<String, T>();
         int i = 0;
-        if(null != args) {
+        if (null != args) {
             for (T t : args) {
                 map.put(i + "", t);
                 i++;
@@ -315,14 +330,22 @@ public final class StringUtils {
         return map;
     }
 
-    public static <T> Map<String, T> asMap(String key,T val) {
+    public static <T> Map<String, T> asMap(String key, T val) {
         Map<String, T> map = new HashMap<String, T>();
-        map.put(key,val);
+        map.put(key, val);
         return map;
     }
 
     public static long random(int min, int max) {
         return Math.round(Math.random() * (max - min) + min);
+    }
+
+
+    public static int randomColor() {
+        int r = (int) StringUtils.random(0, 255);
+        int g = (int) StringUtils.random(0, 255);
+        int b = (int) StringUtils.random(0, 255);
+        return Color.rgb(r, g, b);
     }
 
     public static String encodeBase64(byte[] b) {
@@ -452,7 +475,7 @@ public final class StringUtils {
     }
 
 
-    public static String getDateTime(Calendar calendar,String format) {
+    public static String getDateTime(Calendar calendar, String format) {
         return new SimpleDateFormat(format).format(calendar.getTime());
     }
 
@@ -492,6 +515,7 @@ public final class StringUtils {
 
     /**
      * 获取某年某月有多少天
+     *
      * @param year
      * @param month
      * @return

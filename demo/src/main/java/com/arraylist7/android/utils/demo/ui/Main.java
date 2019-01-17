@@ -63,13 +63,13 @@ public class Main extends Base {
     private NEditText editText2;
     @Views(R.id.ui_main_button1)
     private Button button1;
-    @Views(R.id.ui_main_button2)
-    private Button button2;
-    @Views(R.id.ui_main_button3)
+    // 绑定view 并且将random参数设置给tag和text
+    @Views(value = R.id.ui_main_button3,setTag = "random",setText = "random")
     private Button button3;
     @Views(R.id.ui_main_button4)
     private Button button4;
-    @Views(R.id.ui_main_recyclerView1)
+    // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效
+    @Views(value = R.id.ui_main_recyclerView1,setText = "random",setTag = "random")
     private NRecyclerView recyclerView1;
 
     // 获取从Launch页面点击按钮传过来的random参数
@@ -113,8 +113,7 @@ public class Main extends Base {
                 UiUtils.showLong(App.getContext(), "点击了键盘右下角按钮");
             }
         });
-        recyclerView1.setVertical(true);
-        recyclerView1.setListDivider(Color.rgb((int) StringUtils.random(0, 255), (int) StringUtils.random(0, 255), (int) StringUtils.random(0, 255)), 10);
+        recyclerView1.setListDivider(StringUtils.randomColor(), 5);
         recyclerView1.setAdapter(adapter = new DemoAdapter(R.layout.ui_main_item, this));
     }
 
@@ -166,6 +165,7 @@ public class Main extends Base {
             for (String item : srcs) {
                 LogUtils.e("srcs=" + item);
             }
+//            LogUtils.e("11111111",HTMLUtils.clearHTMLTag("<html><li>111</li><li id='222'>222</li><div><li>333</li></div><div><a><li>444</li><li id='5' /></a></div>6</html>","li",true));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -196,33 +196,11 @@ public class Main extends Base {
                 Fonts.instance(activity, false);
             }
         });
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.requestPermission(1001, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_SMS, Manifest.permission.VIBRATE, Manifest.permission.CHANGE_NETWORK_STATE, Manifest.permission.READ_PHONE_NUMBERS}, new PermissionListener() {
-                    @Override
-                    public void permissionRequestSuccess(String[] permissions) {
-                        StringBuffer buffer = new StringBuffer("你同意了以下权限：");
-                        for (String permission : permissions) {
-                            buffer.append("[" + permission + "]，");
-                        }
-                        UiUtils.showLong(App.getContext(), buffer.toString());
-                    }
 
-                    @Override
-                    public void permissionRequestFail(String[] permissions) {
-                        StringBuffer buffer = new StringBuffer("你拒绝了以下权限：");
-                        for (String permission : permissions) {
-                            buffer.append("[" + permission + "]，");
-                        }
-                        UiUtils.showLong(App.getContext(), buffer.toString());
-                    }
-                });
-            }
-        });
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LogUtils.d("button3.tag="+button3.getTag());
                 // 以下3种广播基本满足所有需求，如果不能满足
                 ActivityBroadcast.sendLoginSuccess(App.getContext(), "login_success_custom_key", "登录成功");
                 ActivityBroadcast.sendLoginOut(App.getContext(), "login_out_custom_key", "注销登录");

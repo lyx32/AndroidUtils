@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.arraylist7.android.utils.annotation.Params;
 import com.arraylist7.android.utils.annotation.RArray;
@@ -16,6 +17,10 @@ import com.arraylist7.android.utils.annotation.Views;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class ViewUtils {
@@ -53,10 +58,13 @@ public final class ViewUtils {
         Class<?> clazz = object.getClass();
         Field[] fields = ClassUtils.getDeclaredFields(clazz);
         Bundle bundle = getBundle(object);
-        Set<String> keys = null;
+        List<String> keys = null;
         if (null != bundle) {
-            keys = bundle.keySet();
+            keys = StringUtils.asList(bundle.keySet());
+        } else {
+            keys = new ArrayList<>();
         }
+
         for (Field field : fields) {
             Views aView = field.getAnnotation(Views.class);
             Params params = field.getAnnotation(Params.class);
@@ -77,23 +85,43 @@ public final class ViewUtils {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
                     LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName + " 失败");
                 }
+                String setText = aView.setText();
+                String setTag = aView.setTag();
+                if (!StringUtils.isNullOrEmpty(setText)) {
+                    Object val = bundle.get(setText);
+                    if (StringUtils.isNullOrEmpty(val)) {
+                        LogUtils.d(getFieldInfo(field) + " 绑定setText错误，不能找到参数key=" + setText + "。");
+                    } else {
+                        if (findView instanceof TextView) {
+                            ((TextView) findView).setText(val + "");
+                        } else {
+                            LogUtils.d(getFieldInfo(field) + " 绑定setText错误，该View不支持setText。");
+                        }
+                    }
+                }
+                if (!StringUtils.isNullOrEmpty(setTag)) {
+                    Object val = bundle.get(setTag);
+                    if (StringUtils.isNullOrEmpty(val)) {
+                        LogUtils.d(getFieldInfo(field) + " 绑定setTag错误，不能找到参数key=" + setTag + "。");
+                    } else {
+                        findView.setTag(val + "");
+                    }
+                }
             }
             // 注入参数
             if (null != params) {
-                if (null != keys && null != keys.iterator()) {
-                    for (String key : keys) {
-                        if (key.equalsIgnoreCase(params.value())) {
-                            try {
-                                Object val = bundle.get(key);
-                                if (!StringUtils.isNullOrEmpty(val)) {
-                                    field.setAccessible(true);
-                                    field.set(object, val);
-                                }
-                            } catch (Throwable e) {
-                                LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                for (String key : keys) {
+                    if (key.equalsIgnoreCase(params.value())) {
+                        try {
+                            Object val = bundle.get(key);
+                            if (!StringUtils.isNullOrEmpty(val)) {
+                                field.setAccessible(true);
+                                field.set(object, val);
                             }
-                            break;
+                        } catch (Throwable e) {
+                            LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
                         }
+                        break;
                     }
                 }
             }

@@ -19,6 +19,8 @@ import android.os.Vibrator;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -123,6 +125,7 @@ public final class OtherUtils {
 
     /**
      * 兼容各个版本的安装app方法，需要在AndroidManifest.xml添加REQUEST_INSTALL_PACKAGES权限，REQUEST_INSTALL_PACKAGES权限不能通过动态判断
+     *
      * @param context
      * @param file
      */
@@ -133,7 +136,7 @@ public final class OtherUtils {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Uri uri = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, context.getPackageName()+".FileProvider", file);
+            uri = FileProvider.getUriForFile(context, context.getPackageName() + ".FileProvider", file);
         } else {
             uri = Uri.fromFile(file);
         }
@@ -177,14 +180,14 @@ public final class OtherUtils {
 
 
     public static void hideKeyboard(Activity activity) {
-        if(null != activity) {
+        if (null != activity) {
             InputMethodManager im = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
             im.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
     public static void showKeyboard(Activity activity) {
-        if(null != activity) {
+        if (null != activity) {
             InputMethodManager im = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
             im.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.SHOW_FORCED);
         }
@@ -204,6 +207,23 @@ public final class OtherUtils {
         if (null != view) {
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+        }
+    }
+
+
+    public static void setFocus(View view) {
+        if (null != view) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+        }
+    }
+
+    public void setFocusAndSelectAll(EditText view) {
+        if (null != view) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setSelectAllOnFocus(true);
+            view.selectAll();
         }
     }
 

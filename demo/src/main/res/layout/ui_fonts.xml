@@ -8,6 +8,11 @@
     android:orientation="vertical"
     tools:context=".ui.Main">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:src="@mipmap/ui_fonts_banner"
+        android:scaleType="centerCrop"
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/ui_fonts_textView1"
@@ -51,23 +56,6 @@
         android:layout_marginRight="@dimen/_12dp"
         android:text="因为单独设置了typeface所以字体不会生效"/>
 
-    <RadioButton
-        android:id="@+id/ui_fonts_button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_12dp"
-        android:layout_marginTop="@dimen/_12dp"
-        android:layout_marginRight="@dimen/_12dp"
-        android:text="这是一段测试文字abcdefg1234567890" />
-
-    <CheckBox
-        android:id="@+id/ui_fonts_button3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_12dp"
-        android:layout_marginTop="@dimen/_12dp"
-        android:layout_marginRight="@dimen/_12dp"
-        android:text="这是一段测试文字abcdefg1234567890"/>
 
     <ListView
         android:id="@+id/ui_fonts_recyclerView1"

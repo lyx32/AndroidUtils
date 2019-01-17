@@ -1,6 +1,8 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -8,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.arraylist7.android.utils.IntentUtils;
+import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.TypefaceUtils;
 import com.arraylist7.android.utils.ViewUtils;
@@ -33,10 +36,6 @@ public class Fonts extends Base {
     private NEditText editText1;
     @Views(R.id.ui_fonts_button1)
     private Button button1;
-    @Views(R.id.ui_fonts_button2)
-    private Button button2;
-    @Views(R.id.ui_fonts_button3)
-    private Button button3;
     @Views(R.id.ui_fonts_recyclerView1)
     private ListView recyclerView1;
 
@@ -55,6 +54,12 @@ public class Fonts extends Base {
         return R.layout.ui_fonts;
     }
 
+
+    @Override
+    public void initStatusBar() {
+        StatusBarUtils.setTranslucent(activity,true);
+    }
+
     @Override
     public void initWidget() {
         ViewUtils.inject(this);
@@ -63,7 +68,7 @@ public class Fonts extends Base {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
-
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         recyclerView1.setAdapter(adapter = new FontsAdapter(R.layout.ui_main_item, this));
     }
 
@@ -90,7 +95,7 @@ public class Fonts extends Base {
             model.id = i + "";
             model.name = "name-" + i;
             model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
-            model.picUrl = img[i % img.length] + "?random=" + i;
+            model.picUrl = img[i % img.length];
             list.add(model);
             model = null;
         }

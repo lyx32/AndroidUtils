@@ -90,6 +90,7 @@ public class NRecyclerView extends RecyclerView {
         }
     }
 
+
     public void setListDivider(int color, int strokeWidth) {
         this.addItemDecoration(new RecyclerViewItemDecoration(color, strokeWidth));
     }

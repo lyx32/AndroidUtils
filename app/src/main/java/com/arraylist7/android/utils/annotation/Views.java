@@ -8,5 +8,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Views {
-	int value();
+    
+    int value();
+
+    String setText() default "";
+
+    String setTag() default "";
 }

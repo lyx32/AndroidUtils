@@ -104,7 +104,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
      * 动态请求权限
      *
      * @param requestCode 请求的requestCode
-     * @param permission  Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了权限才能弹出请求权限的dialog）
+     * @param permission  Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了，才能弹出请求权限的dialog）
      * @param listener
      */
     public void requestPermission(@NonNull int requestCode, @NonNull String permission, @Nullable PermissionListener listener) {
@@ -115,7 +115,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
      * 动态请求权限
      *
      * @param requestCode 请求的requestCode
-     * @param permissions Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了权限才能弹出请求权限的dialog）
+     * @param permissions Manifest.permission.XXX （注：在部分手机上需要在AndroidManifest.xml申请了，才能弹出请求权限的dialog）
      * @param listener
      */
     public void requestPermission(@NonNull int requestCode, @NonNull String[] permissions, @Nullable PermissionListener listener) {
@@ -133,9 +133,12 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             };
         if (Build.VERSION.SDK_INT >= 23) {
             List<String> request = new ArrayList<>();
+            List<String> success = new ArrayList<>();
             for (String permission : permissions) {
                 if (PackageManager.PERMISSION_GRANTED != this.checkSelfPermission(permission)) {
                     request.add(permission);
+                }else{
+                    success.add(permission);
                 }
             }
             if (0 == request.size()) {
@@ -143,6 +146,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             } else {
                 permissionMap.put(requestCode + "", listener);
                 this.requestPermissions(request.toArray(new String[]{}), requestCode);
+                listener.permissionRequestSuccess(success.toArray(new String[]{}));
             }
         } else {
             listener.permissionRequestSuccess(permissions);

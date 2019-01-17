@@ -14,12 +14,12 @@ public class HTMLUtils {
 
 
     /**
-     * 替换所有html标签保留标签内容（不包括script及style）
+     * 清楚html标签保留内容
      *
      * @param htmlStr
      * @return
      */
-    public static String replaceAllHTMLTag(String htmlStr) {
+    public static String clearHTMLTag(String htmlStr) {
         Pattern p_script = Pattern.compile(regEx_script, Pattern.CASE_INSENSITIVE);
         Matcher m_script = p_script.matcher(htmlStr);
         htmlStr = m_script.replaceAll(""); // 过滤script标签
@@ -39,13 +39,13 @@ public class HTMLUtils {
      *
      * @param str
      * @param tag               指定标签
-     * @param isContainsContent 是否包含内容
+     * @param isClearContent 是否清理标签内容
      * @return String
      */
-    public static String replaceHTMLTag(String str, String tag, boolean isContainsContent) {
+    public static String clearHTMLTag(String str, String tag, boolean isClearContent) {
         String patternString = "<\\s*" + tag + "\\s*([^>]*)>";
-        if (isContainsContent)
-            patternString = "<\\s*" + tag + "[^>]*?\\s*>.*?</\\s*" + tag + "\\s*>";
+        if (isClearContent)
+            patternString = "<\\s*" + tag + "\\s*([^>]*)>.*?</\\s*" + tag + "\\s*>";
         Pattern pattern = Pattern.compile(patternString);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
@@ -74,8 +74,8 @@ public class HTMLUtils {
      * @param val               要查找的内容
      * @param tag               标签名
      * @param attrs             属性名（尽量可以的少）
-     * @param attrVals          属性值
-     * @param isContainsContent 是否包含内容
+     * @param attrVals          属性值（与attrs一一对应）
+     * @param isContainsContent 是否包含内容（注：如果你要find的tag下还有该同名tag，那么数据则会不完整）
      * @return
      */
     public static List<String> findHtmlTag(String val, String tag, String[] attrs, String[] attrVals, boolean isContainsContent) {

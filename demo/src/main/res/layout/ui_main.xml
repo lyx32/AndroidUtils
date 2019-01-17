@@ -79,14 +79,6 @@
         android:layout_marginRight="@dimen/_12dp"
         android:text="还原字体看效果" />
 
-    <Button
-        android:id="@+id/ui_main_button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_12dp"
-        android:layout_marginTop="@dimen/_12dp"
-        android:layout_marginRight="@dimen/_12dp"
-        android:text="点击请求多个权限（SDK>=23）" />
 
     <Button
         android:id="@+id/ui_main_button3"
