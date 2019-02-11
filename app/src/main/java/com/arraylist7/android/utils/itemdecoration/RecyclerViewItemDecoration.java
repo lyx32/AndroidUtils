@@ -56,10 +56,12 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             if (!isLastRow) {
                 View child = parent.getChildAt(i);
                 ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
-                int startX = child.getLeft() - lp.leftMargin;
-                int endX = child.getRight() + lp.rightMargin;
-                int y = child.getBottom() + lp.bottomMargin;
-                c.drawLine(startX, y, endX, y, paint);
+                if (null != lp) {
+                    int startX = child.getLeft() - lp.leftMargin;
+                    int endX = child.getRight() + lp.rightMargin;
+                    int y = child.getBottom() + lp.bottomMargin;
+                    c.drawLine(startX, y, endX, y, paint);
+                }
             }
         }
     }
@@ -75,10 +77,12 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
                 boolean isFirstRow = isFirstRow(parent, i, spanCount, childCount);
                 View child = parent.getChildAt(i);
                 ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
-                int x = child.getRight() + lp.rightMargin;
-                int startY = child.getTop() - (isFirstRow ? 0 : lp.topMargin);
-                int endY = child.getBottom() + (isLastRow ? 0 : lp.bottomMargin);
-                c.drawLine(x, startY, x, endY, paint);
+                if(null != lp) {
+                    int x = child.getRight() + lp.rightMargin;
+                    int startY = child.getTop() - (isFirstRow ? 0 : lp.topMargin);
+                    int endY = child.getBottom() + (isLastRow ? 0 : lp.bottomMargin);
+                    c.drawLine(x, startY, x, endY, paint);
+                }
             }
         }
     }
