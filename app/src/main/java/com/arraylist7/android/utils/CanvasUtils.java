@@ -3,6 +3,7 @@ package com.arraylist7.android.utils;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -13,17 +14,19 @@ import android.support.annotation.NonNull;
 
 public final class CanvasUtils {
 
+
     CanvasUtils() {
     }
 
 
     /**
-     *  绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+     * 绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
+     *
      * @param canvas 画布
-     * @param rect 矩形大小
-     * @param rx x圆角大小
-     * @param ry y圆角大小
-     * @param paint 画笔
+     * @param rect   矩形大小
+     * @param rx     x圆角大小
+     * @param ry     y圆角大小
+     * @param paint  画笔
      */
     public static void drawRoundRect(Canvas canvas, @NonNull RectF rect, float rx, float ry, @NonNull Paint paint) {
         drawRoundRect(canvas, rect.left, rect.top, rect.right, rect.bottom, rx, ry, paint);
@@ -33,13 +36,13 @@ public final class CanvasUtils {
      * 绘制圆角矩形，低版本使用贝塞尔线模拟圆角矩形
      *
      * @param canvas 画布
-     * @param left 左边起点
-     * @param top 上面起点
-     * @param right 矩形宽度
+     * @param left   左边起点
+     * @param top    上面起点
+     * @param right  矩形宽度
      * @param bottom 矩形高度
-     * @param rx x圆角大小
-     * @param ry y圆角大小
-     * @param paint 画笔
+     * @param rx     x圆角大小
+     * @param ry     y圆角大小
+     * @param paint  画笔
      */
     public static void drawRoundRect(Canvas canvas, float left, float top, float right, float bottom, float rx, float ry, @NonNull Paint paint) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -71,4 +74,37 @@ public final class CanvasUtils {
         }
     }
 
+    /**
+     * 获取文字宽度
+     *
+     * @param paint
+     * @param str
+     * @return
+     */
+    public static float getTextWidth(Paint paint, String str) {
+        return paint.measureText(str);
+    }
+    /**
+     * 获取文字宽度
+     *
+     * @param paint
+     * @param str
+     * @return
+     */
+    public static int getTextHeight(Paint paint, String str) {
+        return getTextWidthAndHeight(paint,str).height();
+    }
+
+    /**
+     * 获取文字宽度
+     *
+     * @param paint
+     * @param str
+     * @return
+     */
+    public static Rect getTextWidthAndHeight(Paint paint, String str) {
+        Rect widthAndHeight = new Rect();
+        paint.getTextBounds(str, 0, str.length(), widthAndHeight);
+        return widthAndHeight;
+    }
 }

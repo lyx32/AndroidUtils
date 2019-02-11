@@ -71,29 +71,13 @@ public class DeviceUtils {
                     if (StringUtils.isNullOrEmpty(deviceId)) {
                         deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
                         if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
-                            String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
-                            String serial = "";
-                            try {
-                                serial =  ClassUtils.getValue(Build.class,null,"SERIAL").toString();
-                                return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
-                            } catch (Exception e) {
-                                serial = "serial";
-                            }
-                            return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+                            deviceId = getPhoneDeviceId(context);
                         }
                     }
                 }
             }
         } catch (Exception ee) {
-            String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
-            String serial = "";
-            try {
-                serial =  ClassUtils.getValue(Build.class,null,"SERIAL").toString();
-                return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
-            } catch (Exception e) {
-                serial = "serial";
-            }
-            return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+            deviceId = getPhoneDeviceId(context);
         }
         return deviceId;
     }
@@ -106,36 +90,16 @@ public class DeviceUtils {
      */
     public static String getPhoneDeviceId(Context context) {
         String deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-        if (StringUtils.isNullOrEmpty(deviceId)) {
-            if (StringUtils.isNullOrEmpty(deviceId)) {
-                if (StringUtils.isNullOrEmpty(deviceId)) {
-                    String path1 = CacheUtils.createAppOtherDir(".#%/\\au", ".*%^~a");
-                    String path2 = CacheUtils.createAppOtherDir("au", "uuid");
-                    File deviceFile = new File(path1, "device");
-                    if (!deviceFile.getParentFile().exists()) {
-                        if (!deviceFile.mkdirs()) {
-                            deviceFile = new File(path2, "device");
-                            if (!deviceFile.getParentFile().exists()) {
-                                deviceFile.mkdirs();
-                            }
-                        }
-                    }
-                    if (!deviceFile.exists()) {
-                        deviceId = UUID.randomUUID().toString().replace("-", "");
-                        try {
-                            FileUtils.writeFile(deviceFile.getAbsolutePath(), deviceId, "UTF-8");
-                        } catch (Exception e) {
-                            LogUtils.e("创建唯一序列号UUID失败", e);
-                        }
-                    } else {
-                        try {
-                            deviceId = FileUtils.readerFile(deviceFile.getAbsolutePath());
-                        } catch (IOException e) {
-                            LogUtils.e("创建唯一序列号UUID失败", e);
-                        }
-                    }
-                }
+        if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
+            String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
+            String serial = "";
+            try {
+                serial = ClassUtils.getValue(Build.class, null, "SERIAL").toString();
+                return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+            } catch (Exception e) {
+                serial = "serial";
             }
+            return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
         }
         return deviceId;
     }

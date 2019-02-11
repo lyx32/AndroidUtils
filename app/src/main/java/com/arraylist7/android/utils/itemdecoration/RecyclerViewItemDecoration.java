@@ -48,9 +48,10 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public void drawHorizontal(Canvas c, RecyclerView parent) {
-        int childCount = parent.getChildCount();
+        int childCount = parent.getAdapter().getItemCount();
+        int spanCount = getSpanCount(parent);
         for (int i = 0; i < childCount; i++) {
-            int spanCount = getSpanCount(parent);
+            if (parent.getChildCount() < i) break;
             boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (!isLastRow) {
                 View child = parent.getChildAt(i);
@@ -64,9 +65,10 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public void drawVertical(Canvas c, RecyclerView parent) {
-        final int childCount = parent.getChildCount();
+        int childCount = parent.getAdapter().getItemCount();
+        int spanCount = getSpanCount(parent);
         for (int i = 0; i < childCount; i++) {
-            int spanCount = getSpanCount(parent);
+            if (parent.getChildCount() < i) break;
             boolean isLastColumn = isLastColumn(parent, i, spanCount, childCount);
             if (!isLastColumn) {
                 boolean isLastRow = isLastRow(parent, i, spanCount, childCount);

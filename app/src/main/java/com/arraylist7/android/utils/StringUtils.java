@@ -306,17 +306,6 @@ public final class StringUtils {
         return t;
     }
 
-    public static <T> T[] asArray(List<T> list) {
-        if(null == list)
-            return null;
-        return (T[]) list.toArray();
-    }
-
-    public static <T> T[] asArray(Set<T> set) {
-        if(null == set)
-            return null;
-        return (T[]) set.toArray();
-    }
 
     public static <T> Map<String, T> asMap(T... args) {
         Map<String, T> map = new HashMap<String, T>();
