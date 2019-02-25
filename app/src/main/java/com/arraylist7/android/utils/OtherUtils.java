@@ -218,7 +218,7 @@ public final class OtherUtils {
         }
     }
 
-    public void setFocusAndSelectAll(EditText view) {
+    public static void setFocusAndSelectAll(EditText view) {
         if (null != view) {
             view.setFocusableInTouchMode(true);
             view.requestFocus();

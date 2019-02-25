@@ -328,6 +328,9 @@ public final class StringUtils {
     public static long random(int min, int max) {
         return Math.round(Math.random() * (max - min) + min);
     }
+    public static float random(float min, float max) {
+        return Math.round(Math.random() * (max - min) + min);
+    }
 
 
     public static int randomColor() {

@@ -8,13 +8,17 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.NetState;
-import com.arraylist7.android.utils.StatusBarUtils;
+import com.arraylist7.android.utils.R;
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.handler.NHandler;
 import com.arraylist7.android.utils.inter.IActivity;
@@ -53,6 +57,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             initData();
         }
     }
+
 
     public abstract boolean onCreate2(Bundle savedInstanceState);
 
@@ -137,7 +142,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             for (String permission : permissions) {
                 if (PackageManager.PERMISSION_GRANTED != this.checkSelfPermission(permission)) {
                     request.add(permission);
-                }else{
+                } else {
                     success.add(permission);
                 }
             }

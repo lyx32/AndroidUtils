@@ -213,6 +213,16 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
             addData(Arrays.asList(data));
         }
     }
+    /**
+     * 添加数据
+     *
+     * @param data 待添加数据源
+     */
+    public void addData(T data) {
+        if (data != null) {
+            this.data.add(data);
+        }
+    }
 
     /**
      * 清空数据

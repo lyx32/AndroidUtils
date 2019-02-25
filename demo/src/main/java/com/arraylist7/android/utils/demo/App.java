@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.arraylist7.android.utils.AppUtils;
+import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 
 public class App extends Application {

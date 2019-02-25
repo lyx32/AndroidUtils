@@ -9,6 +9,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arraylist7.android.utils.LogUtils;
+
 /**
  * 使用该类绘制分割线，必须要给RecyclerView的Item设置margin
  */
@@ -55,12 +57,14 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (!isLastRow) {
                 View child = parent.getChildAt(i);
-                ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
-                if (null != lp) {
-                    int startX = child.getLeft() - lp.leftMargin;
-                    int endX = child.getRight() + lp.rightMargin;
-                    int y = child.getBottom() + lp.bottomMargin;
-                    c.drawLine(startX, y, endX, y, paint);
+                if(null != child) {
+                    ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
+                    if (null != lp) {
+                        int startX = child.getLeft() - lp.leftMargin;
+                        int endX = child.getRight() + lp.rightMargin;
+                        int y = child.getBottom() + lp.bottomMargin;
+                        c.drawLine(startX, y, endX, y, paint);
+                    }
                 }
             }
         }
@@ -76,12 +80,14 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
                 boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
                 boolean isFirstRow = isFirstRow(parent, i, spanCount, childCount);
                 View child = parent.getChildAt(i);
-                ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
-                if(null != lp) {
-                    int x = child.getRight() + lp.rightMargin;
-                    int startY = child.getTop() - (isFirstRow ? 0 : lp.topMargin);
-                    int endY = child.getBottom() + (isLastRow ? 0 : lp.bottomMargin);
-                    c.drawLine(x, startY, x, endY, paint);
+                if(null != child) {
+                    ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
+                    if (null != lp) {
+                        int x = child.getRight() + lp.rightMargin;
+                        int startY = child.getTop() - (isFirstRow ? 0 : lp.topMargin);
+                        int endY = child.getBottom() + (isLastRow ? 0 : lp.bottomMargin);
+                        c.drawLine(x, startY, x, endY, paint);
+                    }
                 }
             }
         }

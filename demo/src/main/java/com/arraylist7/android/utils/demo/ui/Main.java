@@ -1,30 +1,17 @@
 package com.arraylist7.android.utils.demo.ui;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.arraylist7.android.utils.CacheUtils;
-import com.arraylist7.android.utils.ClassUtils;
-import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
-import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.TypefaceUtils;
@@ -40,15 +27,11 @@ import com.arraylist7.android.utils.demo.adapter.DemoAdapter;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
-import com.arraylist7.android.utils.listener.PermissionListener;
 import com.arraylist7.android.utils.widget.NEditText;
 import com.arraylist7.android.utils.widget.NRecyclerView;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +47,12 @@ public class Main extends Base {
     @Views(R.id.ui_main_button1)
     private Button button1;
     // 绑定view 并且将random参数设置给tag和text
-    @Views(value = R.id.ui_main_button3,setTag = "random",setText = "random")
+    @Views(value = R.id.ui_main_button3, setTag = "random", setText = "random")
     private Button button3;
     @Views(R.id.ui_main_button4)
     private Button button4;
     // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效
-    @Views(value = R.id.ui_main_recyclerView1,setText = "random",setTag = "random")
+    @Views(value = R.id.ui_main_recyclerView1, setText = "random", setTag = "random")
     private NRecyclerView recyclerView1;
 
     // 获取从Launch页面点击按钮传过来的random参数
@@ -200,7 +183,7 @@ public class Main extends Base {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.d("button3.tag="+button3.getTag());
+                LogUtils.d("button3.tag=" + button3.getTag());
                 // 以下3种广播基本满足所有需求，如果不能满足
                 ActivityBroadcast.sendLoginSuccess(App.getContext(), "login_success_custom_key", "登录成功");
                 ActivityBroadcast.sendLoginOut(App.getContext(), "login_out_custom_key", "注销登录");
