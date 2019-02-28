@@ -12,6 +12,7 @@ import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -197,7 +198,7 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
      *
      * @param data 待添加数据源
      */
-    public void addData(List<T> data) {
+    public void addData(Collection<T> data) {
         if (data != null) {
             this.data.addAll(data);
         }

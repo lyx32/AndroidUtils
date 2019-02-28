@@ -258,6 +258,11 @@ public final class StringUtils {
         return emailer.matcher(email.toString()).matches();
     }
 
+    /**
+     * 使用sdk自带json库判断是否是json对象（验证比较严格）
+     * @param string
+     * @return
+     */
     public static boolean isJSONObject(String string) {
         if (isNullOrEmpty(string))
             return false;
@@ -269,6 +274,11 @@ public final class StringUtils {
         return true;
     }
 
+    /**
+     * 使用sdk自带json库判断是否是json数据（验证比较严格）
+     * @param string
+     * @return
+     */
     public static boolean isJSONArray(String string) {
         if (isNullOrEmpty(string))
             return false;
@@ -280,15 +290,21 @@ public final class StringUtils {
         return true;
     }
 
+    /**
+     * 使用sdk自带json库判断是否是json字符串（验证比较严格）
+     * @param string
+     * @return
+     */
     public static boolean isJSONString(String string) {
         if (isNullOrEmpty(string))
             return false;
-        if (isJSONArray(string))
-            return true;
         if (isJSONObject(string))
+            return true;
+        if (isJSONArray(string))
             return true;
         return false;
     }
+
 
     public static <T> List<T> asList(T... t) {
         if (null == t)

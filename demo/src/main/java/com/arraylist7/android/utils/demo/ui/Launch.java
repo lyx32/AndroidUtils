@@ -1,22 +1,16 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.Manifest;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
-import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.IOUtils;
-import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.StringUtils;
-import com.arraylist7.android.utils.TypefaceUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
 import com.arraylist7.android.utils.annotation.Views;
@@ -27,9 +21,6 @@ import com.arraylist7.android.utils.listener.PermissionListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Launch extends Base {
 
@@ -95,13 +86,14 @@ public class Launch extends Base {
                 requestPermission(1000, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionListener() {
                     @Override
                     public void permissionRequestSuccess(String[] permissions) {
-                        File installFile = new File(CacheUtils.getStorageDirectory() + "/demo-release.apk");
+                        String fileName = "demo-release-unsigned.apk";
+                        File installFile = new File(CacheUtils.getStorageDirectory() + "/" + fileName);
                         if (installFile.exists()) {
                             OtherUtils.install(App.getContext(), installFile);
-                        }else{
+                        } else {
                             try {
-                                IOUtils.readAndWriteAndClose(getAssets().open("demo-release.apk"), IOUtils.fileOut(CacheUtils.getStorageDirectory() + "/demo-release.apk"));
-                                OtherUtils.install(App.getContext(), new File(CacheUtils.getStorageDirectory() + "/demo-release.apk"));
+                                IOUtils.readAndWriteAndClose(getAssets().open(fileName), IOUtils.fileOut(CacheUtils.getStorageDirectory() + "/" + fileName));
+                                OtherUtils.install(App.getContext(), new File(CacheUtils.getStorageDirectory() + "/" + fileName));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -150,4 +142,6 @@ public class Launch extends Base {
             }
         });
     }
+
 }
+

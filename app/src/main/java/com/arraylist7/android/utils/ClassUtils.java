@@ -291,9 +291,9 @@ public class ClassUtils {
     public static <T> T invoke(Class clazz, Object obj, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException {
         if (null == clazz)
             throw new NoSuchFieldError("clazz 不能为空");
-        Method method = getDeclaredMethod(obj.getClass(), methodName);
+        Method method = getDeclaredMethod(clazz, methodName);
         if (null == method)
-            method = getMethod(obj.getClass(), methodName);
+            method = getMethod(clazz, methodName);
         Object result = null;
         if (null != method) {
             method.setAccessible(true);

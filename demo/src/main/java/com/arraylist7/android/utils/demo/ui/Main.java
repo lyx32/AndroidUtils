@@ -55,8 +55,8 @@ public class Main extends Base {
     @Views(value = R.id.ui_main_recyclerView1, setText = "random", setTag = "random")
     private NRecyclerView recyclerView1;
 
-    // 获取从Launch页面点击按钮传过来的random参数
-    @Params("random")
+    // 获取从Launch页面点击按钮传过来的random参数，并将这个参数值设置给button1的tag
+    @Params(value="random",setTag = R.id.ui_main_button1)
     private String random;
 
 

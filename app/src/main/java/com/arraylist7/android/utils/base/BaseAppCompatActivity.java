@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -41,6 +42,11 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     protected NHandler handler;
     protected BaseAppCompatActivity activity;
     private HashMap<String, PermissionListener> permissionMap = new HashMap<>();
+
+
+    public void openActivity(Activity from, String title, boolean finish) {
+        IntentUtils.activity(from, this.getClass(), finish);
+    }
 
     @Override
     protected final void onCreate(Bundle savedInstanceState) {

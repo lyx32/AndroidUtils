@@ -15,6 +15,7 @@ import com.arraylist7.android.utils.annotation.RColor;
 import com.arraylist7.android.utils.annotation.RString;
 import com.arraylist7.android.utils.annotation.Views;
 
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -112,14 +113,34 @@ public final class ViewUtils {
             if (null != params) {
                 for (String key : keys) {
                     if (key.equalsIgnoreCase(params.value())) {
+                        Object val = bundle.get(key);
                         try {
-                            Object val = bundle.get(key);
                             if (!StringUtils.isNullOrEmpty(val)) {
                                 field.setAccessible(true);
                                 field.set(object, val);
                             }
                         } catch (Throwable e) {
                             LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                        }
+                        int setText = params.setText();
+                        int setTag = params.setTag();
+                        if (-1 != setText) {
+                            View view = vs.findViewById(setText);
+                            if (null == view) {
+                                LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setText失败。");
+                            } else {
+                                if (view instanceof TextView) {
+                                    ((TextView) view).setText(val.toString());
+                                }
+                            }
+                        }
+                        if (-1 != setTag) {
+                            View view = vs.findViewById(setTag);
+                            if (null == view) {
+                                LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setTag失败。");
+                            } else {
+                                view.setTag(val);
+                            }
                         }
                         break;
                     }
@@ -198,6 +219,7 @@ public final class ViewUtils {
 }
 
 class ViewSource {
+    private List<SoftReference<View>> list = new ArrayList<>();
     private Context context;
     private Activity activity;
     private View view;
@@ -215,7 +237,19 @@ class ViewSource {
     }
 
     public View findViewById(int id) {
-        return null == activity ? view.findViewById(id) : activity.findViewById(id);
+        View view = null;
+        for (SoftReference<View> softView : list) {
+            if (null != softView) {
+                if (null != softView.get()) {
+                    if (id == softView.get().getId()) {
+                        return softView.get();
+                    }
+                }
+            }
+        }
+        view = null == this.activity ? this.view.findViewById(id) : this.activity.findViewById(id);
+        list.add(new SoftReference<View>(view));
+        return view;
     }
 
     public Context getContext() {
@@ -227,6 +261,11 @@ class ViewSource {
     }
 
     public void clear() {
+        for (SoftReference<View> softView : list) {
+            softView.clear();
+        }
+        list.clear();
+        list = null;
         context = null;
         activity = null;
         view = null;
