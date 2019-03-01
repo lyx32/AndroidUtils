@@ -74,6 +74,10 @@ public final class ViewUtils {
             RColor color = field.getAnnotation(RColor.class);
             // 注入View
             if (null != aView) {
+                if (-1 == aView.value()) {
+                    LogUtils.e(getFieldInfo(field) + " 注入view无效");
+                    continue;
+                }
                 View findView = vs.findViewById(aView.value());
                 if (null == findView) {
                     LogUtils.e(getFieldInfo(field) + " 注入id无效");
@@ -86,27 +90,22 @@ public final class ViewUtils {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
                     LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName + " 失败");
                 }
-                String setText = aView.setText();
-                String setTag = aView.setTag();
-                if (!StringUtils.isNullOrEmpty(setText)) {
-                    Object val = bundle.get(setText);
+                String setTextForParam = aView.setText();
+                String setTagForParam = aView.setTag();
+                if (!StringUtils.isNullOrEmpty(setTextForParam)) {
+                    Object val = bundle.get(setTextForParam);
                     if (StringUtils.isNullOrEmpty(val)) {
-                        LogUtils.d(getFieldInfo(field) + " 绑定setText错误，不能找到参数key=" + setText + "。");
+                        LogUtils.d(getFieldInfo(field) + " 绑定setTextForParam错误，不能找到参数key=" + setTextForParam + "。");
                     } else {
                         if (findView instanceof TextView) {
                             ((TextView) findView).setText(val + "");
                         } else {
-                            LogUtils.d(getFieldInfo(field) + " 绑定setText错误，该View不支持setText。");
+                            LogUtils.d(getFieldInfo(field) + " 绑定setTextForParam错误，该View不支持setText。");
                         }
                     }
                 }
-                if (!StringUtils.isNullOrEmpty(setTag)) {
-                    Object val = bundle.get(setTag);
-                    if (StringUtils.isNullOrEmpty(val)) {
-                        LogUtils.d(getFieldInfo(field) + " 绑定setTag错误，不能找到参数key=" + setTag + "。");
-                    } else {
-                        findView.setTag(val + "");
-                    }
+                if (!StringUtils.isNullOrEmpty(setTagForParam)) {
+                    findView.setTag(bundle.get(setTagForParam));
                 }
             }
             // 注入参数
@@ -148,6 +147,10 @@ public final class ViewUtils {
             }
             // 注入r.array
             if (null != array) {
+                if (-1 == array.value()) {
+                    LogUtils.e(getFieldInfo(field) + " 注入R.array无效");
+                    continue;
+                }
                 boolean isStringArray = field.getGenericType().toString().contains("String");
                 String[] array_string = null;
                 int[] array_int = null;
@@ -165,10 +168,6 @@ public final class ViewUtils {
                         array_int = vs.getResources().getIntArray(array.value());
                     }
                 }
-                if (0 == StringUtils.len(array_string) && 0 == StringUtils.len(array_int)) {
-                    LogUtils.e(getFieldInfo(field) + " 注入R.array无效");
-                    continue;
-                }
                 try {
                     field.setAccessible(true);
                     field.set(object, (0 == StringUtils.len(array_string) ? array_int : array_string));
@@ -178,30 +177,70 @@ public final class ViewUtils {
             }
             // 注入r.string
             if (null != string) {
-                String strings = vs.getResources().getString(string.value());
-                if (null == strings) {
+                if (-1 == string.value()) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.string无效");
                     continue;
                 }
+                String strings = vs.getResources().getString(string.value());
                 try {
                     field.setAccessible(true);
                     field.set(object, strings);
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.string：" + string.value() + " 失败");
                 }
+                int setText = string.setText();
+                int setTag = string.setTag();
+                if (-1 != setText) {
+                    View view = vs.findViewById(setText);
+                    if (null == view) {
+                        LogUtils.e(getFieldInfo(field) + " 没找到需要setText的View。");
+                    } else {
+                        if (view instanceof TextView) {
+                            ((TextView) view).setText(string.value());
+                        }
+                    }
+                }
+                if (-1 != setTag) {
+                    View view = vs.findViewById(setTag);
+                    if (null == view) {
+                        LogUtils.e(getFieldInfo(field) + " 没找到需要setTag的View。");
+                    } else {
+                        view.setTag(strings);
+                    }
+                }
             }
             // 注入r.color
             if (null != color) {
-                int colors = vs.getResources().getColor(color.value());
-                if (0 >= colors) {
+                if (-1 == color.value()) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.color无效");
                     continue;
                 }
+                int colors = vs.getResources().getColor(color.value());
                 try {
                     field.setAccessible(true);
                     field.set(object, colors);
                 } catch (Throwable e) {
                     LogUtils.e(getFieldInfo(field) + " 注入R.color：" + color.value() + " 失败");
+                }
+                int setTextColor = color.setTextColor();
+                int setBackgroundColor = color.setBackgroundColor();
+                if (-1 != setTextColor) {
+                    View view = vs.findViewById(setTextColor);
+                    if (null == view) {
+                        LogUtils.e(getFieldInfo(field) + " 没找到需要setText的View。");
+                    } else {
+                        if (view instanceof TextView) {
+                            ((TextView) view).setTextColor(colors);
+                        }
+                    }
+                }
+                if (-1 != setBackgroundColor) {
+                    View view = vs.findViewById(setBackgroundColor);
+                    if (null == view) {
+                        LogUtils.e(getFieldInfo(field) + " 没找到需要setTag的View。");
+                    } else {
+                        view.setBackgroundColor(colors);
+                    }
                 }
             }
         }

@@ -57,7 +57,7 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
             if (!isLastRow) {
                 View child = parent.getChildAt(i);
-                if(null != child) {
+                if (null != child) {
                     ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
                     if (null != lp) {
                         int startX = child.getLeft() - lp.leftMargin;
@@ -80,7 +80,7 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
                 boolean isLastRow = isLastRow(parent, i, spanCount, childCount);
                 boolean isFirstRow = isFirstRow(parent, i, spanCount, childCount);
                 View child = parent.getChildAt(i);
-                if(null != child) {
+                if (null != child) {
                     ViewGroup.MarginLayoutParams lp = ((ViewGroup.MarginLayoutParams) child.getLayoutParams());
                     if (null != lp) {
                         int x = child.getRight() + lp.rightMargin;
@@ -138,11 +138,15 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     public boolean isLastRow(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
-            return childCount - pos <= spanCount;
+            int rowCount = (int)Math.ceil((childCount+0F) / spanCount);
+            int curCount = (int)Math.ceil((pos+1F) / spanCount);
+            return rowCount == curCount;
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
             if (orientation == StaggeredGridLayoutManager.VERTICAL) {
-                return childCount - pos <= spanCount;
+                int rowCount = (int)Math.ceil((childCount+0F) / spanCount);
+                int curCount = (int)Math.ceil((pos+1F) / spanCount);
+                return rowCount == curCount;
             } else {
                 return true;
             }

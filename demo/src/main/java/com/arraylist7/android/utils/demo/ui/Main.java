@@ -18,6 +18,8 @@ import com.arraylist7.android.utils.TypefaceUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
 import com.arraylist7.android.utils.annotation.Params;
+import com.arraylist7.android.utils.annotation.RColor;
+import com.arraylist7.android.utils.annotation.RString;
 import com.arraylist7.android.utils.annotation.Views;
 import com.arraylist7.android.utils.broadcast.ActivityBroadcast;
 import com.arraylist7.android.utils.broadcast.BaseBroadcastReceiver;
@@ -51,12 +53,21 @@ public class Main extends Base {
     private Button button3;
     @Views(R.id.ui_main_button4)
     private Button button4;
+
+    // 绑定R.color.colorAccent颜色，并将该颜色作为textView2的textColor和textView3的backgroundColor
+    @RColor(value = R.color.colorAccent,setTextColor = R.id.ui_main_textView2,setBackgroundColor = R.id.ui_main_textView3)
+    private int backgroundColor =-1;
+    // 绑定R.string.app_name 并将该值赋值给textView3的tag及textView4的text
+    @RString(value = R.string.app_name,setTag = R.id.ui_main_textView3,setText = R.id.ui_main_textView4)
+    private String app_name;
+
     // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效
     @Views(value = R.id.ui_main_recyclerView1, setText = "random", setTag = "random")
     private NRecyclerView recyclerView1;
 
+
     // 获取从Launch页面点击按钮传过来的random参数，并将这个参数值设置给button1的tag
-    @Params(value="random",setTag = R.id.ui_main_button1)
+    @Params(value = "random", setTag = R.id.ui_main_button1)
     private String random;
 
 
@@ -89,6 +100,7 @@ public class Main extends Base {
         ViewUtils.inject(activity);
         // 弹出的键盘，点击右下角跳转到指定EditText
         editText1.setNextView(editText2);
+//        ((TextView)findViewById(R.id.ui_main_textView3)).setTextColor(getResources().getColor(R.color.colorAccent));
         // 绑定键盘右下角响应对应按钮，默认 IME_ACTION_DONE, IME_ACTION_GO,  IME_ACTION_SEARCH, IME_ACTION_SEND, IME_ACTION_UNSPECIFIED
         editText2.setOnSubmitListener(new View.OnClickListener() {
             @Override
@@ -97,6 +109,7 @@ public class Main extends Base {
             }
         });
         recyclerView1.setListDivider(StringUtils.randomColor(), 5);
+        recyclerView1.setVertical(false);
         recyclerView1.setAdapter(adapter = new DemoAdapter(R.layout.ui_main_item, this));
     }
 
@@ -119,7 +132,7 @@ public class Main extends Base {
                 "https://assets-cdn.github.com/images/modules/site/logos/nasa-logo.png",
                 "https://assets-cdn.github.com/images/modules/site/logos/walmart-logo.png"
         };
-        for (int i = 1; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             model = new DemoModel();
             model.id = i + "";
             model.name = "name-" + i;

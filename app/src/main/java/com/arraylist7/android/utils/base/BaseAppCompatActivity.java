@@ -196,7 +196,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             if (f instanceof IActivity)
                 ((IOperator) f).onLoginSuccess(data);
         }
-
     }
 
     @Override

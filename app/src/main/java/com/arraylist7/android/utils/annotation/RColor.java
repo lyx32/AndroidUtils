@@ -8,5 +8,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RColor {
-	int value();
+    int value() default -1;
+
+    /**
+     * 将此颜色设置给text
+     * @return
+     */
+    int setTextColor() default -1;
+
+    /**
+     * 将此颜色设置给background
+     * @return
+     */
+    int setBackgroundColor() default -1;
 }
