@@ -121,16 +121,13 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
             return pos < spanCount;
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
-            if (orientation == StaggeredGridLayoutManager.VERTICAL) {
+            if (orientation == StaggeredGridLayoutManager.VERTICAL)
                 return pos == 0;
-            } else {
-                return true;
-            }
+            return true;
         } else if (layoutManager instanceof LinearLayoutManager) {
             if (LinearLayoutManager.HORIZONTAL == ((LinearLayoutManager) layoutManager).getOrientation())
                 return true;
-            else
-                return pos == 0;
+            return pos == 0;
         }
         return false;
     }
@@ -138,14 +135,14 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
     public boolean isLastRow(RecyclerView parent, int pos, int spanCount, int childCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
-            int rowCount = (int)Math.ceil((childCount+0F) / spanCount);
-            int curCount = (int)Math.ceil((pos+1F) / spanCount);
+            int rowCount = (int) Math.ceil((childCount + 0F) / spanCount);
+            int curCount = (int) Math.ceil((pos + 1F) / spanCount);
             return rowCount == curCount;
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
             int orientation = ((StaggeredGridLayoutManager) layoutManager).getOrientation();
             if (orientation == StaggeredGridLayoutManager.VERTICAL) {
-                int rowCount = (int)Math.ceil((childCount+0F) / spanCount);
-                int curCount = (int)Math.ceil((pos+1F) / spanCount);
+                int rowCount = (int) Math.ceil((childCount + 0F) / spanCount);
+                int curCount = (int) Math.ceil((pos + 1F) / spanCount);
                 return rowCount == curCount;
             } else {
                 return true;
@@ -153,8 +150,7 @@ public class RecyclerViewItemDecoration extends RecyclerView.ItemDecoration {
         } else if (layoutManager instanceof LinearLayoutManager) {
             if (LinearLayoutManager.HORIZONTAL == ((LinearLayoutManager) layoutManager).getOrientation())
                 return true;
-            else
-                return childCount == pos + 1;
+            return childCount == pos + 1;
         }
         return false;
     }

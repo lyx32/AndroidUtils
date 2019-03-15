@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
  */
 
 public class NHandler extends Handler {
-    private final WeakReference<IHandler> handlers;
+    private WeakReference<IHandler> handlers;
 
     public NHandler(IHandler handler) {
         handlers = new WeakReference<IHandler>(handler);

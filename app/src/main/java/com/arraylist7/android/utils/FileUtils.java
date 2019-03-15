@@ -2,6 +2,7 @@ package com.arraylist7.android.utils;
 
 
 import android.os.Environment;
+import android.support.annotation.StringRes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,9 +12,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 功能：使用NIO的文件工具类<br>
@@ -86,98 +91,168 @@ public final class FileUtils {
         return dirSize;
     }
 
-    public static String readerFile(String path) throws IOException {
+    public static String readerFile(String path) {
         return readerFile(new File(path), Charset.defaultCharset().name());
     }
 
-    public static String readerFile(String path, String charset) throws IOException {
+    public static String readerFile(String path, String charset) {
         return readerFile(new File(path), charset);
     }
 
-    public static String readerFile(File file) throws IOException {
+    public static String readerFile(File file) {
         return readerFile(file, Charset.defaultCharset().name());
     }
 
-    public static String readerFile(File file, String charset) throws IOException {
+    public static String readerFile(File file, String charset) {
         if (null == file) {
-            throw new NullPointerException();
+            LogUtils.e("file 对象不能为空！");
+            return null;
         }
         if (!file.exists()) {
-            throw new FileNotFoundException(file.getAbsolutePath());
+            LogUtils.e(file.getAbsolutePath() + " 不存在！");
+            return null;
         }
         if (!file.canRead()) {
-            throw new RuntimeException(file.getAbsolutePath() + "没有读取权限");
+            LogUtils.e(file.getAbsolutePath() + " 没有读取权限！");
+            return null;
         }
-        FileInputStream fis = new FileInputStream(file);
-        FileChannel channel = fis.getChannel();
-        ByteBuffer buffer = ByteBuffer.allocate(10086);
-        channel.read(buffer);
-        long end = channel.size();
-        byte[] bt = buffer.array();
-        buffer.clear();
-        String str = new String(bt, 0, (int) end, Charset.forName(charset));
-        bt = null;
-        buffer.clear();
-        buffer = null;
-        IOUtils.close(fis);
-        IOUtils.close(channel);
-        return str;
+        StringBuffer result = new StringBuffer();
+        FileInputStream fis = null;
+        FileChannel channel = null;
+        try {
+            fis = new FileInputStream(file);
+            channel = fis.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate(65535);
+            int size = 0;
+            while(0 < (size = channel.read(buffer))){
+                result.append(new String(buffer.array(), 0, size, Charset.forName(charset)));
+                buffer.flip();
+            }
+            buffer.clear();
+            buffer = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(fis);
+            IOUtils.close(channel);
+        }
+        return result.toString();
     }
 
 
-    public static void writeFile(String path, String content) throws Exception {
-        writeFile(path, content, Charset.defaultCharset().name(), false);
+    public static String[] readersFile(String path) {
+        return readersFile(new File(path), Charset.defaultCharset().name());
     }
 
-    public static void writeFile(String path, String content, String charset) throws Exception {
-        writeFile(path, content, charset, false);
+    public static String[] readersFile(String path, String charset) {
+        return readersFile(new File(path), charset);
     }
 
-    public static void writeFile(String path, String content, boolean isAppend) throws Exception {
-        writeFile(path, content, Charset.defaultCharset().name(), isAppend);
+    public static String[] readersFile(File file) {
+        return readersFile(file, Charset.defaultCharset().name());
     }
 
-    public static void writeFile(String path, String content, String charset, boolean isAppend) throws Exception {
-        writeFile(path, content.getBytes(charset), isAppend);
+    public static String[] readersFile(File file, String charset) {
+        if (null == file) {
+            LogUtils.e("file 对象不能为空！");
+            return null;
+        }
+        if (!file.exists()) {
+            LogUtils.e(file.getAbsolutePath() + " 不存在！");
+            return null;
+        }
+        if (!file.canRead()) {
+            LogUtils.e(file.getAbsolutePath() + " 没有读取权限！");
+            return null;
+        }
+        List<String> list = new ArrayList<>();
+        FileInputStream fis = null;
+        InputStreamReader isr = null;
+        BufferedReader reader = null;
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, charset);
+            reader = new BufferedReader(isr);
+            String line = null;
+            while (null != (line = reader.readLine())) {
+                list.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(reader);
+            IOUtils.close(fis);
+        }
+        return list.toArray(new String[]{});
     }
 
-    public static void writeFile(String path, byte[] content) throws Exception {
-        writeFile(path, content, false);
+
+    public static void writerFile(String path, String content) throws UnsupportedEncodingException {
+        writerFile(path, content, Charset.defaultCharset().name(), false);
     }
 
-    public static void writeFile(String path, byte[] content, boolean isAppend) throws Exception {
+    public static void writerFile(String path, String content, String charset) throws UnsupportedEncodingException {
+        writerFile(path, content, charset, false);
+    }
+
+    public static void writerFile(String path, String content, boolean isAppend) throws UnsupportedEncodingException {
+        writerFile(path, content, Charset.defaultCharset().name(), isAppend);
+    }
+
+    public static void writerFile(String path, String content, String charset, boolean isAppend) throws UnsupportedEncodingException {
+        writerFile(path, content.getBytes(charset), isAppend);
+    }
+
+    public static void writerFile(String path, byte[] content) {
+        writerFile(path, content, false);
+    }
+
+    public static void writerFile(String path, byte[] content, boolean isAppend) {
         File file = new File(path);
         if (!file.getParentFile().exists())
             file.mkdirs();
         if (!file.exists()) {
-            file.createNewFile();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                LogUtils.e("创建文件 " + file.getAbsolutePath() + " 失败", e);
+                return;
+            }
         }
         if (!file.canWrite()) {
-            throw new RuntimeException(path + "没有写入权限");
+            LogUtils.e(file.getAbsolutePath() + " 没有写入权限！");
+            return;
         }
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new RuntimeException("没有挂载SD卡");
+        FileOutputStream fos = null;
+        FileChannel channel = null;
+        try {
+            fos = new FileOutputStream(file, isAppend);
+            channel = fos.getChannel();
+            ByteBuffer buffer = ByteBuffer.wrap(content);
+            channel.write(buffer);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(fos);
+            IOUtils.close(channel);
         }
-        FileOutputStream fos = new FileOutputStream(file, isAppend);
-        FileChannel channel = fos.getChannel();
-        ByteBuffer buffer = ByteBuffer.wrap(content);
-        channel.write(buffer);
-        fos.flush();
-        IOUtils.close(fos);
-        IOUtils.close(channel);
     }
 
-    public static void copyFile(String path, String newPath) {
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new RuntimeException(path + "没有挂载SD卡");
+    public static void copyFile(String sourceFilePath, String newFilePath) {
+        File source = new File(sourceFilePath);
+        File newFile = new File(newFilePath);
+
+        if (!source.exists()) {
+            LogUtils.e("原文件 " + source.getAbsolutePath() + " 不存在");
+            return;
         }
-        File source = new File(path);
-        File newFile = new File(newPath);
         if (!newFile.exists()) {
             try {
                 newFile.createNewFile();
             } catch (IOException e) {
-                LogUtils.e("创建文件失败！", e);
+                LogUtils.e("创建文件 " + newFile.getAbsolutePath() + " 失败", e);
+                return;
             }
         }
         FileInputStream fis = null;
@@ -199,6 +274,66 @@ public final class FileUtils {
             IOUtils.close(nc);
         }
     }
+
+
+    public static void copyFile(InputStream sourceFileStream, String newFilePath) {
+        File newFile = new File(newFilePath);
+
+        if (null == sourceFileStream) {
+            LogUtils.e("sourceFileStream 不能为空");
+            return;
+        }
+
+        if (!newFile.exists()) {
+            try {
+                newFile.createNewFile();
+            } catch (IOException e) {
+                LogUtils.e("创建文件 " + newFile.getAbsolutePath() + " 失败", e);
+                return;
+            }
+        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(newFile);
+            byte[] b = new byte[65535];
+            int size = 0;
+            while (0 < (size = sourceFileStream.read(b))) {
+                fos.write(b, 0, size);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(sourceFileStream);
+            IOUtils.close(fos);
+        }
+    }
+
+
+    public static void copyFile(InputStream sourceFileStream, OutputStream newFileStream) {
+
+        if (null == sourceFileStream) {
+            LogUtils.e("sourceFileStream 不能为空");
+            return;
+        }
+        if (null == newFileStream) {
+            LogUtils.e("newFileStream 不能为空");
+            return;
+        }
+
+        try {
+            byte[] b = new byte[65535];
+            int size = 0;
+            while (0 < (size = sourceFileStream.read(b))) {
+                newFileStream.write(b, 0, size);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(sourceFileStream);
+            IOUtils.close(newFileStream);
+        }
+    }
+
 
     public static void deleteFile(File fileOrDir) {
         if (!fileOrDir.exists()) {

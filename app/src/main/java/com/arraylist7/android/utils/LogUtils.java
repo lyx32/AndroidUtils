@@ -100,7 +100,7 @@ public class LogUtils {
     public static void file(String message, String fileAbsolutePath) {
         LogUtils.e(message);
         try {
-            FileUtils.writeFile(fileAbsolutePath, message + "\n\n");
+            FileUtils.writerFile(fileAbsolutePath, message + "\n\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

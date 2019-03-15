@@ -1,10 +1,8 @@
 package com.arraylist7.android.utils.adapter.holder;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +15,13 @@ import android.widget.TextView;
 import com.arraylist7.android.utils.BitmapUtils;
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.LogUtils;
-import com.arraylist7.android.utils.ViewUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2017/8/4 0004.
@@ -49,7 +46,6 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.tag = tag;
     }
-
 
     public BaseViewHolder(Context context, int layoutId) {
         this(context,TAG_ITEM, layoutId);
@@ -116,6 +112,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     public TextView setText(int viewId, String text) {
         TextView textView = getTextView(viewId);
         textView.setText(text);
+
         return textView;
     }
 

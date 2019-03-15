@@ -95,12 +95,12 @@ public final class ViewUtils {
                 if (!StringUtils.isNullOrEmpty(setTextForParam)) {
                     Object val = bundle.get(setTextForParam);
                     if (StringUtils.isNullOrEmpty(val)) {
-                        LogUtils.d(getFieldInfo(field) + " 绑定setTextForParam错误，不能找到参数key=" + setTextForParam + "。");
+                        LogUtils.d(getFieldInfo(field) + " 绑定setText错误，不能找到参数key=" + setTextForParam + "。");
                     } else {
                         if (findView instanceof TextView) {
                             ((TextView) findView).setText(val + "");
                         } else {
-                            LogUtils.d(getFieldInfo(field) + " 绑定setTextForParam错误，该View不支持setText。");
+                            LogUtils.d(getFieldInfo(field) + " 绑定setText错误，该View不支持setText。");
                         }
                     }
                 }

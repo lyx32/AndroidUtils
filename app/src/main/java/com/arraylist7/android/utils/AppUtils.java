@@ -43,6 +43,7 @@ public final class AppUtils {
 
         LogUtils.setTAG(app.getApplicationContext().getPackageName());
 
+
         BitmapUtils.init(app.getApplicationContext());
 
 
@@ -70,16 +71,23 @@ public final class AppUtils {
                     }
                     List<BaseBroadcastReceiver> list = activityMap.get(key);
                     // 绑定activity广播
-                    ActivityBroadcast activityReceiver = new ActivityBroadcast();
-                    activityReceiver.registerActivityReceiver(activity, (IOperator) activity);
-                    list.add(activityReceiver);
+                    if (activity instanceof IOperator) {
+                        ActivityBroadcast activityReceiver = new ActivityBroadcast();
+                        activityReceiver.registerActivityReceiver(activity, (IOperator) activity);
+                        list.add(activityReceiver);
+                    }
                     // 绑定网络改变广播
-                    netMap.put(key, (BaseAppCompatActivity) activity);
+                    if (activity instanceof BaseAppCompatActivity) {
+                        netMap.put(key, (BaseAppCompatActivity) activity);
+                    }
                     // 绑定屏幕锁定广播
-                    ScreenReceiver screenReceiver = new ScreenReceiver();
-                    screenReceiver.registerScreenReceiver(activity, (IScreen) activity);
-                    list.add(screenReceiver);
-                    activityMap.put(key, list);
+                    if (activity instanceof IScreen) {
+                        ScreenReceiver screenReceiver = new ScreenReceiver();
+                        screenReceiver.registerScreenReceiver(activity, (IScreen) activity);
+                        list.add(screenReceiver);
+                    }
+                    if(0 != list.size())
+                        activityMap.put(key, list);
                 }
                 finalAdapter.onActivityCreated(activity, savedInstanceState);
             }

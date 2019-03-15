@@ -7,7 +7,10 @@ import android.widget.Button;
 
 import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
+import com.arraylist7.android.utils.FileUtils;
+import com.arraylist7.android.utils.HTMLUtils;
 import com.arraylist7.android.utils.IOUtils;
+import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.StringUtils;
@@ -21,6 +24,7 @@ import com.arraylist7.android.utils.listener.PermissionListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Launch extends Base {
 
@@ -64,6 +68,35 @@ public class Launch extends Base {
 
     @Override
     public void initData() {
+        String newFilePath = CacheUtils.createAppRootDir("android_utils_folder") + "/1.html";
+        try {
+            FileUtils.copyFile(getAssets().open("cq.qq.com_2018-12-21.html"), newFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String cq_qq_com = FileUtils.readerFile(newFilePath, "gbk");
+        LogUtils.e(cq_qq_com);
+        LogUtils.e("-------------------------");
+        String[] array = FileUtils.readersFile(newFilePath);
+        LogUtils.e(array[0]);
+        LogUtils.e(array[7]);
+        LogUtils.e(array[15]);
+
+        // 找到所有type="text" 的input标签
+        List<String> inputs = HTMLUtils.findInputTag(cq_qq_com, new String[]{"type"}, new String[]{"text"});
+        // 找到class="channel-title"的h3节点及h3节点下的内容
+        List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
+        // 提取所有img的src值
+        List<String> srcs = HTMLUtils.filterHtmlTag(cq_qq_com, "img", new String[]{"src"});
+        for (String item : inputs) {
+            LogUtils.e("input=" + item);
+        }
+        for (String item : h3_class) {
+            LogUtils.e("h3_class=" + item);
+        }
+        for (String item : srcs) {
+            LogUtils.e("srcs=" + item);
+        }
     }
 
     @Override
@@ -82,7 +115,7 @@ public class Launch extends Base {
         install.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 在部分手机上权限需要在
+                // 在部分手机上需要在 AndroidManifest.xml 先声明，不然不会弹出授权框而直接拒绝
                 requestPermission(1000, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionListener() {
                     @Override
                     public void permissionRequestSuccess(String[] permissions) {
@@ -112,7 +145,7 @@ public class Launch extends Base {
             @Override
             public void onClick(View v) {
                 // 在部分手机上需要在 AndroidManifest.xml 先声明，不然不会弹出授权框而直接拒绝
-                // 在部分手机上 BLUETOOTH_ADMIN 则会被拒绝
+                // 因为BLUETOOTH_ADMIN没有在AndroidManifest.xml 声明。所以在部分手机上 BLUETOOTH_ADMIN 会被拒绝
                 activity.requestPermission(1001, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_PHONE_STATE, Manifest.permission.VIBRATE, Manifest.permission.CHANGE_NETWORK_STATE, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.BLUETOOTH_ADMIN}, new PermissionListener() {
                     @Override
                     public void permissionRequestSuccess(String[] permissions) {
