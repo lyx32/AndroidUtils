@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">demo</string>
+    <string name="ui_main_edittext2_text">string.xml的值，动态参数 %1$s，%2$s </string>
 </resources>

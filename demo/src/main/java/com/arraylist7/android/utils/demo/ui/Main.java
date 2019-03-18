@@ -44,7 +44,7 @@ public class Main extends Base {
     private TextView textView1;
     @Views(R.id.ui_main_editText_1)
     private NEditText editText1;
-    @Views(R.id.ui_main_editText_2)
+    @Views(value = R.id.ui_main_editText_2, rString = R.string.ui_main_edittext2_text, rStringParams = {"random", "这是一个xml有定义但是不存在的参数key", "这是一个xml没有定义的参数key"})
     private NEditText editText2;
     @Views(R.id.ui_main_button1)
     private Button button1;
@@ -55,10 +55,10 @@ public class Main extends Base {
     private Button button4;
 
     // 绑定R.color.colorAccent颜色，并将该颜色作为textView2的textColor和textView3的backgroundColor
-    @RColor(value = R.color.colorAccent,setTextColor = R.id.ui_main_textView2,setBackgroundColor = R.id.ui_main_textView3)
-    private int backgroundColor =-1;
+    @RColor(value = R.color.colorAccent, setTextColor = R.id.ui_main_textView2, setBackgroundColor = R.id.ui_main_textView3)
+    private int backgroundColor = -1;
     // 绑定R.string.app_name 并将该值赋值给textView3的tag及textView4的text
-    @RString(value = R.string.app_name,setTag = R.id.ui_main_textView3,setText = R.id.ui_main_textView4)
+    @RString(value = R.string.app_name, setTag = R.id.ui_main_textView3, setText = R.id.ui_main_textView4)
     private String app_name;
 
     // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效

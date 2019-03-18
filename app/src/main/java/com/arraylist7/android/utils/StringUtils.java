@@ -32,8 +32,7 @@ import java.util.regex.Pattern;
 
 public final class StringUtils {
 
-    private final static Pattern emailer = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
-    private final static Pattern phone = Pattern.compile("1[3\\d|4[5|7]|5[0|1|5-9]|7[0|6|7|8]|8\\d]|\\d{8}");
+    private final static Pattern phone = Pattern.compile("1[3\\d|4[5|7]|5[0|1|5-9]|7[0|6|7|8]|8\\d|91]|\\d{8}");
     private final static SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -252,12 +251,6 @@ public final class StringUtils {
         return URL.matcher(str).matches();
     }
 
-    public static boolean isEmail(Object email) {
-        if (isNullOrEmpty(email))
-            return false;
-        return emailer.matcher(email.toString()).matches();
-    }
-
     /**
      * 使用sdk自带json库判断是否是json对象（验证比较严格）
      * @param string
@@ -344,10 +337,9 @@ public final class StringUtils {
     public static long random(int min, int max) {
         return Math.round(Math.random() * (max - min) + min);
     }
-    public static float random(float min, float max) {
+    public static double random(float min, float max) {
         return Math.round(Math.random() * (max - min) + min);
     }
-
 
     public static int randomColor() {
         int r = (int) StringUtils.random(0, 255);

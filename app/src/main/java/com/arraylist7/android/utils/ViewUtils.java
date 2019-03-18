@@ -90,12 +90,14 @@ public final class ViewUtils {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
                     LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName + " 失败");
                 }
-                String setTextForParam = aView.setText();
-                String setTagForParam = aView.setTag();
-                if (!StringUtils.isNullOrEmpty(setTextForParam)) {
-                    Object val = bundle.get(setTextForParam);
+                String setText = aView.setText();
+                String setTag = aView.setTag();
+                int rStringId = aView.rString();
+                String[] rStringParam = aView.rStringParams();
+                if (!StringUtils.isNullOrEmpty(setText)) {
+                    Object val = bundle.get(setText);
                     if (StringUtils.isNullOrEmpty(val)) {
-                        LogUtils.d(getFieldInfo(field) + " 绑定setText错误，不能找到参数key=" + setTextForParam + "。");
+                        LogUtils.d(getFieldInfo(field) + " 绑定setText错误，不能找到参数key=" + setText + "。");
                     } else {
                         if (findView instanceof TextView) {
                             ((TextView) findView).setText(val + "");
@@ -104,8 +106,27 @@ public final class ViewUtils {
                         }
                     }
                 }
-                if (!StringUtils.isNullOrEmpty(setTagForParam)) {
-                    findView.setTag(bundle.get(setTagForParam));
+                if (!StringUtils.isNullOrEmpty(setTag)) {
+                    findView.setTag(bundle.get(setTag));
+                }
+                if (-1 != rStringId) {
+                    List<Object> list = new ArrayList<>();
+                    if (0 < StringUtils.len(rStringParam)) {
+                        for (String key : rStringParam) {
+                            list.add(bundle.get(key));
+                        }
+                    }
+                    if (findView instanceof TextView) {
+                        if (0 != list.size()) {
+                            ((TextView) findView).setText(vs.getResources().getString(rStringId, list.toArray()));
+                        } else {
+                            String result = vs.getResources().getString(rStringId);
+                            if ((result + "").contains("%1$")) {
+                                LogUtils.d(getFieldInfo(field) + " rString=" + rStringId + " 存在参数需要绑定");
+                            }
+                            ((TextView) findView).setText(result);
+                        }
+                    }
                 }
             }
             // 注入参数

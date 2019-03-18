@@ -11,7 +11,7 @@ public @interface RColor {
     int value() default -1;
 
     /**
-     * 将此颜色设置给text
+     * 将此颜色作为TextColor
      * @return
      */
     int setTextColor() default -1;
