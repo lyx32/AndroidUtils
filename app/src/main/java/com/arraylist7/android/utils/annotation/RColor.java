@@ -11,13 +11,13 @@ public @interface RColor {
     int value() default -1;
 
     /**
-     * 将此颜色作为TextColor
+     * 将此颜色作为textColor设置给指定的view
      * @return
      */
     int setTextColor() default -1;
 
     /**
-     * 将此颜色设置给background
+     * 将此颜色作为background设置给指定的view
      * @return
      */
     int setBackgroundColor() default -1;

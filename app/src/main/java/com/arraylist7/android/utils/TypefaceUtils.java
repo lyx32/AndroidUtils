@@ -79,7 +79,7 @@ public class TypefaceUtils {
             ClassUtils.setValue(Typeface.class, "SANS_SERIF", TypefaceUtils.getAssetsTypeface(context, fontName));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -98,7 +98,7 @@ public class TypefaceUtils {
             ClassUtils.setValue(Typeface.class, "SANS_SERIF", TypefaceUtils.getPathTypeface(context, fontName));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InstantiationException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -114,7 +114,7 @@ public class TypefaceUtils {
                 DEFAULT_SANS_SERIF_FONT = null;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-            } catch (InstantiationException e) {
+            } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
         }

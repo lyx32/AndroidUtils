@@ -110,6 +110,42 @@ public final class StringUtils {
         return left.equals(right);
     }
 
+
+    public static boolean isAllEquals(int[] arrays) {
+        if (null == arrays || 0 == arrays.length)
+            return true;
+        for (int i = 1; i < arrays.length; i++) {
+            if (arrays[0] != arrays[i])
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean isAllEquals(double[] arrays) {
+        if (null == arrays || 0 == arrays.length)
+            return true;
+        for (int i = 1; i < arrays.length; i++) {
+            if (arrays[0] != arrays[i])
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean isAllEquals(String[] arrays) {
+        if (null == arrays || 0 == arrays.length)
+            return true;
+        if (null == arrays[0])
+            throw new NullPointerException("第一个字符串不能为null！");
+        if (null == arrays[1])
+            return false;
+        for (int i = 1; i < arrays.length; i++) {
+            if (!arrays[0].equals(arrays[i]))
+                return false;
+        }
+        return true;
+    }
+
+
     public static boolean contains(Object left, Object right) {
         if (isAllNullOrEmpty(left, right)) return true;
         if (!isAllNotNullOrEmpty(left, right)) return false;
@@ -253,6 +289,7 @@ public final class StringUtils {
 
     /**
      * 使用sdk自带json库判断是否是json对象（验证比较严格）
+     *
      * @param string
      * @return
      */
@@ -269,6 +306,7 @@ public final class StringUtils {
 
     /**
      * 使用sdk自带json库判断是否是json数据（验证比较严格）
+     *
      * @param string
      * @return
      */
@@ -285,6 +323,7 @@ public final class StringUtils {
 
     /**
      * 使用sdk自带json库判断是否是json字符串（验证比较严格）
+     *
      * @param string
      * @return
      */
@@ -307,7 +346,7 @@ public final class StringUtils {
 
     public static <T> List<T> asList(Set<T> t) {
         if (null == t)
-           return new ArrayList<T>();
+            return new ArrayList<T>();
         return asList((T[]) t.toArray());
     }
 
@@ -337,6 +376,7 @@ public final class StringUtils {
     public static long random(int min, int max) {
         return Math.round(Math.random() * (max - min) + min);
     }
+
     public static double random(float min, float max) {
         return Math.round(Math.random() * (max - min) + min);
     }

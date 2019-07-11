@@ -91,18 +91,46 @@ public final class FileUtils {
         return dirSize;
     }
 
+
+    /**
+     * 读取文件全部内容
+     *
+     * @param path 读取文件路径
+     * @return
+     */
     public static String readerFile(String path) {
         return readerFile(new File(path), Charset.defaultCharset().name());
     }
 
+    /**
+     * 读取文件全部内容
+     *
+     * @param path    读取文件路径
+     * @param charset 读取编码
+     * @return
+     */
     public static String readerFile(String path, String charset) {
         return readerFile(new File(path), charset);
     }
 
+    /**
+     * 读取文件全部内容
+     *
+     * @param file    读取文件
+     * @return
+     */
     public static String readerFile(File file) {
         return readerFile(file, Charset.defaultCharset().name());
     }
 
+
+    /**
+     * 读取文件全部内容
+     *
+     * @param file    读取文件
+     * @param charset 读取编码
+     * @return
+     */
     public static String readerFile(File file, String charset) {
         if (null == file) {
             LogUtils.e("file 对象不能为空！");
@@ -124,7 +152,7 @@ public final class FileUtils {
             channel = fis.getChannel();
             ByteBuffer buffer = ByteBuffer.allocate(65535);
             int size = 0;
-            while(0 < (size = channel.read(buffer))){
+            while (0 < (size = channel.read(buffer))) {
                 result.append(new String(buffer.array(), 0, size, Charset.forName(charset)));
                 buffer.flip();
             }
@@ -140,19 +168,125 @@ public final class FileUtils {
     }
 
 
-    public static String[] readersFile(String path) {
-        return readersFile(new File(path), Charset.defaultCharset().name());
+    /**
+     * 读取文件指定多少行
+     *
+     * @param path 读取文件路径
+     * @param top  读取行数
+     * @return
+     */
+    public static String[] readerTopLines(String path, int top) {
+        return readerTopLines(new File(path), Charset.defaultCharset().name(), top);
     }
 
-    public static String[] readersFile(String path, String charset) {
-        return readersFile(new File(path), charset);
+    /**
+     * 读取文件指定多少行
+     *
+     * @param file 读取文件
+     * @param top  读取行数
+     * @return
+     */
+    public static String[] readerTopLines(File file, int top) {
+        return readerTopLines(file, Charset.defaultCharset().name(), top);
     }
 
-    public static String[] readersFile(File file) {
-        return readersFile(file, Charset.defaultCharset().name());
+    /**
+     * 读取文件指定多少行
+     *
+     * @param path    读取文件路径
+     * @param charset 读取编码
+     * @param top     读取行数
+     * @return
+     */
+    public static String[] readerTopLines(String path, String charset, int top) {
+        return readerTopLines(new File(path), charset, top);
     }
 
-    public static String[] readersFile(File file, String charset) {
+    /**
+     * 读取文件指定多少行
+     *
+     * @param file    读取文件
+     * @param charset 读取编码
+     * @param top     读取行数
+     * @return
+     */
+    public static String[] readerTopLines(File file, String charset, int top) {
+        if (null == file) {
+            LogUtils.e("file 对象不能为空！");
+            return null;
+        }
+        if (!file.exists()) {
+            LogUtils.e(file.getAbsolutePath() + " 不存在！");
+            return null;
+        }
+        if (!file.canRead()) {
+            LogUtils.e(file.getAbsolutePath() + " 没有读取权限！");
+            return null;
+        }
+        List<String> list = new ArrayList<>();
+        FileInputStream fis = null;
+        InputStreamReader isr = null;
+        BufferedReader reader = null;
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, charset);
+            reader = new BufferedReader(isr);
+            String line = null;
+            int index = 0;
+            while (null != (line = reader.readLine()) && index != top) {
+                list.add(line);
+                index++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(reader);
+            IOUtils.close(isr);
+            IOUtils.close(fis);
+        }
+        return list.toArray(new String[]{});
+    }
+
+
+    /**
+     * 将文件按照真实行数读取
+     *
+     * @param path 读取文件路径
+     * @return
+     */
+    public static String[] readerLines(String path) {
+        return readerLines(new File(path), Charset.defaultCharset().name());
+    }
+
+    /**
+     * 将文件按照真实行数读取
+     *
+     * @param path    读取文件路径
+     * @param charset 读取编码
+     * @return
+     */
+    public static String[] readerLines(String path, String charset) {
+        return readerLines(new File(path), charset);
+    }
+
+    /**
+     * 将文件按照真实行数读取
+     *
+     * @param file 读取文件
+     * @return
+     */
+    public static String[] readerLines(File file) {
+        return readerLines(file, Charset.defaultCharset().name());
+    }
+
+    /**
+     * 将文件按照真实行数读取
+     *
+     * @param file    读取文件
+     * @param charset 读取编码
+     * @return
+     */
+    public static String[] readerLines(File file, String charset) {
         if (null == file) {
             LogUtils.e("file 对象不能为空！");
             return null;
@@ -240,71 +374,19 @@ public final class FileUtils {
     }
 
     public static void copyFile(String sourceFilePath, String newFilePath) {
-        File source = new File(sourceFilePath);
-        File newFile = new File(newFilePath);
-
-        if (!source.exists()) {
-            LogUtils.e("原文件 " + source.getAbsolutePath() + " 不存在");
-            return;
-        }
-        if (!newFile.exists()) {
-            try {
-                newFile.createNewFile();
-            } catch (IOException e) {
-                LogUtils.e("创建文件 " + newFile.getAbsolutePath() + " 失败", e);
-                return;
-            }
-        }
-        FileInputStream fis = null;
-        FileOutputStream fos = null;
-        FileChannel sc = null;
-        FileChannel nc = null;
         try {
-            fis = new FileInputStream(source);
-            fos = new FileOutputStream(newFile);
-            sc = fis.getChannel();
-            nc = fos.getChannel();
-            nc.transferFrom(sc, 0, sc.size());
-        } catch (IOException e) {
+            copyFile(IOUtils.fileIn(sourceFilePath), IOUtils.fileOut(newFilePath));
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            IOUtils.close(fis);
-            IOUtils.close(fos);
-            IOUtils.close(sc);
-            IOUtils.close(nc);
         }
     }
 
 
     public static void copyFile(InputStream sourceFileStream, String newFilePath) {
-        File newFile = new File(newFilePath);
-
-        if (null == sourceFileStream) {
-            LogUtils.e("sourceFileStream 不能为空");
-            return;
-        }
-
-        if (!newFile.exists()) {
-            try {
-                newFile.createNewFile();
-            } catch (IOException e) {
-                LogUtils.e("创建文件 " + newFile.getAbsolutePath() + " 失败", e);
-                return;
-            }
-        }
-        FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(newFile);
-            byte[] b = new byte[65535];
-            int size = 0;
-            while (0 < (size = sourceFileStream.read(b))) {
-                fos.write(b, 0, size);
-            }
-        } catch (IOException e) {
+            copyFile(sourceFileStream, IOUtils.fileOut(newFilePath));
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            IOUtils.close(sourceFileStream);
-            IOUtils.close(fos);
         }
     }
 

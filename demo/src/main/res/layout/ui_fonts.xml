@@ -27,7 +27,6 @@
         android:textColor="@color/black"
         android:textSize="@dimen/text_middle" />
 
-
     <com.arraylist7.android.utils.widget.NEditText
         android:id="@+id/ui_fonts_editText_1"
         android:layout_width="match_parent"

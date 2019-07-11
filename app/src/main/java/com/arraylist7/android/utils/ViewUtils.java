@@ -57,7 +57,7 @@ public final class ViewUtils {
             return;
         }
         Class<?> clazz = object.getClass();
-        Field[] fields = ClassUtils.getDeclaredFields(clazz);
+        Field[] fields = clazz.getDeclaredFields();
         Bundle bundle = getBundle(object);
         List<String> keys = null;
         if (null != bundle) {
@@ -131,38 +131,36 @@ public final class ViewUtils {
             }
             // 注入参数
             if (null != params) {
-                for (String key : keys) {
-                    if (key.equalsIgnoreCase(params.value())) {
-                        Object val = bundle.get(key);
-                        try {
-                            if (!StringUtils.isNullOrEmpty(val)) {
-                                field.setAccessible(true);
-                                field.set(object, val);
-                            }
-                        } catch (Throwable e) {
-                            LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                String key = params.value();
+                if (bundle.containsKey(params.value())) {
+                    Object val = bundle.get(key);
+                    try {
+                        if (!StringUtils.isNullOrEmpty(val)) {
+                            field.setAccessible(true);
+                            field.set(object, val);
                         }
-                        int setText = params.setText();
-                        int setTag = params.setTag();
-                        if (-1 != setText) {
-                            View view = vs.findViewById(setText);
-                            if (null == view) {
-                                LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setText失败。");
-                            } else {
-                                if (view instanceof TextView) {
-                                    ((TextView) view).setText(val.toString());
-                                }
-                            }
-                        }
-                        if (-1 != setTag) {
-                            View view = vs.findViewById(setTag);
-                            if (null == view) {
-                                LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setTag失败。");
-                            } else {
-                                view.setTag(val);
+                    } catch (Throwable e) {
+                        LogUtils.e(getFieldInfo(field) + " 绑定参数：" + key + " 错误。");
+                    }
+                    int setText = params.setText();
+                    int setTag = params.setTag();
+                    if (-1 != setText) {
+                        View view = vs.findViewById(setText);
+                        if (null == view) {
+                            LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setText失败。");
+                        } else {
+                            if (view instanceof TextView) {
+                                ((TextView) view).setText(val.toString());
                             }
                         }
-                        break;
+                    }
+                    if (-1 != setTag) {
+                        View view = vs.findViewById(setTag);
+                        if (null == view) {
+                            LogUtils.e(getFieldInfo(field) + " 参数" + key + "绑定setTag失败。");
+                        } else {
+                            view.setTag(val);
+                        }
                     }
                 }
             }

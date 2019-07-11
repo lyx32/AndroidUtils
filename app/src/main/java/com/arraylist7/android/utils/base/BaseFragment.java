@@ -21,6 +21,7 @@ import com.arraylist7.android.utils.inter.IOperator;
 import com.arraylist7.android.utils.inter.IScreen;
 
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.util.Map;
 
 /**
@@ -32,21 +33,23 @@ public abstract class BaseFragment extends Fragment implements IActivity, IHandl
     protected NHandler hanlder;
     protected Bundle bundle;
     protected Context context;
+    private View rootView;
 
     @Nullable
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(getLayoutId(), container, false);
+        rootView = inflater.inflate(getLayoutId(), container, false);
+
         that = this;
         hanlder = new NHandler(this);
         context = getActivity().getApplicationContext();
         bundle = getArguments();
-        onCreate(root);
+        onCreate(rootView);
         initWidget();
         readerDatabase();
         initData();
         initListener();
-        return root;
+        return rootView;
     }
 
     protected abstract void onCreate(View root);
@@ -70,11 +73,16 @@ public abstract class BaseFragment extends Fragment implements IActivity, IHandl
     // http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
     @Override
     public void onDetach() {
+        rootView = null;
         super.onDetach();
         try {
-            ClassUtils.setValue(Fragment.class, this, "mChildFragmentManager", null);
+            ClassUtils.setValue(this, "mChildFragmentManager", null);
         } catch (Throwable throwable) {
         }
+    }
+
+    public View getRootView() {
+        return rootView;
     }
 
     @Override

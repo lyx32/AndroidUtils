@@ -1,6 +1,8 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
 import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
+import com.arraylist7.android.utils.HttpUtils;
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
@@ -20,11 +23,18 @@ import com.arraylist7.android.utils.annotation.Views;
 import com.arraylist7.android.utils.demo.App;
 import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.base.Base;
+import com.arraylist7.android.utils.http.HttpRequest;
+import com.arraylist7.android.utils.http.HttpResponse;
+import com.arraylist7.android.utils.http.callback.HttpListenerImpl;
+import com.arraylist7.android.utils.http.excep.HttpException;
 import com.arraylist7.android.utils.listener.PermissionListener;
+import com.arraylist7.android.utils.widget.RoundImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Launch extends Base {
 
@@ -34,9 +44,12 @@ public class Launch extends Base {
     private Button install;
     @Views(R.id.ui_launch_permisstion)
     private Button permisstion;
+    @Views(R.id.ui_launch_http)
+    private Button http;
     @Views(R.id.ui_launch_intent)
     private Button intent;
-
+    @Views(R.id.ui_launch_roundImageView)
+    private RoundImageView roundImageView;
 
     private long backClickTime = 1L;
 
@@ -68,6 +81,8 @@ public class Launch extends Base {
 
     @Override
     public void initData() {
+
+
         String newFilePath = CacheUtils.createAppRootDir("android_utils_folder") + "/1.html";
         try {
             FileUtils.copyFile(getAssets().open("cq.qq.com_2018-12-21.html"), newFilePath);
@@ -75,9 +90,9 @@ public class Launch extends Base {
             e.printStackTrace();
         }
         String cq_qq_com = FileUtils.readerFile(newFilePath, "gbk");
-        LogUtils.e(cq_qq_com);
+        LogUtils.e("本地文件大小：" + cq_qq_com.length());
         LogUtils.e("-------------------------");
-        String[] array = FileUtils.readersFile(newFilePath);
+        String[] array = FileUtils.readerTopLines(newFilePath,30);
         LogUtils.e(array[0]);
         LogUtils.e(array[7]);
         LogUtils.e(array[15]);
@@ -101,6 +116,37 @@ public class Launch extends Base {
 
     @Override
     public void initListener() {
+
+        http.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HttpUtils.request(new HttpRequest("www.qq.com", "GBK"), new HttpListenerImpl() {
+                    @Override
+                    public void onStart(HttpRequest request) {
+                        LogUtils.e("开始请求=" + request.getUrl()+"    "+request.getMethod());
+                    }
+
+                    @Override
+                    public void onSuccess(String html, HttpResponse response) {
+                        LogUtils.e("请求成功，提取所有 p http状态=" + response.getHttpStatusCode());
+                        List<String> imgList = HTMLUtils.findHtmlTag(html, "p", null, null, true);
+                        for (String img : imgList)
+                            LogUtils.e(img);
+                    }
+
+                    @Override
+                    public void onException(HttpException exception) {
+                        super.onException(exception);
+                    }
+
+                    @Override
+                    public void onEnd() {
+                        LogUtils.e("请求结束");
+                    }
+                });
+            }
+        });
+
         anim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

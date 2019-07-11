@@ -359,4 +359,6 @@ public final class CacheUtils {
         LogUtils.d("可用内存---->>>" + (mi.availMem / (1024 * 1024)) + "M");
         return mi.availMem / (1024 * 1024);
     }
+
+
 }

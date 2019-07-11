@@ -10,17 +10,18 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:gravity="center"
-        android:paddingBottom="@dimen/space.small"
-        android:paddingLeft="@dimen/space.medium"
-        android:paddingRight="@dimen/space.medium"
-        android:paddingTop="@dimen/space.small" />
+        android:paddingBottom="@dimen/_7dp"
+        android:paddingLeft="@dimen/_14dp"
+        android:paddingRight="@dimen/_14dp"
+        android:paddingTop="@dimen/_7dp" />
 
     <View
         android:id="@+id/separator"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/space.very_small"
-        android:layout_marginTop="@dimen/space.very_small"
+        android:layout_marginBottom="@dimen/_3dp"
+        android:layout_marginTop="@dimen/_3dp"
         android:visibility="invisible" />
 
 </LinearLayout>
+

@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.arraylist7.android.utils.HTMLUtils;
-import com.arraylist7.android.utils.IOUtils;
+import com.arraylist7.android.utils.CacheUtils;
+import com.arraylist7.android.utils.HttpUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
@@ -28,11 +28,13 @@ import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.adapter.DemoAdapter;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
+import com.arraylist7.android.utils.http.HttpRequest;
+import com.arraylist7.android.utils.http.HttpResponse;
+import com.arraylist7.android.utils.http.callback.HttpListenerImpl;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
 import com.arraylist7.android.utils.widget.NEditText;
 import com.arraylist7.android.utils.widget.NRecyclerView;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,32 +121,23 @@ public class Main extends Base {
         DemoModel model = null;
         List<DemoModel> list = new ArrayList<>();
         String[] img = new String[]{
-                "https://assets-cdn.github.com/images/modules/site/logos/airbnb-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/sap-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/ibm-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/google-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/paypal-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/bloomberg-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/spotify-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/swift-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/facebook-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/node-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/nasa-logo.png",
-                "https://assets-cdn.github.com/images/modules/site/logos/walmart-logo.png"
+                "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823189_976723.jpg&size=100_100",
+                "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823202_862185.jpg&size=100_100",
+                "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823231_621330.jpg&size=100_100",
+                "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823232_489289.jpg&size=100_100",
+                "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823262_955160.jpg&size=100_100",
         };
         for (int i = 0; i < 20; i++) {
             model = new DemoModel();
             model.id = i + "";
             model.name = "name-" + i;
             model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
-            model.picUrl = img[i % img.length] + "?random=" + i;
+            model.picUrl = img[i % img.length];
             list.add(model);
             model = null;
         }
         adapter.addData(list);
         adapter.updateUI();
-
-
     }
 
     @Override

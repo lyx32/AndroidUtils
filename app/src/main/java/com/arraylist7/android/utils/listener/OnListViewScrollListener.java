@@ -46,14 +46,14 @@ public class OnListViewScrollListener implements OnScrollListener {
         if (null != BitmapUtils.getPicasso()) {
             if (state == SCROLL_STATE_IDLE || state == SCROLL_STATE_TOUCH_SCROLL) {
                 if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                    handler.removeCallbacksAndMessages(null);
+                    handler.removeMessages(200);
                     handler.sendEmptyMessageDelayed(200, 300);
                 } else {
                     handler.sendEmptyMessage(200);
                 }
             } else {
                 if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                    handler.removeCallbacksAndMessages(null);
+                    handler.removeMessages(201);
                     handler.sendEmptyMessageDelayed(201, 300);
                 } else {
                     handler.sendEmptyMessage(201);

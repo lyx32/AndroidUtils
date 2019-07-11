@@ -94,7 +94,7 @@ public class DeviceUtils {
             String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
             String serial = "";
             try {
-                serial = ClassUtils.getValue(Build.class, null, "SERIAL").toString();
+                serial = ClassUtils.getValue(Build.class, "SERIAL").toString();
                 return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
             } catch (Exception e) {
                 serial = "serial";

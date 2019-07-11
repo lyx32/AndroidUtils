@@ -176,11 +176,16 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
     // http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
     @Override
     public void onDetach() {
+        rootView = null;
         super.onDetach();
         try {
-            ClassUtils.setValue(Fragment.class, this, "mChildFragmentManager", null);
+            ClassUtils.setValue(this, "mChildFragmentManager", null);
         } catch (Throwable throwable) {
         }
+    }
+
+    public View getRootView() {
+        return rootView;
     }
 
     @Override

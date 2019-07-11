@@ -22,8 +22,7 @@ import com.arraylist7.android.utils.StringUtils;
  * Created by Administrator on 2017/11/23 0023.
  */
 
-@SuppressLint("AppCompatCustomView")
-public class NEditText extends EditText {
+public class NEditText extends android.support.v7.widget.AppCompatEditText {
     public NEditText(Context context) {
         this(context, null);
     }

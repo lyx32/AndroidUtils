@@ -220,6 +220,7 @@ public class CircleImageView extends ImageView {
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
         mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
 
+
         updateShaderMatrix();
         invalidate();
     }

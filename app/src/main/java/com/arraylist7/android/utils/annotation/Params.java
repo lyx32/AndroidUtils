@@ -19,13 +19,13 @@ public @interface Params {
     String value();
 
     /**
-     * 将此参数值绑定到指定wiew的setText上
+     * 将此参数值绑定到指定view的setText上
      * @return
      */
     int setText() default -1;
 
     /**
-     * 将此参数值绑定到指定wiew的setTag
+     * 将此参数值绑定到指定view的setTag
      * @return
      */
     int setTag() default -1;

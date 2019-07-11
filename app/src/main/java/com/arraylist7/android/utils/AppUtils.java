@@ -41,11 +41,9 @@ public final class AppUtils {
     @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public static void init(@NonNull final Application app, final ActivityLifecycleAdapter adapter) {
 
-        LogUtils.setTAG(app.getApplicationContext().getPackageName());
-
-
         BitmapUtils.init(app.getApplicationContext());
 
+        LogUtils.setTAG(app.getApplicationContext().getPackageName());
 
         ThrowableUtils.setDefaultExceptionHandler(app.getApplicationContext());
 

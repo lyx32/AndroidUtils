@@ -13,9 +13,12 @@ import android.transition.Slide;
 import android.transition.TransitionInflater;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.NetState;
@@ -45,7 +48,9 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
 
     public void openActivity(Activity from, String title, boolean finish) {
-        IntentUtils.activity(from, this.getClass(), finish);
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title);
+        IntentUtils.activity(from, this.getClass(), bundle, finish);
     }
 
     @Override
@@ -82,6 +87,10 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         super.finish();
     }
 
+
+    public View getRootView() {
+        return ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+    }
 
     public void hideKeyboard(View view) {
         if (view != null) {

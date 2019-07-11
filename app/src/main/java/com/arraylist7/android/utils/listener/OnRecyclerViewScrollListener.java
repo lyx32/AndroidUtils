@@ -45,14 +45,14 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
         if (null != BitmapUtils.getPicasso()) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                    handler.removeCallbacksAndMessages(null);
+                    handler.removeMessages(200);
                     handler.sendEmptyMessageDelayed(200, 300);
                 } else {
                     handler.sendEmptyMessage(200);
                 }
             } else {
                 if (handler.hasMessages(200) && handler.hasMessages(201)) {
-                    handler.removeCallbacksAndMessages(null);
+                    handler.removeMessages(201);
                     handler.sendEmptyMessageDelayed(201, 300);
                 } else {
                     handler.sendEmptyMessage(201);

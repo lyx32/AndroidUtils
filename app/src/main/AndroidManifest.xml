@@ -8,6 +8,14 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <application>
+
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="360"/> <!-- 高度px / ( (选最接近的默认dpi)(分辨率斜边px（a^2 + b ^2 = c^2） / 5) / 160)  -->
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="640"/> <!-- 高度px / ( (选最接近的默认dpi)(分辨率斜边px（a^2 + b ^2 = c^2） / 5) / 160)  -->
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"
