@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public final class AppUtils {
 
@@ -134,6 +135,7 @@ public final class AppUtils {
                 if(0 == netMap.size())
                     appNetReceiver.unRegisterReceiver(app.getApplicationContext());
                 finalAdapter.onActivityDestroyed(activity);
+                ThreadUtils.cancel(activity);
             }
         });
     }

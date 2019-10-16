@@ -1,8 +1,6 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.Manifest;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,31 +9,32 @@ import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
 import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
-import com.arraylist7.android.utils.HttpUtils;
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StatusBarUtils;
 import com.arraylist7.android.utils.StringUtils;
+import com.arraylist7.android.utils.ThreadUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.annotation.LayoutBind;
 import com.arraylist7.android.utils.annotation.Views;
 import com.arraylist7.android.utils.demo.App;
 import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.base.Base;
-import com.arraylist7.android.utils.http.HttpRequest;
-import com.arraylist7.android.utils.http.HttpResponse;
-import com.arraylist7.android.utils.http.callback.HttpListenerImpl;
-import com.arraylist7.android.utils.http.excep.HttpException;
+import com.arraylist7.android.utils.demo.model.DemoModel;
 import com.arraylist7.android.utils.listener.PermissionListener;
+import com.arraylist7.android.utils.listener.ThreadStateListener;
 import com.arraylist7.android.utils.widget.RoundImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
+@LayoutBind(R.layout.ui_launch)
 public class Launch extends Base {
 
     @Views(R.id.ui_launch_anim)
@@ -46,6 +45,8 @@ public class Launch extends Base {
     private Button permisstion;
     @Views(R.id.ui_launch_http)
     private Button http;
+    @Views(R.id.ui_launch_thread)
+    private Button thread;
     @Views(R.id.ui_launch_intent)
     private Button intent;
     @Views(R.id.ui_launch_roundImageView)
@@ -92,7 +93,7 @@ public class Launch extends Base {
         String cq_qq_com = FileUtils.readerFile(newFilePath, "gbk");
         LogUtils.e("本地文件大小：" + cq_qq_com.length());
         LogUtils.e("-------------------------");
-        String[] array = FileUtils.readerTopLines(newFilePath,30);
+        String[] array = FileUtils.readerTopLines(newFilePath, 30);
         LogUtils.e(array[0]);
         LogUtils.e(array[7]);
         LogUtils.e(array[15]);
@@ -112,6 +113,22 @@ public class Launch extends Base {
         for (String item : srcs) {
             LogUtils.e("srcs=" + item);
         }
+
+        DemoModel model = new DemoModel();
+        model.id = 1 + "";
+        model.name = "name-" + 1;
+        model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
+        model.picUrl = "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823262_955160.jpg&size=100_100";
+
+        Annotation[] annotations = DemoModel.class.getAnnotations();
+
+        for (Annotation anno : annotations){
+            LogUtils.e("anno="+anno);
+        }
+        LayoutBind lb = DemoModel.class.getAnnotation(LayoutBind.class);
+        LogUtils.e("lb = "+lb+" "+DemoModel.class.isAnnotationPresent(LayoutBind.class));
+        if(null != lb)
+            LogUtils.e("lb.value = "+lb.value()+" ");
     }
 
     @Override
@@ -120,32 +137,97 @@ public class Launch extends Base {
         http.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HttpUtils.request(new HttpRequest("www.qq.com", "GBK"), new HttpListenerImpl() {
+//                HttpRequest request = new HttpRequest("https://www.qq.com/", "gb2312", "GET");
+//                request.addPostParameter("time",StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss"));
+//                HttpUtils.request(request, new HttpListenerImpl() {
+//                    @Override
+//                    public void onSuccess(String html, HttpResponse response) {
+//                        LogUtils.e("[" + html + "]");
+//                    }
+//                });
+            }
+        });
+
+        thread.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ThreadUtils.submit(activity, new Runnable() {
                     @Override
-                    public void onStart(HttpRequest request) {
-                        LogUtils.e("开始请求=" + request.getUrl()+"    "+request.getMethod());
+                    public void run() {
+                        LogUtils.e("线程1开始执行");
+                        try {
+                            TimeUnit.SECONDS.sleep(3);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, 5000, new ThreadStateListener() {
+                    @Override
+                    public void done(Object threadReturnValue) {
+                        LogUtils.e("线程1执行完毕：" + threadReturnValue);
                     }
 
                     @Override
-                    public void onSuccess(String html, HttpResponse response) {
-                        LogUtils.e("请求成功，提取所有 p http状态=" + response.getHttpStatusCode());
-                        List<String> imgList = HTMLUtils.findHtmlTag(html, "p", null, null, true);
-                        for (String img : imgList)
-                            LogUtils.e(img);
+                    public void timeout() {
+                        LogUtils.e("线程1超时");
                     }
 
                     @Override
-                    public void onException(HttpException exception) {
-                        super.onException(exception);
+                    public void exception(Exception e) {
+
+                    }
+                });
+                ThreadUtils.submit(activity, new Runnable() {
+                    @Override
+                    public void run() {
+                        LogUtils.e("线程2开始执行");
+                        try {
+                            TimeUnit.SECONDS.sleep(7);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, 5000, new ThreadStateListener() {
+                    @Override
+                    public void done(Object threadReturnValue) {
+                        LogUtils.e("线程2执行完毕");
                     }
 
                     @Override
-                    public void onEnd() {
-                        LogUtils.e("请求结束");
+                    public void timeout() {
+                        LogUtils.e("线程2超时");
+                    }
+
+                    @Override
+                    public void exception(Exception e) {
+
+                    }
+                });
+                ThreadUtils.submit(activity, new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
+                        LogUtils.e("线程3开始执行");
+                        return "线程3返回值：" + System.currentTimeMillis();
+                    }
+                }, 5000, new ThreadStateListener<String>() {
+                    @Override
+                    public void done(String threadReturnValue) {
+                        LogUtils.e("线程3执行完毕：" + threadReturnValue);
+                    }
+
+                    @Override
+                    public void timeout() {
+                    }
+
+                    @Override
+                    public void exception(Exception e) {
+
                     }
                 });
             }
         });
+
 
         anim.setOnClickListener(new View.OnClickListener() {
             @Override

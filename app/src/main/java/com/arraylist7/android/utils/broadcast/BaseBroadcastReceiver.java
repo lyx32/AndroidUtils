@@ -19,6 +19,7 @@ public class BaseBroadcastReceiver extends BroadcastReceiver {
 
     private static final String ACTION_DATA_KEY = "Activity_Receiver_Action_Data_Key";
 
+    private boolean isRegister = false;
     private String[] actions = null;
     private BaseBroadcastReceiverListener baseListener = null;
 
@@ -71,16 +72,19 @@ public class BaseBroadcastReceiver extends BroadcastReceiver {
                     filter.addAction(action);
             }
             context.registerReceiver(this, filter);
+            isRegister = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void unRegisterReceiver(Context context) {
-        try {
-            context.unregisterReceiver(this);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(isRegister) {
+            try {
+                context.unregisterReceiver(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

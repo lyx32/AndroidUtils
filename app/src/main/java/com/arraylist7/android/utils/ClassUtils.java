@@ -3,9 +3,23 @@ package com.arraylist7.android.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClassUtils {
 
+
+    private static boolean USE_CACHE = true;
+    private static Map<String, Object> cacheMap = new HashMap<>();
+
+
+    public static boolean isUseCache() {
+        return USE_CACHE;
+    }
+
+    public static void setUseCache(boolean useCache) {
+        USE_CACHE = useCache;
+    }
 
     public static String getClassName(Class clazz) {
         return clazz.getSimpleName();
@@ -57,6 +71,9 @@ public class ClassUtils {
         }
         field.setAccessible(true);
         field.set(instance, val);
+        String key = null == instance ? clazz.toString() + "_" + fieldName : instance.toString() + "_" + fieldName;
+        cacheMap.remove(key);
+        cacheMap.put(key, val);
     }
 
     /**
@@ -92,13 +109,21 @@ public class ClassUtils {
     private static <T> T getValue(Class clazz, Object obj, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         if (null == clazz)
             throw new NullPointerException("clazz 不能为空");
+        String key = null == obj ? clazz.toString() + "_" + fieldName : obj.toString() + "_" + fieldName;
+
+        Object cache = cacheMap.get(key);
+        if (null != cache && USE_CACHE)
+            return (T) cache;
         Field field = clazz.getDeclaredField(fieldName);
         if (null == field)
             field = clazz.getField(fieldName);
         if (null == field)
             throw new NoSuchFieldError(fieldName + " 不存在!");
         field.setAccessible(true);
-        return (T) field.get(obj);
+        cache = field.get(obj);
+        if (USE_CACHE)
+            cacheMap.put(key, cache);
+        return (T) cache;
     }
 
 
@@ -180,5 +205,9 @@ public class ClassUtils {
         else
             result = method.invoke(obj);
         return (T) result;
+    }
+
+    public static void clear(){
+        cacheMap.clear();
     }
 }

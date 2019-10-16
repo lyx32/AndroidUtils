@@ -209,23 +209,39 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onLoginOut(Map<String, Serializable> data) {
-
+        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (android.support.v4.app.Fragment f : list) {
+            if (f instanceof IActivity)
+                ((IOperator) f).onLoginOut(data);
+        }
     }
 
     @Override
     public void onReceivedData(Map<String, Serializable> data) {
-
+        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (android.support.v4.app.Fragment f : list) {
+            if (f instanceof IActivity)
+                ((IOperator) f).onReceivedData(data);
+        }
     }
 
 
     @Override
     public void onNetChange(NetState state) {
-
+        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (android.support.v4.app.Fragment f : list) {
+            if (f instanceof INetChange)
+                ((INetChange) f).onNetChange(state);
+        }
     }
 
     @Override
     public void onScreenLock(boolean isLock) {
-
+        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (android.support.v4.app.Fragment f : list) {
+            if (f instanceof IScreen)
+                ((IScreen) f).onScreenLock(isLock);
+        }
     }
 
 

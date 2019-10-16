@@ -12,10 +12,12 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
@@ -54,27 +56,27 @@ public final class BitmapUtils {
         }
         RequestCreator pc = picasso.load(urlOrPath);
         if (0 != width && 0 != height) {
-            pc.resize(width, height).onlyScaleDown().centerCrop();
+            pc.resize(width, height).onlyScaleDown();
         }
         pc.into(view);
     }
 
 
-//    public static void loadBitmap(String urlOrPath, Target callback) {
-//        loadBitmap(urlOrPath,0,0,callback);
-//    }
-//
-//    public static void loadBitmap(String urlOrPath, int width, int height, Target callback) {
-//        if (StringUtils.isNullOrEmpty(urlOrPath)) {
-//            LogUtils.d("请求地址：" + urlOrPath + " 为空");
-//            return;
-//        }
-//        RequestCreator pc = picasso.load(urlOrPath);
-//        if (0 != width && 0 != height) {
-//            pc.resize(width, height).onlyScaleDown().centerCrop();
-//        }
-//        pc.into(callback);
-//    }
+    public static void loadBitmap(String urlOrPath, Target callback) {
+        loadBitmap(urlOrPath,0,0,callback);
+    }
+
+    public static void loadBitmap(String urlOrPath, int width, int height, Target callback) {
+        if (StringUtils.isNullOrEmpty(urlOrPath)) {
+            LogUtils.d("请求地址：" + urlOrPath + " 为空");
+            return;
+        }
+        RequestCreator pc = picasso.load(urlOrPath);
+        if (0 != width && 0 != height) {
+            pc.resize(width, height).onlyScaleDown();
+        }
+        pc.into(callback);
+    }
 
 
     public static int caculateInSampleSize(File file, Options options, int reqWidth, int reqHeight) {

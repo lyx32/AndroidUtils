@@ -42,6 +42,14 @@
         android:layout_marginRight="@dimen/_12dp"
         android:text="请求网络" />
     <Button
+        android:id="@+id/ui_launch_thread"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_12dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginRight="@dimen/_12dp"
+        android:text="多线程" />
+    <Button
         android:id="@+id/ui_launch_intent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

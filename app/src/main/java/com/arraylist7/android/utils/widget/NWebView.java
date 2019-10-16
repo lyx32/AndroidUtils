@@ -346,8 +346,8 @@ public class NWebView extends WebView {
             dialog.dismiss();
             dialog = null;
         }
+        this.getContext().unregisterReceiver(downloadReceiver);
         if (this != null) {
-            this.getContext().unregisterReceiver(downloadReceiver);
             this.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
             this.clearHistory();
             ((ViewGroup) this.getParent()).removeView(this);

@@ -233,7 +233,7 @@ public final class FileUtils {
             reader = new BufferedReader(isr);
             String line = null;
             int index = 0;
-            while (null != (line = reader.readLine()) && index != top) {
+            while (index != top && null != (line = reader.readLine())) {
                 list.add(line);
                 index++;
             }

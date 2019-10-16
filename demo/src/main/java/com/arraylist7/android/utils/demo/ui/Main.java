@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.arraylist7.android.utils.CacheUtils;
-import com.arraylist7.android.utils.HttpUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.NetState;
@@ -17,6 +15,7 @@ import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.TypefaceUtils;
 import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
+import com.arraylist7.android.utils.adapter.AutoBindRecyclerViewAdapter;
 import com.arraylist7.android.utils.annotation.Params;
 import com.arraylist7.android.utils.annotation.RColor;
 import com.arraylist7.android.utils.annotation.RString;
@@ -28,9 +27,6 @@ import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.adapter.DemoAdapter;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
-import com.arraylist7.android.utils.http.HttpRequest;
-import com.arraylist7.android.utils.http.HttpResponse;
-import com.arraylist7.android.utils.http.callback.HttpListenerImpl;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
 import com.arraylist7.android.utils.widget.NEditText;
 import com.arraylist7.android.utils.widget.NRecyclerView;
@@ -66,6 +62,9 @@ public class Main extends Base {
     // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效
     @Views(value = R.id.ui_main_recyclerView1, setText = "random", setTag = "random")
     private NRecyclerView recyclerView1;
+    // 演示自动绑定对象属性到xml布局中
+    @Views(R.id.ui_main_recyclerView2)
+    private NRecyclerView recyclerView2;
 
 
     // 获取从Launch页面点击按钮传过来的random参数，并将这个参数值设置给button1的tag
@@ -110,9 +109,12 @@ public class Main extends Base {
                 UiUtils.showLong(App.getContext(), "点击了键盘右下角按钮");
             }
         });
+
         recyclerView1.setListDivider(StringUtils.randomColor(), 5);
         recyclerView1.setVertical(false);
         recyclerView1.setAdapter(adapter = new DemoAdapter(R.layout.ui_main_item, this));
+
+
     }
 
     @Override
@@ -138,6 +140,8 @@ public class Main extends Base {
         }
         adapter.addData(list);
         adapter.updateUI();
+        // 用于演示自动绑定对象昂属性到布局中，所以DemoModel中需要添加LayoutBind和DataBind注解
+        recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity,list));
     }
 
     @Override
@@ -176,7 +180,7 @@ public class Main extends Base {
                 ActivityBroadcast.sendData(App.getContext(), "action_custom_key", "value1");
                 // 则使用
                 if (null == receiver) {
-                    receiver = new BaseBroadcastReceiver();
+                    receiver = new ActivityBroadcast();
                     receiver.registerReceiver(Main.this, "broadcastReceiver_custom_action", new BaseBroadcastReceiverListener() {
                         @Override
                         public void onReceiver(Context context, String action, Map<String, Serializable> data) {
@@ -186,7 +190,7 @@ public class Main extends Base {
                         }
                     });
                 }
-                ActivityBroadcast.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value" + StringUtils.random(100000, 999999));
+                receiver.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value" + StringUtils.random(100000, 999999));
             }
         });
     }
