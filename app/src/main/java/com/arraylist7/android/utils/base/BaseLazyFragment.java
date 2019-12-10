@@ -57,7 +57,6 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
         View view = inflater.inflate(getLayoutId(), container, false);
         onCreate(view);
         initWidget();
-        readerDatabase();
         initData();
         initListener();
         isInit = true;
@@ -65,11 +64,6 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
     }
 
     protected abstract void onCreate(View root);
-
-    @Override
-    public void readerDatabase() {
-
-    }
 
 
     public void hideKeyboard(View view) {

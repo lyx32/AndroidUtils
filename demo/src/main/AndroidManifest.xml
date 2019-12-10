@@ -33,6 +33,7 @@
         </activity>
         <activity android:name=".ui.Main"></activity>
         <activity android:name=".ui.Fonts"></activity>
+        <activity android:name=".ui.Html"></activity>
 
     </application>
 

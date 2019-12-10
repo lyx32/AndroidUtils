@@ -14,6 +14,33 @@ public class HTMLUtils {
 
 
     /**
+     * html 编码
+     *
+     * @param htmlStr
+     * @return
+     */
+    public static String htmlDecoding(String htmlStr) {
+        return htmlStr.replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&quot;", "\"")
+                .replace("&amp;", "&");
+    }
+
+    /**
+     * html 解码
+     *
+     * @param str
+     * @return
+     */
+    public static String htmlEncoding(String str) {
+        return str.replace("<", "&lt;")
+                .replace("<", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("&", "&amp;");
+    }
+
+
+    /**
      * 清楚html标签保留内容
      *
      * @param htmlStr
@@ -38,7 +65,7 @@ public class HTMLUtils {
      * 基本功能：过滤指定标签
      *
      * @param str
-     * @param tag               指定标签
+     * @param tag            指定标签
      * @param isClearContent 是否清理标签内容
      * @return String
      */
@@ -149,12 +176,12 @@ public class HTMLUtils {
     /**
      * 通过指定属性及属性值找到input标签
      *
-     * @param val 要查找的内容
-     * @param attrs 指定的属性
+     * @param val      要查找的内容
+     * @param attrs    指定的属性
      * @param attrVals 指定的值
      * @return
      */
-    public static List<String> findInputTag(String val,String[] attrs,String[] attrVals) {
+    public static List<String> findInputTag(String val, String[] attrs, String[] attrVals) {
         return findHtmlTag(val, "input", attrs, attrVals, false);
     }
 

@@ -19,6 +19,6 @@ public class DemoAdapter extends RecyclerViewAdapter<DemoModel> {
         holder.setText(R.id.ui_main_item_id,model.id);
         holder.setText(R.id.ui_main_item_name,model.name);
         holder.setText(R.id.ui_main_item_datetime,model.dateTime);
-        BitmapUtils.loadBitmap(model.picUrl,holder.getImageView(R.id.ui_main_item_img));
+//        BitmapUtils.loadBitmap(model.picUrl,holder.getImageView(R.id.ui_main_item_img));
     }
 }

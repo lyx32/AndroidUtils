@@ -19,8 +19,6 @@ import android.os.Vibrator;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -210,22 +208,6 @@ public final class OtherUtils {
         }
     }
 
-
-    public static void setFocus(View view) {
-        if (null != view) {
-            view.setFocusableInTouchMode(true);
-            view.requestFocus();
-        }
-    }
-
-    public static void setFocusAndSelectAll(EditText view) {
-        if (null != view) {
-            view.setFocusableInTouchMode(true);
-            view.requestFocus();
-            view.setSelectAllOnFocus(true);
-            view.selectAll();
-        }
-    }
 
     /**
      * 获取app签名md5值

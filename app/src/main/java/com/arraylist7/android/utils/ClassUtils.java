@@ -139,6 +139,18 @@ public class ClassUtils {
         return invoke(clazz, null, methodName, null);
     }
 
+    /**
+     * 调用静态方法
+     *
+     * @param clazz      要调用的class
+     * @param methodName 方法名
+     * @param params     方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    public static <T> T invoke(Class clazz, String methodName, Object params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(clazz, null, methodName, StringUtils.asArray(params));
+    }
 
     /**
      * 调用静态方法
@@ -151,6 +163,34 @@ public class ClassUtils {
      */
     public static <T> T invoke(Class clazz, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         return invoke(clazz, null, methodName, params);
+    }
+
+    /**
+     * 调用静态方法
+     *
+     * @param clazz              要调用的class
+     * @param methodName         方法名
+     * @param parameterTypeClass 方法参数类型的class
+     * @param params             方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    public static <T> T invoke(Class clazz, String methodName, Class<?> parameterTypeClass, Object params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(clazz, null, methodName, StringUtils.asArray(parameterTypeClass), StringUtils.asArray(params));
+    }
+
+    /**
+     * 调用静态方法
+     *
+     * @param clazz              要调用的class
+     * @param methodName         方法名
+     * @param parameterTypeClass 方法参数类型的class
+     * @param params             方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    public static <T> T invoke(Class clazz, String methodName, Class<?>[] parameterTypeClass, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(clazz, null, methodName, parameterTypeClass, params);
     }
 
     /**
@@ -175,8 +215,50 @@ public class ClassUtils {
      * @return
      * @throws InvocationTargetException
      */
+    public static <T> T invoke(Object obj, String methodName, Object params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(obj.getClass(), obj, methodName, StringUtils.asArray(params));
+    }
+
+    /**
+     * 调用实例方法
+     *
+     * @param obj        要调用的实例
+     * @param methodName 方法名
+     * @param params     方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
     public static <T> T invoke(Object obj, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         return invoke(obj.getClass(), obj, methodName, params);
+    }
+
+    /**
+     * 调用实例方法
+     *
+     * @param obj        要调用的实例
+     * @param methodName 方法名
+     * @param paramsType 方法参数类型
+     * @param params     方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    public static <T> T invoke(Object obj, String methodName, Class<?> paramsType, Object params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(obj.getClass(), obj, methodName, StringUtils.asArray(paramsType), StringUtils.asArray(params));
+    }
+
+
+    /**
+     * 调用实例方法
+     *
+     * @param obj                要调用的实例
+     * @param methodName         方法名
+     * @param parameterTypeClass 方法参数类型的class
+     * @param params             方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    public static <T> T invoke(Object obj, String methodName, Class<?>[] parameterTypeClass, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return invoke(obj.getClass(), obj, methodName, parameterTypeClass, params);
     }
 
     /**
@@ -190,11 +272,50 @@ public class ClassUtils {
      * @throws InvocationTargetException
      */
     private static <T> T invoke(Class clazz, Object obj, String methodName, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Class[] parameterTypeClass = null;
+        if (null != params) {
+            parameterTypeClass = new Class[params.length];
+            for (int i = 0; i < params.length; i++) {
+                Object paramObj = params[i];
+                Class<?> paramObjClass = paramObj.getClass();
+                if (paramObjClass == Integer.class || paramObjClass == int.class)
+                    paramObjClass = int.class;
+                else if (paramObjClass == Float.class || paramObjClass == float.class)
+                    paramObjClass = float.class;
+                else if (paramObjClass == Double.class || paramObjClass == double.class)
+                    paramObjClass = double.class;
+                else if (paramObjClass == Long.class || paramObjClass == long.class)
+                    paramObjClass = long.class;
+                else if (paramObjClass == Short.class || paramObjClass == short.class)
+                    paramObjClass = short.class;
+                else if (paramObjClass == Boolean.class || paramObjClass == boolean.class)
+                    paramObjClass = boolean.class;
+                else if (paramObjClass == Byte.class || paramObjClass == byte.class)
+                    paramObjClass = byte.class;
+                parameterTypeClass[i] = paramObjClass;
+            }
+        }
+        return invoke(clazz, obj, methodName, parameterTypeClass, params);
+
+    }
+
+
+    /**
+     * 反射调用方法
+     *
+     * @param clazz      要调用的class
+     * @param obj        要调用的实例，静态类则为null
+     * @param methodName 方法名
+     * @param params     方法参数
+     * @return
+     * @throws InvocationTargetException
+     */
+    private static <T> T invoke(Class clazz, Object obj, String methodName, Class[] parameterTypeClass, Object[] params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         if (null == clazz)
             throw new NoSuchFieldError("clazz 不能为空");
-        Method method = clazz.getDeclaredMethod(methodName);
+        Method method = clazz.getDeclaredMethod(methodName, parameterTypeClass);
         if (null == method)
-            method = clazz.getMethod(methodName);
+            method = clazz.getMethod(methodName, parameterTypeClass);
         if (null == method) {
             throw new NullPointerException(clazz.toString() + " 中不存在 " + methodName + " 方法！");
         }
@@ -207,7 +328,7 @@ public class ClassUtils {
         return (T) result;
     }
 
-    public static void clear(){
+    public static void clear() {
         cacheMap.clear();
     }
 }

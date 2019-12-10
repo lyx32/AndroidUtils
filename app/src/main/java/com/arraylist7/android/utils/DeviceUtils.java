@@ -1,15 +1,18 @@
 package com.arraylist7.android.utils;
 
+import android.Manifest;
+import android.app.ExpandableListActivity;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.support.annotation.RequiresPermission;
 import android.telephony.TelephonyManager;
 
-import java.io.File;
-import java.io.IOException;
+import com.arraylist7.android.utils.model.SimInfo;
+
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class DeviceUtils {
@@ -54,41 +57,12 @@ public class DeviceUtils {
 
 
     /**
-     * 得到手机唯一设备号
+     * 得到手机唯一设备号（取硬件信息）
      *
      * @param context
      * @return
      */
     public static String getDeviceId(Context context) {
-        String deviceId = "";
-        try {
-            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            deviceId = tm.getSubscriberId();
-            if (StringUtils.isNullOrEmpty(deviceId)) {
-                deviceId = tm.getDeviceId();
-                if (StringUtils.isNullOrEmpty(deviceId)) {
-                    deviceId = tm.getLine1Number();
-                    if (StringUtils.isNullOrEmpty(deviceId)) {
-                        deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-                        if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
-                            deviceId = getPhoneDeviceId(context);
-                        }
-                    }
-                }
-            }
-        } catch (Exception ee) {
-            deviceId = getPhoneDeviceId(context);
-        }
-        return deviceId;
-    }
-
-    /**
-     * 获取标识手机的唯一序列号
-     *
-     * @param context
-     * @return
-     */
-    public static String getPhoneDeviceId(Context context) {
         String deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
         if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
             String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
@@ -104,6 +78,123 @@ public class DeviceUtils {
         return deviceId;
     }
 
+    /**
+     * 获取手机sim卡启用数量
+     *
+     * @param context
+     * @return
+     */
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
+    public static int getSimCount(Context context) {
+        int count = 0;
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String iccid1 = tm.getSimSerialNumber();
+        if (!StringUtils.isNullOrEmpty(iccid1)) {
+            count++;
+            try {
+                String iccid2 = "";
+                for (int i = 0; i < 100; i++) {
+                    iccid2 = ClassUtils.invoke(tm, "getSimSerialNumber", new Object[]{i});
+                    if (!iccid1.equals(iccid2) && !StringUtils.isNullOrEmpty(iccid2)) {
+                        count++;
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 获取双卡sim的下标
+     *
+     * @return
+     */
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
+    public static int[] getSimIndex(Context context) {
+        if (0 == getSimCount(context)) return null;
+        int[] indexs = new int[1];
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String back = "";
+        for (int i = 0; i < 100; i++) {
+            try {
+                back = ClassUtils.invoke(tm, "getSimSerialNumber", new Object[]{i});
+                if (!StringUtils.isNullOrEmpty(back)) {
+                    indexs[0] = i;
+                    break;
+                }
+            } catch (Exception e) {
+            }
+        }
+        for (int i = indexs[0]; i < 100; i++) {
+            try {
+                String iccid = ClassUtils.invoke(tm, "getSimSerialNumber", new Object[]{i});
+                if (!iccid.equals(back) && !StringUtils.isNullOrEmpty(iccid)) {
+                    int sim1 = indexs[0];
+                    indexs = new int[]{sim1, i};
+                    break;
+                }
+            } catch (Exception e) {
+            }
+        }
+        return indexs;
+    }
+
+
+    /**
+     * 获取手机sim卡信息
+     *
+     * @return
+     */
+    @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
+    public static SimInfo getSimInfo(Context context) {
+        SimInfo simInfo = new SimInfo();
+        int[] indexs = getSimIndex(context);
+        if (null == indexs) return null;
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        // 卡1，当前拨号卡
+        simInfo.iccid1 = tm.getSimSerialNumber();
+        simInfo.imsi1 = tm.getSubscriberId();
+        simInfo.line1Number1 = tm.getLine1Number();
+
+        // 5.0以前、只上一张sim卡、只启用一张sim卡，默认拨号上网都是这张sim卡。
+        if (getSDKLevel() < 21 || 1 == indexs.length) {
+            simInfo.networkOperator1 = tm.getNetworkOperator();
+            simInfo.networkOperatorName1 = tm.getNetworkOperatorName();
+        } else {
+            Class<?> parameterType = getSDKLevel() == 21 ? long.class : int.class;
+            for (int i = 0; i < indexs.length; i++) {
+                try {
+                    String _temp = ClassUtils.invoke(tm, "getSimSerialNumber", parameterType, indexs[i]);
+                    // 因为在部分手机上getNetworkOperator取到的是上网sim卡的运营商信息，所以这里要匹配一下取当前拨号sim卡的运营商信息
+                    if (simInfo.iccid1.equals(_temp)) {
+                        try {
+                            simInfo.networkOperator1 = ClassUtils.invoke(tm, "getNetworkOperator", parameterType, indexs[i]);
+                        } catch (Exception e) {
+                            LogUtils.e("read sim index " + indexs[i] + " getNetworkOperator error", e);
+                        }
+                        simInfo.networkOperatorName1 = ClassUtils.invoke(tm, "getNetworkOperatorName", parameterType, indexs[i]);
+                    } else {
+                        simInfo.iccid2 = ClassUtils.invoke(tm, "getSimSerialNumber", parameterType, indexs[i]);
+                        simInfo.imsi2 = ClassUtils.invoke(tm, "getSubscriberId", parameterType, indexs[i]);
+                        // 5.1,6.0 取消了getLine1Number 和 getNetworkOperator 的(int subId)方法，所以要单独try
+                        try {
+                            simInfo.line1Number2 = ClassUtils.invoke(tm, "getLine1Number", parameterType, indexs[i]);
+                            simInfo.networkOperator2 = ClassUtils.invoke(tm, "getNetworkOperator", parameterType, indexs[i]);
+                        } catch (Exception e) {
+                            LogUtils.e("read sim index " + indexs[i] + " getLine1Number and getNetworkOperator error", e);
+                        }
+                        simInfo.networkOperatorName2 = ClassUtils.invoke(tm, "getNetworkOperatorName", parameterType, indexs[i]);
+                    }
+                } catch (Exception e) {
+                    LogUtils.e("read sim index " + indexs[i] + " error", e);
+                }
+            }
+        }
+        return simInfo;
+    }
 
     /**
      * 判断是否是刘海屏

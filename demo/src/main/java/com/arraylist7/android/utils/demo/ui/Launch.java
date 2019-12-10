@@ -1,12 +1,16 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 
 import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
+import com.arraylist7.android.utils.ClassUtils;
+import com.arraylist7.android.utils.DeviceUtils;
 import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
 import com.arraylist7.android.utils.IOUtils;
@@ -25,11 +29,13 @@ import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
 import com.arraylist7.android.utils.listener.PermissionListener;
 import com.arraylist7.android.utils.listener.ThreadStateListener;
+import com.arraylist7.android.utils.model.SimInfo;
 import com.arraylist7.android.utils.widget.RoundImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +53,8 @@ public class Launch extends Base {
     private Button http;
     @Views(R.id.ui_launch_thread)
     private Button thread;
+    @Views(R.id.ui_launch_sim)
+    private Button sim;
     @Views(R.id.ui_launch_intent)
     private Button intent;
     @Views(R.id.ui_launch_roundImageView)
@@ -122,13 +130,13 @@ public class Launch extends Base {
 
         Annotation[] annotations = DemoModel.class.getAnnotations();
 
-        for (Annotation anno : annotations){
-            LogUtils.e("anno="+anno);
+        for (Annotation anno : annotations) {
+            LogUtils.e("anno=" + anno);
         }
         LayoutBind lb = DemoModel.class.getAnnotation(LayoutBind.class);
-        LogUtils.e("lb = "+lb+" "+DemoModel.class.isAnnotationPresent(LayoutBind.class));
-        if(null != lb)
-            LogUtils.e("lb.value = "+lb.value()+" ");
+        LogUtils.e("lb = " + lb + " " + DemoModel.class.isAnnotationPresent(LayoutBind.class));
+        if (null != lb)
+            LogUtils.e("lb.value = " + lb.value() + " ");
     }
 
     @Override
@@ -291,6 +299,27 @@ public class Launch extends Base {
                             buffer.append("[" + permission + "]，");
                         }
                         UiUtils.showLong(App.getContext(), buffer.toString());
+                    }
+                });
+            }
+        });
+
+        sim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.requestPermission(1002, Manifest.permission.READ_PHONE_STATE, new PermissionListener() {
+                    @Override
+                    public void permissionRequestSuccess(String[] permissions) {
+                        SimInfo simInfo = DeviceUtils.getSimInfo(activity);
+                        LogUtils.e("拨号卡iccid=" + simInfo.iccid1
+                                + "\n拨号卡运营商=" + simInfo.networkOperatorName1 + "\n\n"
+                                + "\n卡2iccid=" + simInfo.iccid2
+                                + "\n卡2运营商=" + simInfo.networkOperatorName2);
+                    }
+
+                    @Override
+                    public void permissionRequestFail(String[] permissions) {
+                        UiUtils.showLong(activity, "权限被拒绝不能读取sim卡信息");
                     }
                 });
             }

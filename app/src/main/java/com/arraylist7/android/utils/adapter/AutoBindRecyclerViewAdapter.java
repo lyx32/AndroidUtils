@@ -5,6 +5,7 @@ import android.widget.CompoundButton;
 
 import com.arraylist7.android.utils.BitmapUtils;
 import com.arraylist7.android.utils.ClassUtils;
+import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.adapter.holder.BaseViewHolder;
 import com.arraylist7.android.utils.annotation.DataBind;

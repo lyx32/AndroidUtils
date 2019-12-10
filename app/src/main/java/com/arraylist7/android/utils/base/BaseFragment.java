@@ -1,7 +1,6 @@
 package com.arraylist7.android.utils.base;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import com.arraylist7.android.utils.inter.IOperator;
 import com.arraylist7.android.utils.inter.IScreen;
 
 import java.io.Serializable;
-import java.lang.ref.SoftReference;
 import java.util.Map;
 
 /**
@@ -46,18 +44,12 @@ public abstract class BaseFragment extends Fragment implements IActivity, IHandl
         bundle = getArguments();
         onCreate(rootView);
         initWidget();
-        readerDatabase();
         initData();
         initListener();
         return rootView;
     }
 
     protected abstract void onCreate(View root);
-
-    @Override
-    public void readerDatabase() {
-
-    }
 
 
     public void hideKeyboard(View view) {

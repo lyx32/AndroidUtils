@@ -19,10 +19,7 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public final class ViewUtils {
 
@@ -132,7 +129,7 @@ public final class ViewUtils {
             // 注入参数
             if (null != params) {
                 String key = params.value();
-                if (bundle.containsKey(params.value())) {
+                if (null != bundle && bundle.containsKey(params.value())) {
                     Object val = bundle.get(key);
                     try {
                         if (!StringUtils.isNullOrEmpty(val)) {

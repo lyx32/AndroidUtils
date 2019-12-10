@@ -1,17 +1,16 @@
 package com.arraylist7.android.utils.widget;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.arraylist7.android.utils.LogUtils;
@@ -77,6 +76,7 @@ public class NEditText extends android.support.v7.widget.AppCompatEditText {
     }
 
     public void setOnSubmitListener(final OnClickListener listener) {
+        // 如果是在未弹出键盘时触发了setOnEditorActionListener，在某些pda上actionId会以IME_ACTION_UNSPECIFIED来触发，并且会触发多次
         setOnSubmitListener(new int[]{EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
                 EditorInfo.IME_ACTION_SEARCH, EditorInfo.IME_ACTION_SEND, EditorInfo.IME_ACTION_UNSPECIFIED}, listener);
     }
@@ -87,12 +87,10 @@ public class NEditText extends android.support.v7.widget.AppCompatEditText {
         this.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // 如果是在未弹出键盘时触发了setOnEditorActionListener，在某些pda上actionId会以IME_ACTION_UNSPECIFIED来触发，并且会触发多次
                 if (StringUtils.isNullOrEmpty(actions) || null == listener) {
                     OtherUtils.hideKeyboard(getContext(), NEditText.this);
                     return false;
                 }
-                LogUtils.d("触发actionId=" + actionId);
                 if (EditorInfo.IME_ACTION_UNSPECIFIED == actionId) {
                     synchronized (NEditText.this) {
                         LogUtils.d("(System.currentTimeMillis() - time)=" + (System.currentTimeMillis() - time));
@@ -116,5 +114,34 @@ public class NEditText extends android.support.v7.widget.AppCompatEditText {
                 return false;
             }
         });
+    }
+
+
+    /**
+     * 设置文字前景色
+     *
+     * @param startIndex
+     * @param endIndex
+     * @param color
+     */
+    public void setTextForegroundColor(int startIndex, int endIndex, int color) {
+        SpannableString spannableString = new SpannableString(getText());
+        ForegroundColorSpan colorSpan = new ForegroundColorSpan(color);
+        spannableString.setSpan(colorSpan, startIndex, endIndex, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        setText(spannableString);
+    }
+
+    /**
+     * 设置文字背景色
+     *
+     * @param startIndex
+     * @param endIndex
+     * @param color
+     */
+    public void setTextBackgroundColor(int startIndex, int endIndex, int color) {
+        SpannableString spannableString = new SpannableString(getText());
+        BackgroundColorSpan colorSpan = new BackgroundColorSpan(color);
+        spannableString.setSpan(colorSpan, startIndex, endIndex, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        setText(spannableString);
     }
 }

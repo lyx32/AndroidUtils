@@ -9,20 +9,13 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
-import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.NetState;
-import com.arraylist7.android.utils.R;
 import com.arraylist7.android.utils.StringUtils;
 import com.arraylist7.android.utils.handler.NHandler;
 import com.arraylist7.android.utils.inter.IActivity;
@@ -33,6 +26,7 @@ import com.arraylist7.android.utils.inter.IScreen;
 import com.arraylist7.android.utils.listener.PermissionListener;
 
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +38,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     protected Bundle bundle;
     protected NHandler handler;
     protected BaseAppCompatActivity activity;
+    private Map<Integer, SoftReference<View>> findViewByIdCache = new HashMap<>();
     private HashMap<String, PermissionListener> permissionMap = new HashMap<>();
 
 
@@ -63,7 +58,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         if (onCreate2(savedInstanceState)) {
             initWidget();
             initStatusBar();
-            readerDatabase();
             initListener();
             initData();
         }
@@ -72,10 +66,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     public abstract boolean onCreate2(Bundle savedInstanceState);
 
-    @Override
-    public void readerDatabase() {
-
-    }
 
     @Override
     public void initStatusBar() {
@@ -252,5 +242,18 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
             IntentUtils.finish(this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public <T extends View> T findViewById(int id) {
+        SoftReference<View> soft = findViewByIdCache.get(Integer.valueOf(id));
+        if(null != soft && null != soft.get()){
+            return (T)soft.get();
+        }
+        View view = super.findViewById(id);
+        if(null != view){
+            findViewByIdCache.put(Integer.valueOf(id),new SoftReference<>(view));
+        }
+        return (T)view;
     }
 }

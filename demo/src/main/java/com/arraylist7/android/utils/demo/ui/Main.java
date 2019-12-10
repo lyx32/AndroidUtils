@@ -2,7 +2,15 @@ package com.arraylist7.android.utils.demo.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,6 +38,7 @@ import com.arraylist7.android.utils.demo.model.DemoModel;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
 import com.arraylist7.android.utils.widget.NEditText;
 import com.arraylist7.android.utils.widget.NRecyclerView;
+import com.arraylist7.android.utils.widget.NTextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,10 +49,14 @@ public class Main extends Base {
 
     @Views(R.id.ui_main_textView1)
     private TextView textView1;
+    @Views(R.id.ui_main_textView2)
+    private NTextView textView2;
+
     @Views(R.id.ui_main_editText_1)
     private NEditText editText1;
     @Views(value = R.id.ui_main_editText_2, rString = R.string.ui_main_edittext2_text, rStringParams = {"random", "这是一个xml有定义但是不存在的参数key", "这是一个xml没有定义的参数key"})
     private NEditText editText2;
+
     @Views(R.id.ui_main_button1)
     private Button button1;
     // 绑定view 并且将random参数设置给tag和text
@@ -51,10 +64,9 @@ public class Main extends Base {
     private Button button3;
     @Views(R.id.ui_main_button4)
     private Button button4;
+    @Views(R.id.ui_main_button5)
+    private Button button5;
 
-    // 绑定R.color.colorAccent颜色，并将该颜色作为textView2的textColor和textView3的backgroundColor
-    @RColor(value = R.color.colorAccent, setTextColor = R.id.ui_main_textView2, setBackgroundColor = R.id.ui_main_textView3)
-    private int backgroundColor = -1;
     // 绑定R.string.app_name 并将该值赋值给textView3的tag及textView4的text
     @RString(value = R.string.app_name, setTag = R.id.ui_main_textView3, setText = R.id.ui_main_textView4)
     private String app_name;
@@ -70,6 +82,10 @@ public class Main extends Base {
     // 获取从Launch页面点击按钮传过来的random参数，并将这个参数值设置给button1的tag
     @Params(value = "random", setTag = R.id.ui_main_button1)
     private String random;
+
+    // 绑定R.color.colorAccent颜色，并将该颜色作为textView2的textColor和textView3的backgroundColor
+    @RColor(value = R.color.colorAccent, setTextColor = R.id.ui_main_textView2, setBackgroundColor = R.id.ui_main_textView3)
+    private int backgroundColor = -1;
 
 
     private DemoAdapter adapter = null;
@@ -140,8 +156,12 @@ public class Main extends Base {
         }
         adapter.addData(list);
         adapter.updateUI();
-        // 用于演示自动绑定对象昂属性到布局中，所以DemoModel中需要添加LayoutBind和DataBind注解
-        recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity,list));
+        // 用于演示自动绑定对象属性到布局中，所以DemoModel中需要添加LayoutBind和DataBind注解
+//        recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity, list));
+
+
+
+
     }
 
     @Override
@@ -149,15 +169,7 @@ public class Main extends Base {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Object tag = button1.getTag();
-                if (StringUtils.contains(tag, "1"))
-                    tag = "fonts/2.ttf";
-                else if (StringUtils.contains(tag, "2"))
-                    tag = "fonts/3.ttf";
-                else
-                    tag = "fonts/1.ttf";
-                button1.setTag(tag);
-                TypefaceUtils.setAssetsDefaultFont(App.getContext(), tag + "");
+                TypefaceUtils.setAssetsDefaultFont(App.getContext(), "fonts/font.ttf");
                 Fonts.instance(activity, false);
             }
         });
@@ -191,6 +203,13 @@ public class Main extends Base {
                     });
                 }
                 receiver.send(App.getContext(), "broadcastReceiver_custom_action", "action_custom_key", "value" + StringUtils.random(100000, 999999));
+            }
+        });
+
+        button5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Html.instance(activity, false);
             }
         });
     }

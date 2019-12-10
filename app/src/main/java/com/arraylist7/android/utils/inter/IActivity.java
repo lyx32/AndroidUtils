@@ -11,8 +11,6 @@ public interface IActivity {
 
     public void initWidget();
 
-    public void readerDatabase();
-
     public void initData();
 
     public void initListener();

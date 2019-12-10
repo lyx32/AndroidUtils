@@ -1,8 +1,6 @@
 package com.arraylist7.android.utils;
 
-import android.app.DownloadManager;
 import android.os.Build;
-import android.util.Log;
 
 import com.arraylist7.android.utils.http.HttpRequest;
 import com.arraylist7.android.utils.http.HttpResponse;
@@ -20,16 +18,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class HttpUtils {
 
@@ -119,10 +123,38 @@ public class HttpUtils {
         }
         HttpURLConnection conn = null;
         if (request.getUrl().startsWith("https://")) {
-            conn = (HttpsURLConnection) connection;
-        } else {
-            conn = (HttpURLConnection) connection;
+            try {
+                SSLContext sslcontext = SSLContext.getInstance("TLS");
+                sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                    }
+
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }}, new java.security.SecureRandom());
+
+                HostnameVerifier ignoreHostnameVerifier = new HostnameVerifier() {
+                    public boolean verify(String s, SSLSession sslsession) {
+                        System.out.println("WARNING: Hostname is not matched for cert.");
+                        return true;
+                    }
+                };
+                HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
+                HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.getSocketFactory());
+            } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
+        conn = (HttpURLConnection) connection;
         conn.setUseCaches(true);
 
         conn.addRequestProperty("Accept", request.getAccept());
@@ -167,7 +199,7 @@ public class HttpUtils {
         }
         if ("POST".equalsIgnoreCase(request.getMethod())) {
             conn.setDoOutput(true);
-            if (0 == StringUtils.len(request.getFiles())) {
+            if (0 == StringUtils.len(request.getFiles()) && !request.getPostParameter().isEmpty()) {
                 conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 StringBuffer paramster = new StringBuffer();
                 Map<String, Object> params = request.getPostParameter();
@@ -182,7 +214,7 @@ public class HttpUtils {
                 } catch (IOException e) {
                     IOUtils.close(out);
                 }
-            } else {
+            } else if (0 != StringUtils.len(request.getFiles()) && !request.getPostParameter().isEmpty()) {
                 String uuid = UUID.randomUUID().toString(); //边界标识 随机生成
                 String prefix = "--", line_end = "\r\n";
                 conn.addRequestProperty("Content-Type", "multipart/form-data" + ";boundary=" + uuid);
@@ -251,9 +283,7 @@ public class HttpUtils {
         HttpResponse response = new HttpResponse();
 
         try {
-            LogUtils.e("code=" + connection.getResponseCode());
             if (302 == connection.getResponseCode()) {
-                //如果会重定向，保存302重定向地址，以及Cookies,然后重新发送请求(模拟请求)
                 String location = connection.getHeaderField("Location");
                 String cookies = connection.getHeaderField("Set-Cookie");
                 LogUtils.e("location=" + location + "      cookies=" + cookies);

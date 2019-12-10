@@ -29,7 +29,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtils {
     private static final int BUFF_SIZE = 1024 * 1024 * 3; // 3M Byte
 
-    ZipUtils() {
+    private ZipUtils() {
     }
 
     /**
