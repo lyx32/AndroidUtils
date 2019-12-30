@@ -2,7 +2,6 @@ package com.arraylist7.android.utils.demo.adapter;
 
 import android.content.Context;
 
-import com.arraylist7.android.utils.BitmapUtils;
 import com.arraylist7.android.utils.adapter.RecyclerViewAdapter;
 import com.arraylist7.android.utils.adapter.holder.BaseViewHolder;
 import com.arraylist7.android.utils.demo.R;

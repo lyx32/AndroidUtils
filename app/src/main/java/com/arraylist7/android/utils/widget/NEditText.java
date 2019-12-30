@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
 import com.arraylist7.android.utils.StringUtils;
@@ -21,7 +23,7 @@ import com.arraylist7.android.utils.StringUtils;
  * Created by Administrator on 2017/11/23 0023.
  */
 
-public class NEditText extends android.support.v7.widget.AppCompatEditText {
+public class NEditText extends AppCompatEditText {
     public NEditText(Context context) {
         this(context, null);
     }

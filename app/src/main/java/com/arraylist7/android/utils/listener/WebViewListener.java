@@ -6,16 +6,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.arraylist7.android.utils.IntentUtils;
+import androidx.annotation.RequiresApi;
+
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.R;
-import com.arraylist7.android.utils.widget.NWebView;
 
 public class WebViewListener extends WebViewClient {
 

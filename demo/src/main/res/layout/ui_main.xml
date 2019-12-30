@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".ui.Main">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -150,5 +150,5 @@
                 android:layout_height="300dp"
                 android:layout_margin="@dimen/_12dp"></com.arraylist7.android.utils.widget.NRecyclerView>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

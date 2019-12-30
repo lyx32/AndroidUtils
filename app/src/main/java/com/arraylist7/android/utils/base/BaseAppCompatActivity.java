@@ -6,13 +6,15 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.NetState;
@@ -204,8 +206,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onLoginSuccess(Map<String, Serializable> data) {
-        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list) {
+        List<Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
             if (f instanceof IActivity)
                 ((IOperator) f).onLoginSuccess(data);
         }
@@ -213,8 +215,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onLoginOut(Map<String, Serializable> data) {
-        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list) {
+        List<Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
             if (f instanceof IActivity)
                 ((IOperator) f).onLoginOut(data);
         }
@@ -222,8 +224,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onReceivedData(Map<String, Serializable> data) {
-        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list) {
+        List<Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
             if (f instanceof IActivity)
                 ((IOperator) f).onReceivedData(data);
         }
@@ -232,8 +234,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onNetChange(NetState state) {
-        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list) {
+        List<Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
             if (f instanceof INetChange)
                 ((INetChange) f).onNetChange(state);
         }
@@ -241,8 +243,8 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
     @Override
     public void onScreenLock(boolean isLock) {
-        List<android.support.v4.app.Fragment> list = this.getSupportFragmentManager().getFragments();
-        for (android.support.v4.app.Fragment f : list) {
+        List<Fragment> list = this.getSupportFragmentManager().getFragments();
+        for (Fragment f : list) {
             if (f instanceof IScreen)
                 ((IScreen) f).onScreenLock(isLock);
         }

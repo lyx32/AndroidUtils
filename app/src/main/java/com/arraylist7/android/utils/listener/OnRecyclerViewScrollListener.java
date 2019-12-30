@@ -1,7 +1,8 @@
 package com.arraylist7.android.utils.listener;
 
 import android.os.Message;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.arraylist7.android.utils.BitmapUtils;
 import com.arraylist7.android.utils.handler.NHandler;

@@ -2,7 +2,6 @@ package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.AppCompatTextView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -13,6 +12,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.arraylist7.android.utils.listener.HtmlParserListener;
 import com.arraylist7.android.utils.listener.HtmlParserListenerAdapter;

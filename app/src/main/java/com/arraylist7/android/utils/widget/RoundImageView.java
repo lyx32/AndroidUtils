@@ -12,26 +12,21 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.ImageView;
 
-import com.arraylist7.android.utils.CanvasUtils;
-import com.arraylist7.android.utils.LogUtils;
+import androidx.appcompat.widget.AppCompatImageView;
+
 import com.arraylist7.android.utils.R;
-import com.arraylist7.android.utils.StringUtils;
 
 
 /**
  * 圆角ImageView组件
  */
-public class RoundImageView extends android.support.v7.widget.AppCompatImageView {
+public class RoundImageView extends AppCompatImageView {
 
     //save bundle state
     private static final String STATE_INSTANCE = "state_instance";

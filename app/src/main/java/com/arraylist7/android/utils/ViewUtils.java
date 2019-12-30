@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.arraylist7.android.utils.annotation.Params;
 import com.arraylist7.android.utils.annotation.RArray;
 import com.arraylist7.android.utils.annotation.RColor;
@@ -42,8 +44,8 @@ public final class ViewUtils {
                 bundle = intent.getExtras();
         } else if (object instanceof android.app.Fragment) {
             bundle = ((android.app.Fragment) object).getArguments();
-        } else if (object instanceof android.support.v4.app.Fragment) {
-            bundle = ((android.support.v4.app.Fragment) object).getArguments();
+        } else if (object instanceof Fragment) {
+            bundle = ((Fragment) object).getArguments();
         }
         return bundle;
     }

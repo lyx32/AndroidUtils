@@ -1,13 +1,13 @@
 package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.arraylist7.android.utils.StringUtils;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arraylist7.android.utils.adapter.RecyclerViewAdapter;
 import com.arraylist7.android.utils.itemdecoration.RecyclerViewItemDecoration;
 import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;

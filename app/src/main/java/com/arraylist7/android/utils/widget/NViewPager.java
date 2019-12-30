@@ -2,9 +2,10 @@ package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.viewpager.widget.ViewPager;
 
 public class NViewPager extends ViewPager {
 

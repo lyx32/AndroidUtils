@@ -1,10 +1,11 @@
 package com.arraylist7.android.utils.widget.parser;
 
 
-import android.support.v4.view.ViewCompat;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.core.view.ViewCompat;
 
 
 /**
