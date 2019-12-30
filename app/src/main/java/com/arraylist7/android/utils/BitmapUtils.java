@@ -44,21 +44,6 @@ public final class BitmapUtils {
     }
 
     public static void init(final Context context, final Map<String, String> header) {
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        okHttpClient.interceptors().add(new Interceptor() {
-//            @Override
-//            public Response intercept(Chain chain) throws IOException {
-//                Request.Builder request = chain.request().newBuilder();
-//                if (null != header) {
-//                    for (String key : header.keySet()) {
-//                        request.addHeader(key, header.get(key));
-//                    }
-//                }
-//                OkHttp3Downloader
-//                return chain.proceed(request.build());
-//
-//            }
-//        });
         picasso = new Picasso.Builder(context).listener(new Picasso.Listener() {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
@@ -91,6 +76,10 @@ public final class BitmapUtils {
     }
     public static Picasso getPicasso() {
         return picasso;
+    }
+
+    public static void setPicasso(Picasso picasso) {
+        BitmapUtils.picasso = picasso;
     }
 
     public static void loadBitmap(String urlOrPath, ImageView view) {
