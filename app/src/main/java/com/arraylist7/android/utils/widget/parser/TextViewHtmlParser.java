@@ -44,7 +44,7 @@ public class TextViewHtmlParser {
     // 默认替换内容
     private static HtmlParserReplaceCallback defaultReplace = new HtmlParserReplaceCallback() {
         @Override
-        public CharSequence replaceHtml(HtmlParserTypeEnum htmlType, String href, String text) {
+        public CharSequence replaceHtml(Context context, HtmlParserTypeEnum htmlType, String href, String text) {
             return text;
         }
     };
@@ -74,7 +74,7 @@ public class TextViewHtmlParser {
      * @return 匹配后的文本
      */
     @SuppressWarnings("all")
-    private static Spannable assimilate(SpanShowConfig config, CharSequence sequence, Pattern pattern, int usedGroupIndex, int showGroupIndex, final HtmlParserListener listener) {
+    private static Spannable assimilate(SpanShowConfig config, Context context, CharSequence sequence, Pattern pattern, int usedGroupIndex, int showGroupIndex, final HtmlParserListener listener) {
         SpannableStringBuilder builder = new SpannableStringBuilder(sequence);
         Matcher matcher;
 
@@ -100,7 +100,7 @@ public class TextViewHtmlParser {
                 else
                     htmlType = HtmlParserTypeEnum.UNKNOWN;
 
-                CharSequence showText = defaultReplace.replaceHtml(htmlType,group0,group1);
+                CharSequence showText = defaultReplace.replaceHtml(context, htmlType, group0, group1);
                 builder.replace(matcher.start(), matcher.end(), showText);
                 ClickableSpan span = new QMUITouchableSpan(config) {
                     @Override
@@ -145,7 +145,7 @@ public class TextViewHtmlParser {
      * @return Spannable
      */
     public static Spannable parseAtUser(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(atUserConfig, content, PATTERN_ATUSER, 1, 2, listener);
+        return assimilate(atUserConfig, context, content, PATTERN_ATUSER, 1, 2, listener);
     }
 
     /**
@@ -156,7 +156,7 @@ public class TextViewHtmlParser {
      * @return
      */
     public static Spannable parserLink(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(linksConfig, content, PATTERN_LINK, 1, 2, listener);
+        return assimilate(linksConfig, context, content, PATTERN_LINK, 1, 2, listener);
     }
 
     /**
@@ -167,7 +167,7 @@ public class TextViewHtmlParser {
      * @return
      */
     public static Spannable parserTopic(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(topicConfig, content, PATTERN_TOPIC, 1, 2, listener);
+        return assimilate(topicConfig, context, content, PATTERN_TOPIC, 1, 2, listener);
     }
 
 
@@ -179,7 +179,7 @@ public class TextViewHtmlParser {
      * @return
      */
     public static Spannable parserEMail(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(emailConfig, content, PATTERN_EMAIL, 1, 2, listener);
+        return assimilate(emailConfig, context, content, PATTERN_EMAIL, 1, 2, listener);
     }
 
 
@@ -191,7 +191,7 @@ public class TextViewHtmlParser {
      * @return
      */
     public static Spannable parserTelePhone(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(telephoneConfig, content, PATTERN_TELEPHONE, 1, 2, listener);
+        return assimilate(telephoneConfig, context, content, PATTERN_TELEPHONE, 1, 2, listener);
     }
 
 
@@ -203,7 +203,7 @@ public class TextViewHtmlParser {
      * @return
      */
     public static Spannable parserImage(final Context context, CharSequence content, final HtmlParserListener listener) {
-        return assimilate(imageConfig, content, PATTERN_IMAGE, 1, 2, listener);
+        return assimilate(imageConfig, context, content, PATTERN_IMAGE, 1, 2, listener);
     }
 
 

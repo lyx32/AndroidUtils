@@ -1,8 +1,10 @@
 package com.arraylist7.android.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,11 +25,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public final class AppUtils {
 
-    private static NetState netState = null;
     private static NetReceiver appNetReceiver = new NetReceiver();
     private static Map<String, BaseAppCompatActivity> netMap = new HashMap<>();
     private static Map<String, List<BaseBroadcastReceiver>> activityMap = new HashMap<>();
@@ -142,8 +142,41 @@ public final class AppUtils {
 
 
     public static void clearCache(Context context){
-        CacheUtils.getInternalCacheDir(context, "picasso-cache");
+
+        CacheUtils.getPublicDir(context, "picasso-cache");
     }
 
 
+    public static void cleanInvalidMemory(Context context) {
+        int res = context.checkCallingOrSelfPermission("android.permission.KILL_BACKGROUND_PROCESSES");
+        if (PackageManager.PERMISSION_GRANTED == res) {
+            getAvailMemory(context);
+            ActivityManager activityManger = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> list = activityManger.getRunningAppProcesses();
+            if (list != null) {
+                int close = 0;
+                for (int i = 0; i < list.size(); i++) {
+                    ActivityManager.RunningAppProcessInfo apinfo = list.get(i);
+                    String[] pkgList = apinfo.pkgList;
+                    if (apinfo.importance > ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                        for (int j = 0; j < pkgList.length; j++) {
+                            activityManger.killBackgroundProcesses(pkgList[j]);
+                        }
+                        close++;
+                    }
+                }
+                LogUtils.i("已关闭" + close + "个后台进程");
+            }
+            getAvailMemory(context);
+        }
+        System.gc();
+    }
+
+    public static long getAvailMemory(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        LogUtils.d("可用内存---->>>" + (mi.availMem / (1024 * 1024)) + "M");
+        return mi.availMem / (1024 * 1024);
+    }
 }

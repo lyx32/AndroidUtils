@@ -3,13 +3,17 @@ package com.arraylist7.android.utils;
 import android.Manifest;
 import android.app.ExpandableListActivity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings.Secure;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.RequiresPermission;
 import android.telephony.TelephonyManager;
 
 import com.arraylist7.android.utils.model.SimInfo;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,10 +69,19 @@ public class DeviceUtils {
     public static String getDeviceId(Context context) {
         String deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
         if ("9774d56d682e549c".equalsIgnoreCase(deviceId)) {
-            String m_szDevIDShort = "35" + (Build.BOARD.length() % 10) + (Build.BRAND.length() % 10) + (Build.CPU_ABI.length() % 10) + (Build.DEVICE.length() % 10) + (Build.MANUFACTURER.length() % 10) + (Build.MODEL.length() % 10) + (Build.PRODUCT.length() % 10);
+            String m_szDevIDShort = "35" + Build.BOARD.length() % 10 + Build.BRAND.length() % 10 +
+                    Build.CPU_ABI.length() % 10 + Build.DEVICE.length() % 10 +
+                    Build.DISPLAY.length() % 10 + Build.HOST.length() % 10 +
+                    Build.ID.length() % 10 + Build.MANUFACTURER.length() % 10 +
+                    Build.MODEL.length() % 10 + Build.PRODUCT.length() % 10 +
+                    Build.TAGS.length() % 10 + Build.TYPE.length() % 10 +
+                    Build.USER.length() % 10; //13 位
             String serial = "";
             try {
-                serial = ClassUtils.getValue(Build.class, "SERIAL").toString();
+                if (getSDKLevel() >= 26)
+                    serial = ClassUtils.invoke(Build.class, "getSerial").toString();
+                else
+                    serial = ClassUtils.getValue(Build.class, "SERIAL").toString();
                 return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
             } catch (Exception e) {
                 serial = "serial";
@@ -78,14 +91,67 @@ public class DeviceUtils {
         return deviceId;
     }
 
+
     /**
-     * 获取手机sim卡启用数量
+     * 读取或写入以为设备码
+     *
+     * @param context
+     * @return
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static String getUniqueSign(Context context) {
+        String sign = "";
+        String publicPath = CacheUtils.getStorageDirectory(Environment.DIRECTORY_DOCUMENTS);
+        String privatePath = CacheUtils.getPrivateDirectory(context);
+        String fileName = "deviceId.device";
+        if (PackageManager.PERMISSION_DENIED != context.checkCallingOrSelfPermission(Manifest.permission.READ_PHONE_STATE)) {
+            SimInfo sim = getSimInfo(context);
+            if (null != sim) {
+                sign = sim.iccid1 + "_" + sim.iccid2;
+                try {
+                    FileUtils.writerFile(publicPath, sign);
+                } catch (Exception e) {
+                }
+                try {
+                    FileUtils.writerFile(privatePath, sign);
+                } catch (Exception e) {
+                }
+            }
+        }
+        if (Build.VERSION.SDK_INT >= 18 && StringUtils.isNullOrEmpty(sign)) {
+            sign = FileUtils.readerFile(publicPath + File.separatorChar + fileName);
+            if (StringUtils.isNullOrEmpty(sign)) {
+                sign = FileUtils.readerFile(privatePath + File.separatorChar + fileName);
+                if (StringUtils.isNullOrEmpty(sign)) {
+                    sign = getDeviceId(context);
+                    try {
+                        FileUtils.writerFile(publicPath, sign);
+                    } catch (Exception e) {
+                    }
+                    try {
+                        FileUtils.writerFile(privatePath, sign);
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
+        if(StringUtils.isNullOrEmpty(sign)){
+            sign = getDeviceId(context);
+        }
+        return sign;
+
+    }
+
+    /**
+     * 获取手机sim卡启用数量(android Q 已经不允许获取sim卡信息)
      *
      * @param context
      * @return
      */
     @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     public static int getSimCount(Context context) {
+        if (Build.VERSION.SDK_INT >= 29)
+            return 0;
         int count = 0;
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String iccid1 = tm.getSimSerialNumber();
@@ -108,7 +174,7 @@ public class DeviceUtils {
     }
 
     /**
-     * 获取双卡sim的下标
+     * 获取双卡sim的下标(android Q 已经不允许获取sim卡信息)
      *
      * @return
      */
@@ -144,12 +210,14 @@ public class DeviceUtils {
 
 
     /**
-     * 获取手机sim卡信息
+     * 获取手机sim卡信息(android Q 已经不允许获取sim卡信息)
      *
      * @return
      */
     @RequiresPermission(Manifest.permission.READ_PHONE_STATE)
     public static SimInfo getSimInfo(Context context) {
+        if (Build.VERSION.SDK_INT >= 29)
+            return null;
         SimInfo simInfo = new SimInfo();
         int[] indexs = getSimIndex(context);
         if (null == indexs) return null;

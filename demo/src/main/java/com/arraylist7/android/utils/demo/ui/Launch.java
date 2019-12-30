@@ -1,15 +1,13 @@
 package com.arraylist7.android.utils.demo.ui;
 
 import android.Manifest;
-import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 
 import com.arraylist7.android.utils.AnimatorUtils;
 import com.arraylist7.android.utils.CacheUtils;
-import com.arraylist7.android.utils.ClassUtils;
 import com.arraylist7.android.utils.DeviceUtils;
 import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
@@ -35,7 +33,6 @@ import com.arraylist7.android.utils.widget.RoundImageView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -79,20 +76,16 @@ public class Launch extends Base {
     }
 
     @Override
-    public void initStatusBar() {
-        StatusBarUtils.setColor(activity, StringUtils.randomColor());
-    }
-
-    @Override
     public void initWidget() {
         ViewUtils.inject(activity);
+        StatusBarUtils.setColor(activity, Color.parseColor("#cf1234"));
     }
 
     @Override
     public void initData() {
 
 
-        String newFilePath = CacheUtils.createAppRootDir("android_utils_folder") + "/1.html";
+        String newFilePath = CacheUtils.getPublicDir(activity,"android_utils_folder") + "/1.html";
         try {
             FileUtils.copyFile(getAssets().open("cq.qq.com_2018-12-21.html"), newFilePath);
         } catch (IOException e) {
@@ -111,7 +104,9 @@ public class Launch extends Base {
         // 找到class="channel-title"的h3节点及h3节点下的内容
         List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
         // 提取所有img的src值
-        List<String> srcs = HTMLUtils.filterHtmlTag(cq_qq_com, "img", new String[]{"src"});
+        List<String> srcs = HTMLUtils.findImg_Src(cq_qq_com);
+        // 提取所有img的src值
+        List<String> spans = HTMLUtils.findHtmlTag(cq_qq_com,"span",true);
         for (String item : inputs) {
             LogUtils.e("input=" + item);
         }
@@ -121,6 +116,11 @@ public class Launch extends Base {
         for (String item : srcs) {
             LogUtils.e("srcs=" + item);
         }
+        for (String item : spans) {
+            LogUtils.e("span_content=" + HTMLUtils.findContent(item));
+        }
+
+
 
         DemoModel model = new DemoModel();
         model.id = 1 + "";
@@ -128,15 +128,7 @@ public class Launch extends Base {
         model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
         model.picUrl = "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823262_955160.jpg&size=100_100";
 
-        Annotation[] annotations = DemoModel.class.getAnnotations();
 
-        for (Annotation anno : annotations) {
-            LogUtils.e("anno=" + anno);
-        }
-        LayoutBind lb = DemoModel.class.getAnnotation(LayoutBind.class);
-        LogUtils.e("lb = " + lb + " " + DemoModel.class.isAnnotationPresent(LayoutBind.class));
-        if (null != lb)
-            LogUtils.e("lb.value = " + lb.value() + " ");
     }
 
     @Override
@@ -256,13 +248,13 @@ public class Launch extends Base {
                     @Override
                     public void permissionRequestSuccess(String[] permissions) {
                         String fileName = "demo-release-unsigned.apk";
-                        File installFile = new File(CacheUtils.getStorageDirectory() + "/" + fileName);
+                        File installFile = new File(CacheUtils.getPrivateDirectory(activity) + "/" + fileName);
                         if (installFile.exists()) {
                             OtherUtils.install(App.getContext(), installFile);
                         } else {
                             try {
-                                IOUtils.readAndWriteAndClose(getAssets().open(fileName), IOUtils.fileOut(CacheUtils.getStorageDirectory() + "/" + fileName));
-                                OtherUtils.install(App.getContext(), new File(CacheUtils.getStorageDirectory() + "/" + fileName));
+                                IOUtils.readAndWriteAndClose(getAssets().open(fileName), IOUtils.fileOut(CacheUtils.getPrivateDirectory(activity) + "/" + fileName));
+                                OtherUtils.install(App.getContext(), new File(CacheUtils.getPrivateDirectory(activity) + "/" + fileName));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

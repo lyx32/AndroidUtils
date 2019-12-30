@@ -103,11 +103,6 @@ public class Main extends Base {
     }
 
     @Override
-    public void initStatusBar() {
-        StatusBarUtils.setDeepColor(this, getResources().getColor(R.color.colorPrimary));
-    }
-
-    @Override
     public int getLayoutId() {
         return R.layout.ui_main;
     }
@@ -115,6 +110,7 @@ public class Main extends Base {
     @Override
     public void initWidget() {
         ViewUtils.inject(activity);
+        StatusBarUtils.setDeepColor(this, getResources().getColor(R.color.colorPrimary));
         // 弹出的键盘，点击右下角跳转到指定EditText
         editText1.setNextView(editText2);
 //        ((TextView)findViewById(R.id.ui_main_textView3)).setTextColor(getResources().getColor(R.color.colorAccent));
@@ -157,7 +153,7 @@ public class Main extends Base {
         adapter.addData(list);
         adapter.updateUI();
         // 用于演示自动绑定对象属性到布局中，所以DemoModel中需要添加LayoutBind和DataBind注解
-//        recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity, list));
+        recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity, list));
 
 
 

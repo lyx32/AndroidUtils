@@ -12,7 +12,6 @@ public interface ThreadStateListener<T> {
     public void done(T threadReturnValue);
 
 
-
     /**
      * 线程超时
      */

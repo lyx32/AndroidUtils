@@ -12,18 +12,25 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Callback;
+import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public final class BitmapUtils {
 
@@ -33,14 +40,55 @@ public final class BitmapUtils {
     }
 
     public static void init(Context context) {
+        init(context, null);
+    }
+
+    public static void init(final Context context, final Map<String, String> header) {
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        okHttpClient.interceptors().add(new Interceptor() {
+//            @Override
+//            public Response intercept(Chain chain) throws IOException {
+//                Request.Builder request = chain.request().newBuilder();
+//                if (null != header) {
+//                    for (String key : header.keySet()) {
+//                        request.addHeader(key, header.get(key));
+//                    }
+//                }
+//                OkHttp3Downloader
+//                return chain.proceed(request.build());
+//
+//            }
+//        });
         picasso = new Picasso.Builder(context).listener(new Picasso.Listener() {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
                 LogUtils.i("BitmapUtils加载图片失败:" + uri.toString(), exception);
             }
-        }).loggingEnabled(BuildConfig.DEBUG).indicatorsEnabled(true).defaultBitmapConfig(Config.ARGB_4444).build();
-    }
+        }).loggingEnabled(BuildConfig.DEBUG).indicatorsEnabled(true).downloader(new Downloader() {
+            final Call.Factory client = new OkHttpClient.Builder().cache(new Cache(createDefaultCacheDir(context), 65*1025*1024)).build();
 
+            @NonNull @Override public Response load(@NonNull Request request) throws IOException {
+                Request.Builder r = request.newBuilder();
+                if (null != header) {
+                    for (String key : header.keySet()) {
+                        r.addHeader(key, header.get(key));
+                    }
+                }
+                return client.newCall(r.build()).execute();
+            }
+
+            @Override public void shutdown() {
+            }
+        }).defaultBitmapConfig(Config.ARGB_4444).build();
+
+    }
+    private static File createDefaultCacheDir(Context context) {
+        File cache = new File(context.getApplicationContext().getCacheDir(), "picasso-cache");
+        if (!cache.exists()) {
+            cache.mkdirs();
+        }
+        return cache;
+    }
     public static Picasso getPicasso() {
         return picasso;
     }
@@ -63,7 +111,7 @@ public final class BitmapUtils {
 
 
     public static void loadBitmap(String urlOrPath, Target callback) {
-        loadBitmap(urlOrPath,0,0,callback);
+        loadBitmap(urlOrPath, 0, 0, callback);
     }
 
     public static void loadBitmap(String urlOrPath, int width, int height, Target callback) {

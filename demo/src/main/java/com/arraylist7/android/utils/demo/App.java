@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.arraylist7.android.utils.AppUtils;
+import com.arraylist7.android.utils.BitmapUtils;
 import com.arraylist7.android.utils.IntentUtils;
 import com.arraylist7.android.utils.LogUtils;
+import com.arraylist7.android.utils.StringUtils;
 
 public class App extends Application {
 
@@ -18,6 +20,7 @@ public class App extends Application {
         context = getApplicationContext();
         LogUtils.setDebug(BuildConfig.DEBUG);
         AppUtils.init(this);
+        BitmapUtils.init(context, StringUtils.asMap("request-source","android"));
     }
 
     public static Context getContext() {

@@ -34,7 +34,7 @@ import java.util.Map;
 
 public abstract class BaseAppCompatActivity extends AppCompatActivity implements IActivity, IHandler, IOperator, INetChange, IScreen {
 
-
+    protected boolean isShow = false;
     protected Bundle bundle;
     protected NHandler handler;
     protected BaseAppCompatActivity activity;
@@ -57,7 +57,6 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         bundle = getIntent().getExtras();
         if (onCreate2(savedInstanceState)) {
             initWidget();
-            initStatusBar();
             initListener();
             initData();
         }
@@ -68,12 +67,27 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
 
 
     @Override
-    public void initStatusBar() {
+    protected void onStart() {
+        super.onStart();
+        isShow = true;
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isShow = false;
     }
 
     @Override
     public void finish() {
+        findViewByIdCache.clear();
+        permissionMap.clear();
+        if (null != activity)
+            activity = null;
+        if (null != handler)
+            handler.removeCallbacksAndMessages(null);
+        if (null != bundle)
+            bundle.clear();
         super.finish();
     }
 
@@ -247,13 +261,13 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
     @Override
     public <T extends View> T findViewById(int id) {
         SoftReference<View> soft = findViewByIdCache.get(Integer.valueOf(id));
-        if(null != soft && null != soft.get()){
-            return (T)soft.get();
+        if (null != soft && null != soft.get()) {
+            return (T) soft.get();
         }
         View view = super.findViewById(id);
-        if(null != view){
-            findViewByIdCache.put(Integer.valueOf(id),new SoftReference<>(view));
+        if (null != view) {
+            findViewByIdCache.put(Integer.valueOf(id), new SoftReference<>(view));
         }
-        return (T)view;
+        return (T) view;
     }
 }

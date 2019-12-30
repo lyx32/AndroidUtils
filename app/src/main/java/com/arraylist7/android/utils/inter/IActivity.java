@@ -7,8 +7,6 @@ public interface IActivity {
 
     public int getLayoutId();
 
-    public void initStatusBar();
-
     public void initWidget();
 
     public void initData();

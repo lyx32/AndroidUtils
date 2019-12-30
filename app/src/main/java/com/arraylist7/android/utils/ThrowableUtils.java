@@ -26,7 +26,7 @@ public final class ThrowableUtils {
     }
 
     public static void saveThrowable(Context context, String dirctory, String logDir, Throwable ex) {
-        File logFile = new File(CacheUtils.createAppOtherDir(dirctory, logDir), StringUtils.getDateTimeNow("yyyy-MM-dd") + ".log");
+        File logFile = new File(CacheUtils.getPublicDir(context,dirctory)+"/"+ logDir, StringUtils.getDateTimeNow("yyyy-MM-dd") + ".log");
         if (!logFile.getParentFile().exists()) {
             logFile.getParentFile().mkdirs();
         }

@@ -70,13 +70,16 @@ public class ThreadUtils {
                 try {
                     execThreadPools.execute(futureTask);
                     T resultObject = (T) futureTask.get(timeout, TimeUnit.MILLISECONDS);
-                    listener.done(resultObject);
+                    if (null != listener)
+                        listener.done(resultObject);
                 } catch (Exception e) {
                     futureTask.cancel(true);
                     if (e instanceof TimeoutException) {
-                        listener.timeout();
+                        if (null != listener)
+                            listener.timeout();
                     } else {
-                        listener.exception(e);
+                        if (null != listener)
+                            listener.exception(e);
                     }
                 } finally {
                     map.get(tag).remove(futureTask);

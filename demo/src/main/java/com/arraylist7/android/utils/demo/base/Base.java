@@ -11,11 +11,6 @@ import com.arraylist7.android.utils.handler.NHandler;
 public abstract class Base extends BaseAppCompatActivity {
 
     @Override
-    public void initStatusBar() {
-        StatusBarUtils.setColor(this,getResources().getColor( R.color.colorPrimary));
-    }
-
-    @Override
     public boolean onCreate2(Bundle savedInstanceState) {
         return true;
     }

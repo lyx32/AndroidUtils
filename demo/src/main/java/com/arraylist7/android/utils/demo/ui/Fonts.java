@@ -56,13 +56,9 @@ public class Fonts extends Base {
 
 
     @Override
-    public void initStatusBar() {
-        StatusBarUtils.setTranslucent(activity,true);
-    }
-
-    @Override
     public void initWidget() {
         ViewUtils.inject(this);
+        StatusBarUtils.setTranslucent(activity,true);
         getSupportActionBar().setTitle("字体");
         getSupportActionBar().setSubtitle("显示设置字体之后的效果");
         getSupportActionBar().setDisplayShowTitleEnabled(true);

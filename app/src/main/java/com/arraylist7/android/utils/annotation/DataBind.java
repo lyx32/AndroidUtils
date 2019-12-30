@@ -26,7 +26,6 @@ public @interface DataBind {
     int setTag() default -1;
 
 
-
     /**
      * 将被注解的属性通过图片框架的方式加载到对应的View上
      * @return

@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -26,25 +27,59 @@ public final class CacheUtils {
     }
 
     /**
-     * 得到SD卡根目录
+     * 得到SD卡目录
      *
+     * @param type Environment.DIRECTORY_XXX
      * @return
      */
-    public static String getStorageDirectory() {
+    public static String getStorageDirectory(String type) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            return Environment.getExternalStorageDirectory().getAbsolutePath();// 获取跟目录
+            return Environment.getExternalStoragePublicDirectory(type).getAbsolutePath();// 获取跟目录
         }
         return null;
     }
 
     /**
-     * 创建SD卡跟目录下的一级目录
+     * 得到App私有根目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getPrivateDirectory(Context context) {
+        if (Build.VERSION.SDK_INT < 24)
+            return context.getFilesDir().getAbsolutePath();
+        return context.getDataDir().getAbsolutePath();
+    }
+
+    /**
+     * 得到App私有根目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getPrivateDirectory(Context context,String dirName) {
+        String path = getPrivateDirectory(context);
+        return new File(path,dirName).getAbsolutePath();
+    }
+    /**
+     * 得到App公有根目录
+     *
+     * @param context
+     * @param dirName 目录名称
+     * @return
+     */
+    private static String getPublicFileDirectory(Context context, String dirName) {
+        return context.getExternalFilesDir(dirName).getAbsolutePath();
+    }
+
+    /**
+     * 创建公有目录下的一级目录
      *
      * @param appRootDirName
      * @return
      */
-    public static String createAppRootDir(String appRootDirName) {
-        File cacheFile = new File(getStorageDirectory() + File.separatorChar + appRootDirName);
+    public static String createAppRootDir(Context context, String appRootDirName) {
+        File cacheFile = new File(getPublicFileDirectory(context,appRootDirName));
         if (!cacheFile.exists()) {
             cacheFile.mkdirs();
         }
@@ -52,14 +87,14 @@ public final class CacheUtils {
     }
 
     /**
-     * 创建SD卡跟目录下的二级目录
+     * 创建公有目录下的二级目录
      *
      * @param appRootDirName 一级目录
      * @param childDirName   二级目录
      * @return
      */
-    public static String createAppOtherDir(String appRootDirName, String childDirName) {
-        String dir = getStorageDirectory() + File.separatorChar + appRootDirName + File.separatorChar + childDirName;
+    public static String createAppOtherDir(Context context, String appRootDirName, String childDirName) {
+        String dir = getPublicFileDirectory(context, File.separatorChar + appRootDirName + File.separatorChar + childDirName);
         File cacheFile = new File(dir);
         if (!cacheFile.exists()) {
             cacheFile.mkdirs();
@@ -68,14 +103,14 @@ public final class CacheUtils {
     }
 
     /**
-     * 获取内置缓存目录<br/>
+     * 获取公有缓存目录<br/>
      * 如果/android/data/xxx.xxx.xxx/cache不能读写，则返回/android/data/xxx.xxx.xxx/files
      *
      * @param context
      * @param dirName
      * @return
      */
-    public static String getInternalCacheDir(Context context, String dirName) {
+    public static String getPublicDir(Context context, String dirName) {
         String path = context.getExternalCacheDir().getAbsolutePath() + File.separator + dirName;
         File testFile = new File(path + File.separator + System.currentTimeMillis() + ".file");
         if (!testFile.getParentFile().exists())
@@ -104,7 +139,7 @@ public final class CacheUtils {
             testFile.delete();
             return path;
         }
-        return CacheUtils.createAppOtherDir(context.getPackageName(), dirName);
+        return CacheUtils.createAppOtherDir(context,context.getPackageName(), dirName);
     }
 
 
@@ -115,7 +150,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getFileCachePath(Context context) {
-        return getInternalCacheDir(context, "files");
+        return getPublicDir(context, "files");
     }
 
     /**
@@ -125,7 +160,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanFileCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "files")));
+        deleteFile(new File(getPublicDir(context, "files")));
     }
 
     /**
@@ -135,7 +170,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getImageCachePath(Context context) {
-        return getInternalCacheDir(context, "images");
+        return getPublicDir(context, "images");
     }
 
     /**
@@ -145,7 +180,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanImageCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "images")));
+        deleteFile(new File(getPublicDir(context, "images")));
     }
 
     /**
@@ -155,7 +190,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getAudioCachePath(Context context) {
-        return getInternalCacheDir(context, "audios");
+        return getPublicDir(context, "audios");
     }
 
     /**
@@ -165,7 +200,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanAudioCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "audios")));
+        deleteFile(new File(getPublicDir(context, "audios")));
     }
 
     /**
@@ -175,7 +210,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getVideoCachePath(Context context) {
-        return getInternalCacheDir(context, "videos");
+        return getPublicDir(context, "videos");
     }
 
 
@@ -186,7 +221,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanVideoCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "videos")));
+        deleteFile(new File(getPublicDir(context, "videos")));
     }
 
     /**
@@ -196,7 +231,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getFaceCachePath(Context context) {
-        return getInternalCacheDir(context, "faces");
+        return getPublicDir(context, "faces");
     }
 
     /**
@@ -206,7 +241,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanFaceCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "faces")));
+        deleteFile(new File(getPublicDir(context, "faces")));
     }
 
     /**
@@ -216,7 +251,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getWebCachePath(Context context) {
-        return getInternalCacheDir(context, "web");
+        return getPublicDir(context, "web");
     }
 
 
@@ -227,7 +262,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanWebCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "web")));
+        deleteFile(new File(getPublicDir(context, "web")));
     }
 
     /**
@@ -237,7 +272,7 @@ public final class CacheUtils {
      * @return
      */
     public static String getDownloadCachePath(Context context) {
-        return getInternalCacheDir(context, "download");
+        return getPublicDir(context, "download");
     }
 
     /**
@@ -247,7 +282,7 @@ public final class CacheUtils {
      * @return
      */
     public static void cleanDownloadCache(Context context) {
-        deleteFile(new File(getInternalCacheDir(context, "download")));
+        deleteFile(new File(getPublicDir(context, "download")));
     }
 
     /**
@@ -258,11 +293,11 @@ public final class CacheUtils {
      */
     public static void cleanInternalCache(Context context, String dirName) {
         if (!StringUtils.isNullOrEmpty(dirName)) {
-            deleteFile(new File(getInternalCacheDir(context, dirName)));
+            deleteFile(new File(getPublicDir(context, dirName)));
         } else {
             deleteFile(context.getFilesDir());
             deleteFile(context.getCacheDir());
-            deleteFile(new File(createAppRootDir(context.getPackageName())));
+            deleteFile(new File(createAppRootDir(context,context.getPackageName())));
         }
     }
 
@@ -296,7 +331,7 @@ public final class CacheUtils {
 
     private static void deleteFile(File directory) {
         if (null != directory && directory.exists()) {
-            if (directory.isFile()) {
+            if (directory.isFile() && directory.canWrite()) {
                 directory.delete();
             } else if (directory.isDirectory()) {
                 for (File item : directory.listFiles()) {
@@ -324,40 +359,6 @@ public final class CacheUtils {
      */
     public static String getCacheDirSizeString(String cacheDir) {
         return FileUtils.formatFileSize(getCacheDirSize(cacheDir));
-    }
-
-
-    public static void cleanInvalidMemory(Context context) {
-        int res = context.checkCallingOrSelfPermission("android.permission.KILL_BACKGROUND_PROCESSES");
-        if (PackageManager.PERMISSION_GRANTED == res) {
-            getAvailMemory(context);
-            ActivityManager activityManger = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
-            List<ActivityManager.RunningAppProcessInfo> list = activityManger.getRunningAppProcesses();
-            if (list != null) {
-                int close = 0;
-                for (int i = 0; i < list.size(); i++) {
-                    ActivityManager.RunningAppProcessInfo apinfo = list.get(i);
-                    String[] pkgList = apinfo.pkgList;
-                    if (apinfo.importance > ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
-                        for (int j = 0; j < pkgList.length; j++) {
-                            activityManger.killBackgroundProcesses(pkgList[j]);
-                        }
-                        close++;
-                    }
-                }
-                LogUtils.i("已关闭" + close + "个后台进程");
-            }
-            getAvailMemory(context);
-        }
-        System.gc();
-    }
-
-    public static long getAvailMemory(Context context) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        MemoryInfo mi = new MemoryInfo();
-        am.getMemoryInfo(mi);
-        LogUtils.d("可用内存---->>>" + (mi.availMem / (1024 * 1024)) + "M");
-        return mi.availMem / (1024 * 1024);
     }
 
 

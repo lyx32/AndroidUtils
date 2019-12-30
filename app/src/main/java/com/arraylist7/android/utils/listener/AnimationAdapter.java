@@ -1,4 +1,4 @@
-package com.arraylist7.android.utils.adapter;
+package com.arraylist7.android.utils.listener;
 
 import android.view.animation.Animation;
 
