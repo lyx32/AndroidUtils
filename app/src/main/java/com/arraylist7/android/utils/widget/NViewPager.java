@@ -1,11 +1,14 @@
 package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.arraylist7.android.utils.adapter.ViewPagerAdapter;
+import com.arraylist7.android.utils.listener.OnViewPagerItemClickListener;
 
 public class NViewPager extends ViewPager {
 
@@ -41,5 +44,16 @@ public class NViewPager extends ViewPager {
 
     public void setCanHorizontalScroll(boolean isCanHorizontalScroll) {
         this.isCanHorizontalScroll = isCanHorizontalScroll;
+    }
+
+
+    public <T> void setOnItemClickListener(OnViewPagerItemClickListener<T> listener) {
+        PagerAdapter adapter = this.getAdapter();
+        if (null == adapter)
+            return;
+        if (adapter instanceof ViewPagerAdapter) {
+            ViewPagerAdapter<T> viewPagerAdapter = (ViewPagerAdapter<T>) adapter;
+            viewPagerAdapter.setOnItemClickListener(listener);
+        }
     }
 }

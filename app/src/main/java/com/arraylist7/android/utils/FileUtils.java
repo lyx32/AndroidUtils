@@ -1,6 +1,11 @@
 package com.arraylist7.android.utils;
 
 
+import android.content.Context;
+import android.net.Uri;
+
+import androidx.core.content.FileProvider;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +34,24 @@ public final class FileUtils {
     FileUtils() {
     }
 
+
+    public static void createFile(String filePath) {
+        File f = new File(filePath);
+        if (!f.exists()) {
+            if (f.getParentFile().exists())
+                f.getParentFile().mkdirs();
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Uri getFileUri(Context context, String path) {
+        return FileProvider.getUriForFile(context, "com.arraylist7.android.utils.FileProvider", new File(path));
+    }
+
     public static String getFileName(String filePath) {
         if (StringUtils.isNullOrEmpty(filePath))
             return "";
@@ -41,6 +64,7 @@ public final class FileUtils {
         int point = fileName.lastIndexOf('.');
         return fileName.substring(point + 1);
     }
+
 
     /**
      * 将文件大小转成中文大小（10.05KB，10.05MB）
@@ -113,7 +137,7 @@ public final class FileUtils {
     /**
      * 读取文件全部内容
      *
-     * @param file    读取文件
+     * @param file 读取文件
      * @return
      */
     public static String readerFile(File file) {

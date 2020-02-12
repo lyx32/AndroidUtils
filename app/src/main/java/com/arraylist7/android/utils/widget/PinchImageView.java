@@ -18,7 +18,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 @SuppressLint("NewApi")
-public class PinchImageView extends ImageView {
+public class PinchImageView extends NetworkImageView {
 
 
     ////////////////////////////////配置参数////////////////////////////////

@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils.listener;
 
+import android.content.Context;
 import android.os.Message;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +32,7 @@ public class OnRecyclerViewScrollListener extends RecyclerView.OnScrollListener 
         this.listener = listener;
         handler = new NHandler(new IHandler() {
             @Override
-            public void handlerMsg(NHandler handler, Message msg) {
+            public void handlerMsg(Context context, NHandler handler, Message msg) {
                 if (200 == msg.what) {
                     BitmapUtils.getPicasso().resumeTag(OnRecyclerViewScrollListener.this.recyclerView.getContext());
                 } else if (201 == msg.what) {

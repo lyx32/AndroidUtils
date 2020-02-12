@@ -11,6 +11,7 @@ import com.arraylist7.android.utils.CacheUtils;
 import com.arraylist7.android.utils.DeviceUtils;
 import com.arraylist7.android.utils.FileUtils;
 import com.arraylist7.android.utils.HTMLUtils;
+import com.arraylist7.android.utils.HttpUtils;
 import com.arraylist7.android.utils.IOUtils;
 import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.OtherUtils;
@@ -25,6 +26,9 @@ import com.arraylist7.android.utils.demo.App;
 import com.arraylist7.android.utils.demo.R;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
+import com.arraylist7.android.utils.http.HttpRequest;
+import com.arraylist7.android.utils.http.HttpResponse;
+import com.arraylist7.android.utils.http.callback.HttpListenerImpl;
 import com.arraylist7.android.utils.listener.PermissionListener;
 import com.arraylist7.android.utils.listener.ThreadStateListener;
 import com.arraylist7.android.utils.model.SimInfo;
@@ -83,9 +87,7 @@ public class Launch extends Base {
 
     @Override
     public void initData() {
-
-
-        String newFilePath = CacheUtils.getPublicDir(activity,"android_utils_folder") + "/1.html";
+        String newFilePath = CacheUtils.getPublicFilePath(activity,"android_utils_folder") + "/1.html";
         try {
             FileUtils.copyFile(getAssets().open("cq.qq.com_2018-12-21.html"), newFilePath);
         } catch (IOException e) {
@@ -95,40 +97,21 @@ public class Launch extends Base {
         LogUtils.e("本地文件大小：" + cq_qq_com.length());
         LogUtils.e("-------------------------");
         String[] array = FileUtils.readerTopLines(newFilePath, 30);
-        LogUtils.e(array[0]);
-        LogUtils.e(array[7]);
-        LogUtils.e(array[15]);
+        LogUtils.e("第1行内容："+array[0]);
+        LogUtils.e("第8行内容："+array[7]);
+        LogUtils.e("第16行内容："+array[15]);
 
-        // 找到所有type="text" 的input标签
-        List<String> inputs = HTMLUtils.findInputTag(cq_qq_com, new String[]{"type"}, new String[]{"text"});
         // 找到class="channel-title"的h3节点及h3节点下的内容
         List<String> h3_class = HTMLUtils.findHtmlTag(cq_qq_com, "h3", new String[]{"class"}, new String[]{"channel-title"}, true);
         // 提取所有img的src值
         List<String> srcs = HTMLUtils.findImg_Src(cq_qq_com);
-        // 提取所有img的src值
-        List<String> spans = HTMLUtils.findHtmlTag(cq_qq_com,"span",true);
-        for (String item : inputs) {
-            LogUtils.e("input=" + item);
-        }
+
         for (String item : h3_class) {
             LogUtils.e("h3_class=" + item);
         }
         for (String item : srcs) {
             LogUtils.e("srcs=" + item);
         }
-        for (String item : spans) {
-            LogUtils.e("span_content=" + HTMLUtils.findContent(item));
-        }
-
-
-
-        DemoModel model = new DemoModel();
-        model.id = 1 + "";
-        model.name = "name-" + 1;
-        model.dateTime = StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss.SSS");
-        model.picUrl = "http://s.img.mix.sina.com.cn/auto/resize?img=http%3A%2F%2Fwww.sinaimg.cn%2Fdy%2Fslidenews%2F1_img%2F2017_13%2F86104_823262_955160.jpg&size=100_100";
-
-
     }
 
     @Override
@@ -137,21 +120,20 @@ public class Launch extends Base {
         http.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                HttpRequest request = new HttpRequest("https://www.qq.com/", "gb2312", "GET");
-//                request.addPostParameter("time",StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss"));
-//                HttpUtils.request(request, new HttpListenerImpl() {
-//                    @Override
-//                    public void onSuccess(String html, HttpResponse response) {
-//                        LogUtils.e("[" + html + "]");
-//                    }
-//                });
+                HttpRequest request = new HttpRequest("https://www.qq.com/", "gb2312", "GET");
+                request.addPostParameter("time",StringUtils.getDateTimeNow("yyyy-MM-dd HH:mm:ss"));
+                HttpUtils.request(request, new HttpListenerImpl() {
+                    @Override
+                    public void onSuccess(String html, HttpResponse response) {
+                        LogUtils.e("[" + html + "]");
+                    }
+                });
             }
         });
 
         thread.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 ThreadUtils.submit(activity, new Runnable() {
                     @Override
                     public void run() {

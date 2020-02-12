@@ -1,7 +1,6 @@
 package com.arraylist7.android.utils;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 public class LogUtils {
@@ -118,7 +117,7 @@ public class LogUtils {
      * @param fileName     要保存的文件名
      */
     public static void file(Context context, String message, String rootDirctory, String fileName) {
-        file(message, CacheUtils.getPublicDir(context,rootDirctory) + "/" + fileName);
+        file(message, CacheUtils.getPublicFilePath(context,rootDirctory) + "/" + fileName);
     }
 
     /**
@@ -131,6 +130,6 @@ public class LogUtils {
      * @param fileName     要保存的文件名
      */
     public static void file(Context context, String message, String rootDirctory, String dirctory, String fileName) {
-        file(message, CacheUtils.getPublicDir(context,rootDirctory)+"/"+dirctory + "/" + fileName);
+        file(message, CacheUtils.getPublicFilePath(context,rootDirctory)+"/"+dirctory + "/" + fileName);
     }
 }

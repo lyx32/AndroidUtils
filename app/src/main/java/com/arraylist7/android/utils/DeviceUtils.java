@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsProvider;
+import android.provider.MediaStore;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
@@ -101,46 +103,17 @@ public class DeviceUtils {
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String getUniqueSign(Context context) {
-        String sign = "";
-        String publicPath = CacheUtils.getStorageDirectory(Environment.DIRECTORY_DOCUMENTS);
         String privatePath = CacheUtils.getPrivateDirectory(context);
-        String fileName = "deviceId.device";
-        if (PackageManager.PERMISSION_DENIED != context.checkCallingOrSelfPermission(Manifest.permission.READ_PHONE_STATE)) {
-            SimInfo sim = getSimInfo(context);
-            if (null != sim) {
-                sign = sim.iccid1 + "_" + sim.iccid2;
-                try {
-                    FileUtils.writerFile(publicPath, sign);
-                } catch (Exception e) {
-                }
-                try {
-                    FileUtils.writerFile(privatePath, sign);
-                } catch (Exception e) {
-                }
-            }
-        }
-        if (Build.VERSION.SDK_INT >= 18 && StringUtils.isNullOrEmpty(sign)) {
-            sign = FileUtils.readerFile(publicPath + File.separatorChar + fileName);
-            if (StringUtils.isNullOrEmpty(sign)) {
-                sign = FileUtils.readerFile(privatePath + File.separatorChar + fileName);
-                if (StringUtils.isNullOrEmpty(sign)) {
-                    sign = getDeviceId(context);
-                    try {
-                        FileUtils.writerFile(publicPath, sign);
-                    } catch (Exception e) {
-                    }
-                    try {
-                        FileUtils.writerFile(privatePath, sign);
-                    } catch (Exception e) {
-                    }
-                }
-            }
-        }
-        if(StringUtils.isNullOrEmpty(sign)){
+        String fileName = "deviceId";
+        String sign = FileUtils.readerFile(privatePath + File.separatorChar + fileName);
+        if (StringUtils.isNullOrEmpty(sign)) {
             sign = getDeviceId(context);
+            try {
+                FileUtils.writerFile(privatePath, sign);
+            } catch (Exception e) {
+            }
         }
         return sign;
-
     }
 
     /**

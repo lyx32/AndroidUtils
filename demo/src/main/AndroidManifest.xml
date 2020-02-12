@@ -23,6 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/DemoAppTheme">
         <activity android:name=".ui.Launch">
             <intent-filter>
@@ -34,7 +35,8 @@
         <activity android:name=".ui.Main"></activity>
         <activity android:name=".ui.Fonts"></activity>
         <activity android:name=".ui.Html"></activity>
-
+        <activity android:name=".ui.Notification"></activity>
+        <activity android:name=".ui.Database"></activity>
     </application>
 
 </manifest>

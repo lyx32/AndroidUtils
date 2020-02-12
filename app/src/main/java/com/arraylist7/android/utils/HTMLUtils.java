@@ -129,10 +129,11 @@ public class HTMLUtils {
                 String attrVal = null;
                 if (null != attrVals)
                     attrVal = attrVals[i];
-                if (!StringUtils.isNullOrEmpty(attr))
-                    patternString.append("[^<>]*?\\s+" + attr);
-                if (!StringUtils.isNullOrEmpty(attrVal))
-                    patternString.append("=\\s*[\"']" + attrVal + "[\"']\\s*");
+                if (!StringUtils.isNullOrEmpty(attr)) {
+                    patternString.append("[^<>]*?\\s+" + attr + "=");
+                    if (!StringUtils.isNullOrEmpty(attrVal))
+                        patternString.append("\\s*[\"']" + attrVal + "[\"']\\s*");
+                }
             }
         }
         if (isContainsContent)
@@ -156,7 +157,15 @@ public class HTMLUtils {
     public static List<String> findATag(String html) {
         return findHtmlTag(html, "a", false);
     }
-
+    /**
+     * 提取a标签的href值
+     *
+     * @param html 要查找的内容
+     * @return
+     */
+    public static List<String> findA_Href(String html) {
+        return findAttrValue(html, "a", new String[]{"href"});
+    }
     /**
      * 找到img标签
      *
@@ -187,6 +196,15 @@ public class HTMLUtils {
         return findHtmlTag(html, "input", "", "", false);
     }
 
+    /**
+     * 找到input标签
+     *
+     * @param html 要查找的内容
+     * @return
+     */
+    public static List<String> findInputValue(String html) {
+        return findHtmlTag(html, "input", "value", "", false);
+    }
 
     /**
      * 通过指定属性及属性值找到input标签
@@ -210,15 +228,7 @@ public class HTMLUtils {
         return findAttrValue(html, "img", new String[]{"src"});
     }
 
-    /**
-     * 提取a标签的href值
-     *
-     * @param html 要查找的内容
-     * @return
-     */
-    public static List<String> findA_Href(String html) {
-        return findAttrValue(html, "a", new String[]{"href"});
-    }
+
 
 
     /**
@@ -253,10 +263,91 @@ public class HTMLUtils {
      * @param html
      * @return
      */
-    public static String findContent(String html) {
+    public static List<String> findHtmlContent(String html) {
+        List<String> list = new ArrayList<>();
         Matcher matcher = CONTENT_ATTR_PATTERN.matcher(html);
-        if (matcher.find())
-            return matcher.group(1);
-        return "";
+        while (matcher.find()) {
+            list.add(matcher.group(1));
+        }
+        return list;
     }
+
+    /**
+     * 找到<div>xxxxxxx</div>中xxxxx的值(如果div内还包含其他html标签，则会出现错误)
+     *
+     * @param html
+     * @param tag  标签
+     * @return
+     */
+    public static List<String> findHtmlContent(String html, String tag) {
+        return findHtmlContent(html, tag, "", "");
+    }
+
+    /**
+     * 找到<div>xxxxxxx</div>中xxxxx的值(如果div内还包含其他html标签，则会出现错误)
+     *
+     * @param html
+     * @param tag     标签
+     * @param attr    包含的属性名
+     * @param attrVal 包含的属性值
+     * @return
+     */
+    public static List<String> findHtmlContent(String html, String tag, String attr, String attrVal) {
+        return findHtmlContent(html, tag, new String[]{attr}, new String[]{attrVal});
+    }
+
+    /**
+     * 找到<div>xxxxxxx</div>中xxxxx的值(如果div内还包含其他html标签，则会出现错误)
+     *
+     * @param html
+     * @param tag      标签
+     * @param attrs    包含的属性名
+     * @param attrVals 包含的属性值
+     * @return
+     */
+    public static List<String> findHtmlContent(String html, String tag, String[] attrs, String[] attrVals) {
+        List<String> list = new ArrayList<>();
+        StringBuffer patternString = new StringBuffer("<\\s*" + tag + "\\s*");
+        if (StringUtils.len(attrs) > 0) {
+            for (int i = 0; i < attrs.length; i++) {
+                String attr = attrs[i];
+                String attrVal = null;
+                if (null != attrVals)
+                    attrVal = attrVals[i];
+                if (!StringUtils.isNullOrEmpty(attr))
+                    patternString.append("[^<>]*?\\s+" + attr);
+                if (!StringUtils.isNullOrEmpty(attrVal))
+                    patternString.append("=\\s*[\"']" + attrVal + "[\"']\\s*");
+            }
+        }
+        patternString.append("[^>]*?\\s*>([^<]*?)</\\s*" + tag + "\\s*>");
+        Pattern pattern = Pattern.compile(patternString.toString());
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find()) {
+            list.add(matcher.group(1));
+        }
+        return list;
+    }
+
+    /**
+     * 找到A标签
+     *
+     * @param html 要查找的内容
+     * @return
+     */
+    public static List<String> findAContent(String html) {
+        return findHtmlContent(html, "a");
+    }
+
+
+    /**
+     * 找到Script标签
+     *
+     * @param html 要查找的内容
+     * @return
+     */
+    public static List<String> findScriptContent(String html) {
+        return findHtmlContent(html, "script");
+    }
+
 }

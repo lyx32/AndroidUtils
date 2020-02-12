@@ -11,5 +11,5 @@ import com.arraylist7.android.utils.handler.NHandler;
 
 public interface IHandler {
 
-    public void handlerMsg(NHandler handler,Message msg);
+    public void handlerMsg(Context context,NHandler handler,Message msg);
 }

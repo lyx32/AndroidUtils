@@ -1,14 +1,17 @@
 package com.arraylist7.android.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Parcelable;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -298,8 +301,11 @@ public final class UiUtils {
      * @return 状态码
      */
     public static NetState isConnected(Context context) {
-        NetState stateCode = NetState.NET_NO;
+        if (PackageManager.PERMISSION_GRANTED != context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE)) {
+            return NetState.NET_NO_PERMISSION;
+        }
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetState stateCode = NetState.NET_NO;
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni != null && ni.isConnectedOrConnecting()) {
             switch (ni.getType()) {
@@ -307,7 +313,10 @@ public final class UiUtils {
                     stateCode = NetState.NET_WIFI;
                     break;
                 case ConnectivityManager.TYPE_MOBILE:
-                    switch (ni.getSubtype()) {
+                    int dataNetworkType = ni.getSubtype();
+                    if (Build.VERSION.SDK_INT >= 24)
+                        dataNetworkType = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDataNetworkType();
+                    switch (dataNetworkType) {
                         case TelephonyManager.NETWORK_TYPE_GPRS: // 联通2g
                         case TelephonyManager.NETWORK_TYPE_CDMA: // 电信2g
                         case TelephonyManager.NETWORK_TYPE_EDGE: // 移动2g

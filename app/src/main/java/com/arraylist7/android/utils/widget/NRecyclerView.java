@@ -2,12 +2,16 @@ package com.arraylist7.android.utils.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.arraylist7.android.utils.LogUtils;
 import com.arraylist7.android.utils.adapter.RecyclerViewAdapter;
 import com.arraylist7.android.utils.itemdecoration.RecyclerViewItemDecoration;
 import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;
@@ -47,21 +51,13 @@ public class NRecyclerView extends RecyclerView {
     }
 
     public void setVertical(final boolean isCanScroll) {
-        LinearLayoutManager manager = new LinearLayoutManager(this.getContext()) {
-            public boolean canScrollVertically() {
-                return isCanScroll;
-            }
-        };
+        LinearLayoutManager manager = getLinearLayoutManager(true, isCanScroll);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         this.setLayoutManager(manager);
     }
 
     public void setHorizontal(final boolean isCanScroll) {
-        LinearLayoutManager manager = new LinearLayoutManager(this.getContext()) {
-            public boolean canScrollVertically() {
-                return isCanScroll;
-            }
-        };
+        LinearLayoutManager manager = getLinearLayoutManager(false, isCanScroll);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         this.setLayoutManager(manager);
     }
@@ -126,7 +122,51 @@ public class NRecyclerView extends RecyclerView {
 
 
     @Override
+    @Deprecated
     public void setOnScrollListener(OnScrollListener listener) {
         addOnScrollListener(listener);
+    }
+
+    private LinearLayoutManager getLinearLayoutManager(final boolean isVerticallyScroll, final boolean isCanScroll) {
+        return new LinearLayoutManager(this.getContext()) {
+            public boolean canScrollVertically() {
+                return isVerticallyScroll && isCanScroll;
+            }
+
+            @Override
+            public boolean canScrollHorizontally() {
+                return !isVerticallyScroll && isCanScroll;
+            }
+
+            private static final float MILLISECONDS_PER_INCH = 25f;
+
+            @Override
+            public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, final int position) {
+                LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
+                    @Override
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                        View view = getChildAt(0);
+                        if (view != null) {
+                            //获取当前item的position
+                            int firstChildPos = getPosition(view);
+                            //算出需要滑动的item数量
+                            int delta = Math.abs(position - firstChildPos) + 1;
+                            if (delta == 0)
+                                delta = 1;
+                            double data = 2D / delta;
+                            // 说明已经爆了，那说明需要滚动的数量有点多，那么则滚快点
+                            if ((data + "").contains("E")) {
+                                data = 0.001D;
+                            }
+                            return (float) data / 2;
+                        } else {
+                            return MILLISECONDS_PER_INCH / displayMetrics.densityDpi;
+                        }
+                    }
+                };
+                linearSmoothScroller.setTargetPosition(position);
+                startSmoothScroll(linearSmoothScroller);
+            }
+        };
     }
 }

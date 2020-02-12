@@ -1,5 +1,6 @@
 package com.arraylist7.android.utils.demo.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
 
@@ -14,8 +15,7 @@ public abstract class Base extends BaseAppCompatActivity {
     }
 
     @Override
-    public void handlerMsg(NHandler handler, Message msg) {
+    public void handlerMsg(Context context, NHandler handler, Message msg) {
 
     }
-
 }

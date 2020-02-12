@@ -1,25 +1,30 @@
 package com.arraylist7.android.utils;
 
+import android.view.animation.Animation;
+
+import androidx.annotation.NonNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClassUtils {
 
 
-    private static boolean USE_CACHE = true;
-    private static Map<String, Object> cacheMap = new HashMap<>();
-
-
-    public static boolean isUseCache() {
-        return USE_CACHE;
-    }
-
-    public static void setUseCache(boolean useCache) {
-        USE_CACHE = useCache;
-    }
+    private static Map<String, SoftReference<Field>> fieldCache = new HashMap<>();
 
     public static String getClassName(Class clazz) {
         return clazz.getSimpleName();
@@ -29,6 +34,171 @@ public class ClassUtils {
         return clazz.getName();
     }
 
+
+    public static <A extends Annotation> List<Annotation> getFieldAnnotation(Class<?> clazz, Class<A> annotationClass) {
+        List<Annotation> list = new ArrayList<>();
+        List<Field> fields = StringUtils.asList(clazz.getFields());
+        Field[] fieldList2 = clazz.getDeclaredFields();
+        for (Field f : fieldList2) {
+            if (!fields.contains(f)) {
+                fields.add(f);
+            }
+        }
+        for (Field field : fields) {
+            Annotation annotation = field.getAnnotation(annotationClass);
+            if (null != annotation)
+                list.add(annotation);
+        }
+        return list;
+    }
+
+
+    /**
+     * 拷贝类
+     *
+     * @param sourceObj 被拷贝的类
+     * @param newClass  新类
+     * @param <T>
+     * @return
+     */
+    public static <T> T copy(@NonNull Object sourceObj, @NonNull Class<T> newClass) {
+        T newObj = null;
+        try {
+            newObj = newClass.newInstance();
+            List<Field> newFieldList = StringUtils.asList(newClass.getFields());
+            Field[] newFieldList2 = newClass.getDeclaredFields();
+            for (Field f : newFieldList2) {
+                if (!newFieldList.contains(f)) {
+                    newFieldList.add(f);
+                }
+            }
+
+            Class sourceClass = sourceObj.getClass();
+            for (Field f : newFieldList) {
+                Field sourceField = sourceClass.getField(f.getName());
+                if (null == sourceField)
+                    sourceField = sourceClass.getDeclaredField(f.getName());
+                if (null == sourceField)
+                    continue;
+                Object sourceVal = getValue(sourceObj, f.getName());
+                // 如果类型一致
+                if (sourceVal.getClass() == f.getClass()) {
+                    setValue(newObj, f.getName(), sourceVal);
+                } else {
+                    // 如果类型不一致，则默认当作内容一致去处理
+                    Object newVal = copy(sourceVal, f.getClass().newInstance());
+                    setValue(newObj, f.getName(), newVal);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return (T) newObj;
+    }
+
+    /**
+     * 拷贝类
+     *
+     * @param sourceObj 被拷贝的类
+     * @param newObj    新类
+     * @param <T>
+     * @return
+     */
+    public static <T> T copy(@NonNull Object sourceObj, @NonNull Object newObj) {
+        try {
+            Class newClass = newObj.getClass();
+            List<Field> newFieldList = StringUtils.asList(newClass.getFields());
+            Field[] newFieldList2 = newClass.getDeclaredFields();
+            for (Field f : newFieldList2) {
+                if (!newFieldList.contains(f)) {
+                    newFieldList.add(f);
+                }
+            }
+            Class sourceClass = sourceObj.getClass();
+            for (Field f : newFieldList) {
+                Field sourceField = sourceClass.getField(f.getName());
+                if (null == sourceField)
+                    sourceField = sourceClass.getDeclaredField(f.getName());
+                if (null == sourceField)
+                    continue;
+                Object sourceVal = getValue(sourceObj, f.getName());
+                // 如果类型一致
+                if (sourceVal.getClass() == f.getClass()) {
+                    setValue(newObj, f.getName(), sourceVal);
+                } else {
+                    // 如果类型不一致，则默认当作内容一致去处理
+                    Object newVal = copy(sourceVal, f.getClass().newInstance());
+                    setValue(newObj, f.getName(), newVal);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return (T) newObj;
+    }
+
+    public static byte[] getByte(Serializable serializable) {
+        ObjectOutputStream oos = null;
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(serializable);
+            return bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.close(oos);
+        }
+        return null;
+    }
+
+    public static boolean isInt(Class<?> clazz) {
+        return int.class.isAssignableFrom(clazz) || Integer.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isLong(Class<?> clazz) {
+        return long.class.isAssignableFrom(clazz) || Long.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isDouble(Class<?> clazz) {
+        return double.class.isAssignableFrom(clazz) || Double.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isShort(Class<?> clazz) {
+        return short.class.isAssignableFrom(clazz) || Short.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isByte(Class<?> clazz) {
+        return byte.class.isAssignableFrom(clazz) || Byte.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isString(Class<?> clazz) {
+        return String.class.isAssignableFrom(clazz) || CharSequence.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isChar(Class<?> clazz) {
+        return char.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isBoolean(Class<?> clazz) {
+        return boolean.class.isAssignableFrom(clazz) || Boolean.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isFloat(Class<?> clazz) {
+        return float.class.isAssignableFrom(clazz) || Float.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isSerializable(Class<?> clazz) {
+        return Serializable.class.isAssignableFrom(clazz);
+    }
+
+    public static boolean isNumber(Class<?> clazz) {
+        return isShort(clazz) || isInt(clazz) || isLong(clazz);
+    }
+
+    public static boolean isDecimal(Class<?> clazz) {
+        return isFloat(clazz) || isDouble(clazz);
+    }
 
     /**
      * 设置静态类属性
@@ -63,17 +233,81 @@ public class ClassUtils {
     private static void setValue(Class clazz, Object instance, String fieldName, Object val) throws IllegalAccessException, NoSuchFieldException {
         if (null == clazz)
             throw new NullPointerException("clazz 不能为空");
-        Field field = clazz.getDeclaredField(fieldName);
-        if (null == field)
-            field = clazz.getField(fieldName);
-        if (null == field) {
-            throw new NoSuchFieldError(fieldName + " 不存在!");
+        String key = null == instance ? clazz.getName() + "_" + fieldName : instance.getClass().getName() + "_" + fieldName;
+        SoftReference<Field> softField = fieldCache.get(key);
+        if (null == softField || null != softField.get()) {
+            Field field = clazz.getDeclaredField(fieldName);
+            if (null == field)
+                field = clazz.getField(fieldName);
+            if (null == field) {
+                throw new NoSuchFieldError(fieldName + " 不存在!");
+            }
+            if (field.getModifiers() != Modifier.PUBLIC) {
+                field.setAccessible(true);
+            }
+            fieldCache.put(key, softField = new SoftReference<>(field));
         }
-        field.setAccessible(true);
-        field.set(instance, val);
-        String key = null == instance ? clazz.toString() + "_" + fieldName : instance.toString() + "_" + fieldName;
-        cacheMap.remove(key);
-        cacheMap.put(key, val);
+        softField.get().set(instance, val);
+    }
+
+    /**
+     * 设置静态类属性
+     *
+     * @param clazz      要设置的class
+     * @param fieldNames 属性名
+     * @param vals       值
+     */
+    public static void setValue(Class clazz, String[] fieldNames, Object[] vals) throws IllegalAccessException, NoSuchFieldException {
+        setValue(clazz, null, fieldNames, vals);
+    }
+
+    /**
+     * 设置实例属性
+     *
+     * @param instance   要设置的对象，
+     * @param fieldNames 属性名
+     * @param vals       值
+     */
+    public static void setValue(Object instance, String[] fieldNames, Object[] vals) throws IllegalAccessException, NoSuchFieldException {
+        setValue(instance.getClass(), instance, fieldNames, vals);
+    }
+
+    /**
+     * 设置属性
+     *
+     * @param clazz      要设置的class
+     * @param instance   要设置的对象，如果是静态类则为null
+     * @param fieldNames 属性名
+     * @param vals       值
+     */
+    private static void setValue(Class clazz, Object instance, String[] fieldNames, Object[] vals) throws IllegalAccessException, NoSuchFieldException {
+        if (null == clazz)
+            throw new NullPointerException("clazz 不能为空");
+        if (StringUtils.isNullOrEmpty(fieldNames) || StringUtils.isNullOrEmpty(vals)) {
+            throw new RuntimeException("fieldNames 与 vals 不匹配");
+        }
+        if (StringUtils.len(fieldNames) != StringUtils.len(vals)) {
+            throw new RuntimeException("fieldNames 与 vals 不匹配");
+        }
+        int index = 0;
+        for (String fieldName : fieldNames) {
+            String key = null == instance ? clazz.getName() + "_" + fieldName : instance.getClass().getName() + "_" + fieldName;
+            SoftReference<Field> softField = fieldCache.get(key);
+            if (null == softField || null == softField.get()) {
+                Field field = clazz.getDeclaredField(fieldName);
+                if (null == field)
+                    field = clazz.getField(fieldName);
+                if (null == field) {
+                    throw new NoSuchFieldError(fieldName + " 不存在!");
+                }
+                if (field.getModifiers() != Modifier.PUBLIC) {
+                    field.setAccessible(true);
+                }
+                fieldCache.put(key, softField = new SoftReference<>(field));
+            }
+            softField.get().set(instance, vals[index]);
+            index++;
+        }
     }
 
     /**
@@ -109,21 +343,20 @@ public class ClassUtils {
     private static <T> T getValue(Class clazz, Object obj, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         if (null == clazz)
             throw new NullPointerException("clazz 不能为空");
-        String key = null == obj ? clazz.toString() + "_" + fieldName : obj.toString() + "_" + fieldName;
-
-        Object cache = cacheMap.get(key);
-        if (null != cache && USE_CACHE)
-            return (T) cache;
-        Field field = clazz.getDeclaredField(fieldName);
-        if (null == field)
-            field = clazz.getField(fieldName);
-        if (null == field)
-            throw new NoSuchFieldError(fieldName + " 不存在!");
-        field.setAccessible(true);
-        cache = field.get(obj);
-        if (USE_CACHE)
-            cacheMap.put(key, cache);
-        return (T) cache;
+        String key = null == obj ? clazz.getName() + "_" + fieldName : obj.getClass().getName() + "_" + fieldName;
+        SoftReference<Field> softField = fieldCache.get(key);
+        if (null == softField || null == softField.get()) {
+            Field field = clazz.getDeclaredField(fieldName);
+            if (null == field)
+                field = clazz.getField(fieldName);
+            if (null == field)
+                throw new NoSuchFieldError(fieldName + " 不存在!");
+            if (field.getModifiers() != Modifier.PUBLIC) {
+                field.setAccessible(true);
+            }
+            fieldCache.put(key, softField = new SoftReference<>(field));
+        }
+        return (T) softField.get().get(obj);
     }
 
 
@@ -320,7 +553,9 @@ public class ClassUtils {
             throw new NullPointerException(clazz.toString() + " 中不存在 " + methodName + " 方法！");
         }
         Object result = null;
-        method.setAccessible(true);
+        if (method.getModifiers() != Modifier.PUBLIC) {
+            method.setAccessible(true);
+        }
         if (null != params && 0 != params.length)
             result = method.invoke(obj, params);
         else
@@ -328,7 +563,4 @@ public class ClassUtils {
         return (T) result;
     }
 
-    public static void clear() {
-        cacheMap.clear();
-    }
 }

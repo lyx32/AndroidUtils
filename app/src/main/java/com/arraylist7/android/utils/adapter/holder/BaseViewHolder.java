@@ -37,7 +37,6 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     private Map<String, WeakReference<Bitmap>> assetsCaches = new HashMap<>();
 
 
-
     public BaseViewHolder(View itemView) {
         this(TAG_ITEM, itemView);
     }
@@ -48,11 +47,11 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     public BaseViewHolder(Context context, int layoutId) {
-        this(context,TAG_ITEM, layoutId);
+        this(context, TAG_ITEM, layoutId);
     }
 
-    public BaseViewHolder(Context context,String tag, int layoutId) {
-        super(LayoutInflater.from(context).inflate(layoutId,null));
+    public BaseViewHolder(Context context, String tag, int layoutId) {
+        super(LayoutInflater.from(context).inflate(layoutId, null));
         this.tag = tag;
     }
 
@@ -99,56 +98,62 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
     public View visibility(int viewId) {
         View view = getView(viewId);
-        view.setVisibility(View.VISIBLE);
+        if (null != view)
+            view.setVisibility(View.VISIBLE);
         return view;
     }
 
     public View gone(int viewId) {
         View view = getView(viewId);
-        view.setVisibility(View.GONE);
+        if (null != view)
+            view.setVisibility(View.GONE);
         return view;
     }
 
     public TextView setText(int viewId, String text) {
         TextView textView = getTextView(viewId);
-        textView.setText(text);
-
+        if (null != textView)
+            textView.setText(text);
         return textView;
     }
 
     public ImageView setImageResource(int viewId, int resId) {
         ImageView imageView = getView(viewId, ImageView.class);
-        imageView.setImageResource(resId);
+        if (null != imageView)
+            imageView.setImageResource(resId);
         return imageView;
     }
 
     public ImageView setImageBitmap(int viewId, Bitmap bitmap) {
         ImageView imageView = getView(viewId, ImageView.class);
-        imageView.setImageBitmap(bitmap);
+        if (null != imageView)
+            imageView.setImageBitmap(bitmap);
         return imageView;
     }
 
 
     public ImageView setImageAssets(int viewId, String fileName) {
         ImageView imageView = getView(viewId, ImageView.class);
-        synchronized (imageView) {
-            WeakReference<Bitmap> soft = assetsCaches.get(viewId + "_" + fileName);
-            if (null != soft && null != soft.get()) {
-                LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") reader cache!");
-                imageView.setImageBitmap(soft.get());
-            } else {
-                LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") no cache load assets file !");
-                InputStream in = null;
-                try {
-                    in = itemView.getContext().getAssets().open(fileName);
-                    Bitmap bitmap = BitmapFactory.decodeStream(in);
-                    imageView.setImageBitmap(bitmap);
-                    assetsCaches.remove(viewId + "_" + fileName);
-                    assetsCaches.put(viewId + "_" + fileName, new WeakReference<Bitmap>(bitmap));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    IOUtils.close(in);
+        if (null != imageView) {
+            synchronized (imageView) {
+                WeakReference<Bitmap> soft = assetsCaches.get(viewId + "_" + fileName);
+                if (null != soft && null != soft.get()) {
+                    LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") reader cache!");
+                    imageView.setImageBitmap(soft.get());
+                } else {
+                    LogUtils.i("setImageAssets(" + viewId + ",\"" + fileName + "\") no cache load assets file !");
+                    InputStream in = null;
+                    try {
+                        in = itemView.getContext().getAssets().open(fileName);
+                        Bitmap bitmap = BitmapFactory.decodeStream(in);
+                        imageView.setImageBitmap(bitmap);
+                        assetsCaches.remove(viewId + "_" + fileName);
+                        assetsCaches.put(viewId + "_" + fileName, new WeakReference<Bitmap>(bitmap));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        IOUtils.close(in);
+                    }
                 }
             }
         }
@@ -161,9 +166,11 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
     public ImageView loadBitmap(int viewId, String url, int width, int height) {
         ImageView imageView = getImageView(viewId);
-        BitmapUtils.loadBitmap(url, width, height, imageView);
+        if (null != imageView)
+            BitmapUtils.loadBitmap(url, width, height, imageView);
         return imageView;
     }
+
 
     public String getTag() {
         return tag;

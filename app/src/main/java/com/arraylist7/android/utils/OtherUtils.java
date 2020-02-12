@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -16,7 +17,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
+
 import androidx.core.content.FileProvider;
+
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -95,27 +98,22 @@ public final class OtherUtils {
      * @return
      */
     public static boolean isBackground(Context context) {
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (appProcess.processName.equals(context.getPackageName())) {
-                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
-                    LogUtils.i(String.format("Background App:", appProcess.processName));
-                    return true;
-                } else {
-                    LogUtils.i(String.format("Foreground App:", appProcess.processName));
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = manager.getRunningAppProcesses();
+        if (!StringUtils.isNullOrEmpty(runningProcesses)) {
+            for (ActivityManager.RunningAppProcessInfo runningProcess : runningProcesses) {
+                if (runningProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                     return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
-    @SuppressLint("MissingPermission")
     public static void vibrate(Context context, long milliseconds) {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (PackageManager.PERMISSION_GRANTED == context.checkSelfPermission(Manifest.permission.VIBRATE)) {
-                Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+            Vibrator vib = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+            if (PackageManager.PERMISSION_GRANTED == context.checkCallingOrSelfPermission(Manifest.permission.VIBRATE)) {
                 vib.vibrate(milliseconds);
             }
         }
@@ -229,7 +227,8 @@ public final class OtherUtils {
                     sgin.append(Integer.toHexString(0xFF & byteArray[i]));
                 }
             }
-            return sgin.toString();
+            sgin.append(context.getPackageName());
+            return StringUtils.md5(sgin.toString(),32);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {

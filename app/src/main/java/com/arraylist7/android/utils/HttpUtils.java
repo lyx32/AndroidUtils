@@ -46,6 +46,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+/**
+ * 一个简单的Http请求类
+ */
 public class HttpUtils {
 
 

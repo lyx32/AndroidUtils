@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
@@ -107,8 +108,8 @@ public class ZipUtils {
      * @throws ZipException 压缩格式有误时抛出
      * @throws IOException  IO错误时抛出
      */
-    public static ArrayList<File> upZipSelectedFile(File zipFile, String folderPath, String nameContains) throws ZipException, IOException {
-        ArrayList<File> fileList = new ArrayList<File>();
+    public static List<File> upZipSelectedFile(File zipFile, String folderPath, String nameContains) throws ZipException, IOException {
+        List<File> fileList = new ArrayList<File>();
 
         File desDir = new File(folderPath);
         if (!desDir.exists()) {
@@ -151,8 +152,8 @@ public class ZipUtils {
      * @throws ZipException 压缩文件格式有误时抛出
      * @throws IOException  当解压缩过程出错时抛出
      */
-    public static ArrayList<String> getEntriesNames(File zipFile) throws ZipException, IOException {
-        ArrayList<String> entryNames = new ArrayList<String>();
+    public static List<String> getEntriesNames(File zipFile) throws ZipException, IOException {
+        List<String> entryNames = new ArrayList<String>();
         Enumeration<?> entries = getEntriesEnumeration(zipFile);
         while (entries.hasMoreElements()) {
             ZipEntry entry = ((ZipEntry) entries.nextElement());

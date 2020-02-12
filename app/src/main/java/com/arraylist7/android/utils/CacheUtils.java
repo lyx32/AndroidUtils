@@ -1,17 +1,11 @@
 package com.arraylist7.android.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * 功能：缓存目录工具类<br>
@@ -32,7 +26,8 @@ public final class CacheUtils {
      * @param type Environment.DIRECTORY_XXX
      * @return
      */
-    public static String getStorageDirectory(String type) {
+    @Deprecated
+    public static String getStorageDirectory(Context context, String type) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return Environment.getExternalStoragePublicDirectory(type).getAbsolutePath();// 获取跟目录
         }
@@ -40,7 +35,7 @@ public final class CacheUtils {
     }
 
     /**
-     * 得到App私有根目录
+     * 得到App私有根目录 /data/data/xxxx/
      *
      * @param context
      * @return
@@ -51,35 +46,15 @@ public final class CacheUtils {
         return context.getDataDir().getAbsolutePath();
     }
 
-    /**
-     * 得到App私有根目录
-     *
-     * @param context
-     * @return
-     */
-    public static String getPrivateDirectory(Context context,String dirName) {
-        String path = getPrivateDirectory(context);
-        return new File(path,dirName).getAbsolutePath();
-    }
-    /**
-     * 得到App公有根目录
-     *
-     * @param context
-     * @param dirName 目录名称
-     * @return
-     */
-    private static String getPublicFileDirectory(Context context, String dirName) {
-        return context.getExternalFilesDir(dirName).getAbsolutePath();
-    }
 
     /**
-     * 创建公有目录下的一级目录
+     * 创建公有目录下的一级目录 /android/data/xxxx/files/appRootDirName
      *
      * @param appRootDirName
      * @return
      */
     public static String createAppRootDir(Context context, String appRootDirName) {
-        File cacheFile = new File(getPublicFileDirectory(context,appRootDirName));
+        File cacheFile = new File(getPublicCachePath(context, appRootDirName));
         if (!cacheFile.exists()) {
             cacheFile.mkdirs();
         }
@@ -87,14 +62,14 @@ public final class CacheUtils {
     }
 
     /**
-     * 创建公有目录下的二级目录
+     * 创建公有目录下的二级目录 /android/data/xxxx/files/appRootDirName/childDirName
      *
      * @param appRootDirName 一级目录
      * @param childDirName   二级目录
      * @return
      */
     public static String createAppOtherDir(Context context, String appRootDirName, String childDirName) {
-        String dir = getPublicFileDirectory(context, File.separatorChar + appRootDirName + File.separatorChar + childDirName);
+        String dir = getPublicCachePath(context, File.separatorChar + appRootDirName + File.separatorChar + childDirName);
         File cacheFile = new File(dir);
         if (!cacheFile.exists()) {
             cacheFile.mkdirs();
@@ -103,201 +78,116 @@ public final class CacheUtils {
     }
 
     /**
-     * 获取公有缓存目录<br/>
-     * 如果/android/data/xxx.xxx.xxx/cache不能读写，则返回/android/data/xxx.xxx.xxx/files
+     * 获取应用程序私有缓存目录，/data/data/xxxx/caches
+     *
+     * @param context
+     * @return
+     */
+    public static String getPrivateCachePath(Context context) {
+        return context.getCacheDir().getAbsolutePath();
+    }
+
+    /**
+     * 获取应用程序私有缓存目录，/data/data/xxxx/caches/dirName
      *
      * @param context
      * @param dirName
      * @return
      */
-    public static String getPublicDir(Context context, String dirName) {
-        String path = context.getExternalCacheDir().getAbsolutePath() + File.separator + dirName;
-        File testFile = new File(path + File.separator + System.currentTimeMillis() + ".file");
-        if (!testFile.getParentFile().exists())
-            testFile.getParentFile().mkdirs();
-        if (!testFile.exists()) {
-            try {
-                testFile.createNewFile();
-            } catch (IOException e) {
-            }
-        }
-        if (testFile.exists()) {
-            testFile.delete();
-            return path;
-        }
-        path = context.getExternalFilesDir(dirName).getAbsolutePath();
-        testFile = new File(path + File.separator + System.currentTimeMillis() + ".file");
-        if (!testFile.getParentFile().exists())
-            testFile.getParentFile().mkdirs();
-        if (!testFile.exists()) {
-            try {
-                testFile.createNewFile();
-            } catch (IOException e) {
-            }
-        }
-        if (testFile.exists()) {
-            testFile.delete();
-            return path;
-        }
-        return CacheUtils.createAppOtherDir(context,context.getPackageName(), dirName);
+    public static String getPrivateCachePath(Context context, String dirName) {
+        return context.getCacheDir().getAbsolutePath() + "/" + dirName;
     }
 
-
     /**
-     * 获取文件缓存目录
+     * 获取应用程序公共缓存目录，/android/data/xxxx/caches
      *
      * @param context
      * @return
      */
-    public static String getFileCachePath(Context context) {
-        return getPublicDir(context, "files");
+    public static String getPublicCachePath(Context context) {
+        return context.getExternalCacheDir().getAbsolutePath();
     }
 
     /**
-     * 清理文件缓存目录
+     * 获取应用程序公共缓存目录，/android/data/xxxx/caches/dirName
+     *
+     * @param context
+     * @param dirName
+     * @return
+     */
+    public static String getPublicCachePath(Context context, String dirName) {
+        return context.getExternalCacheDir().getAbsolutePath() + "/" + dirName;
+    }
+
+
+    /**
+     * 获取应用程序私有文件目录，/data/data/xxxx/files
      *
      * @param context
      * @return
      */
-    public static void cleanFileCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "files")));
+    public static String getPrivateFilePath(Context context) {
+        return context.getFilesDir().getAbsolutePath();
+    }
+
+
+    /**
+     * 获取应用程序私有文件目录，/data/data/xxxx/files/dirName
+     *
+     * @param context
+     * @param dirName
+     * @return
+     */
+    public static String getPrivateFilePath(Context context, String dirName) {
+        return context.getFilesDir().getAbsolutePath() + "/" + dirName;
     }
 
     /**
-     * 获取内置图片缓存目录
+     * 获取应用程序公共文件目录，/android/data/xxxx/files
      *
      * @param context
      * @return
      */
-    public static String getImageCachePath(Context context) {
-        return getPublicDir(context, "images");
+    public static String getPublicFilePath(Context context) {
+        return context.getExternalFilesDir(null).getAbsolutePath();
     }
 
     /**
-     * 清理图片缓存目录
+     * 获取应用程序公共文件目录，/android/data/xxxx/files/dirName
+     *
+     * @param context
+     * @param dirName
+     * @return
+     */
+    public static String getPublicFilePath(Context context, String dirName) {
+        return context.getExternalFilesDir(dirName).getAbsolutePath();
+    }
+
+    /**
+     * 清理文件缓存目录（对应应用程序-清除缓存）
      *
      * @param context
      * @return
      */
-    public static void cleanImageCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "images")));
+    public static void cleanCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context)));
+        deleteFile(new File(getPrivateCachePath(context)));
     }
 
+
     /**
-     * 获取内置音频缓存目录
+     * 清理文件缓存目录（对应应用程序-清除数据）
      *
      * @param context
      * @return
      */
-    public static String getAudioCachePath(Context context) {
-        return getPublicDir(context, "audios");
-    }
-
-    /**
-     * 清理音频缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static void cleanAudioCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "audios")));
-    }
-
-    /**
-     * 获取内置视频缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static String getVideoCachePath(Context context) {
-        return getPublicDir(context, "videos");
-    }
-
-
-    /**
-     * 清理视频缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static void cleanVideoCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "videos")));
-    }
-
-    /**
-     * 获取内置头像缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static String getFaceCachePath(Context context) {
-        return getPublicDir(context, "faces");
-    }
-
-    /**
-     * 清理头像缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static void cleanFaceCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "faces")));
-    }
-
-    /**
-     * 获取内置WEB缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static String getWebCachePath(Context context) {
-        return getPublicDir(context, "web");
-    }
-
-
-    /**
-     * 清理WEB缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static void cleanWebCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "web")));
-    }
-
-    /**
-     * 获取下载缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static String getDownloadCachePath(Context context) {
-        return getPublicDir(context, "download");
-    }
-
-    /**
-     * 清理下载缓存目录
-     *
-     * @param context
-     * @return
-     */
-    public static void cleanDownloadCache(Context context) {
-        deleteFile(new File(getPublicDir(context, "download")));
-    }
-
-    /**
-     * 内置缓存目录
-     *
-     * @param context
-     * @param dirName 不传则清除所有，包含自定义目录
-     */
-    public static void cleanInternalCache(Context context, String dirName) {
-        if (!StringUtils.isNullOrEmpty(dirName)) {
-            deleteFile(new File(getPublicDir(context, dirName)));
-        } else {
-            deleteFile(context.getFilesDir());
+    public static void cleanData(Context context) {
+        deleteFile(new File(getPublicFilePath(context)));
+        if (Build.VERSION.SDK_INT < 24) {
             deleteFile(context.getCacheDir());
-            deleteFile(new File(createAppRootDir(context,context.getPackageName())));
+            deleteFile(context.getFilesDir());
+        } else {
+            deleteFile(context.getDataDir());
         }
     }
 
@@ -320,7 +210,7 @@ public final class CacheUtils {
     }
 
     /**
-     * * 按名字清除本应用数据库 * *
+     * * 删除本应用数据库
      *
      * @param context
      * @param dbName
@@ -328,6 +218,131 @@ public final class CacheUtils {
     public static void cleanDatabaseByName(Context context, String dbName) {
         context.deleteDatabase(dbName);
     }
+
+
+    /**
+     * 获取内置图片缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getImageCachePath(Context context) {
+        return getPublicCachePath(context, Environment.DIRECTORY_PICTURES);
+    }
+
+    /**
+     * 清理图片缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanImageCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context, Environment.DIRECTORY_PICTURES)));
+    }
+
+    /**
+     * 获取内置音频缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getAudioCachePath(Context context) {
+        return getPublicCachePath(context, Environment.DIRECTORY_AUDIOBOOKS);
+    }
+
+    /**
+     * 清理音频缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanAudioCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context, Environment.DIRECTORY_AUDIOBOOKS)));
+    }
+
+    /**
+     * 获取内置视频缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getVideoCachePath(Context context) {
+        return getPublicCachePath(context, Environment.DIRECTORY_MOVIES);
+    }
+
+
+    /**
+     * 清理视频缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanVideoCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context, Environment.DIRECTORY_MOVIES)));
+    }
+
+    /**
+     * 获取内置头像缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getFaceCachePath(Context context) {
+        return getPublicCachePath(context, "faces");
+    }
+
+    /**
+     * 清理头像缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanFaceCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context, "faces")));
+    }
+
+    /**
+     * 获取内置WEB缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getWebCachePath(Context context) {
+        return getPrivateCachePath(context, "web");
+    }
+
+
+    /**
+     * 清理WEB缓存目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanWebCache(Context context) {
+        deleteFile(new File(getPrivateCachePath(context, "web")));
+    }
+
+    /**
+     * 获取下载目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getDownloadCachePath(Context context) {
+        return getPublicCachePath(context, Environment.DIRECTORY_DOWNLOADS);
+    }
+
+
+    /**
+     * 清理下载目录
+     *
+     * @param context
+     * @return
+     */
+    public static void cleanDownloadCache(Context context) {
+        deleteFile(new File(getPublicCachePath(context, Environment.DIRECTORY_DOWNLOADS)));
+    }
+
 
     private static void deleteFile(File directory) {
         if (null != directory && directory.exists()) {

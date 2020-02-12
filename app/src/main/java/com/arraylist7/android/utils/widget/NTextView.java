@@ -60,7 +60,6 @@ public class NTextView extends AppCompatTextView {
         setHighlightColor(Color.TRANSPARENT);
         setMovementMethod(new LinkMovementMethod() {
             private QMUILinkTouchDecorHelper sHelper = new QMUILinkTouchDecorHelper();
-
             @Override
             public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
                 return sHelper.onTouchEvent(widget, buffer, event) || Touch.onTouchEvent(widget, buffer, event);

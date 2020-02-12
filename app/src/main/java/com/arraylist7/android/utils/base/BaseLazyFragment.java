@@ -42,7 +42,7 @@ public abstract class BaseLazyFragment extends Fragment implements IActivity, IH
         this.inflater = inflater;
         this.container = container;
         that = this;
-        hanlder = new NHandler(this);
+        hanlder = new NHandler(this.getActivity(), this);
         context = getActivity().getApplicationContext();
         bundle = this.getArguments();
         if (!isVisibility && !isInit && rootView == null)

@@ -55,7 +55,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity implements
         this.setContentView(getLayoutId());
         super.onCreate(savedInstanceState);
         activity = this;
-        handler = new NHandler(this);
+        handler = new NHandler(this, this);
         bundle = getIntent().getExtras();
         if (onCreate2(savedInstanceState)) {
             initWidget();

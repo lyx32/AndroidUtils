@@ -1,12 +1,14 @@
 package com.arraylist7.android.utils.adapter;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.arraylist7.android.utils.UiUtils;
 import com.arraylist7.android.utils.ViewUtils;
 import com.arraylist7.android.utils.adapter.holder.BaseViewHolder;
 import com.arraylist7.android.utils.listener.OnRecyclerViewItemClickListener;
@@ -259,7 +261,12 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseVi
     public void updateUI() {
         notifyDataSetChanged();
     }
-
+    public void updateUI(int index){
+        notifyItemChanged(index);
+    }
+    public void updateUI(int start,int count){
+        notifyItemRangeChanged(start,count);
+    }
 
     public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.listener = listener;

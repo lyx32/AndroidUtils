@@ -24,7 +24,9 @@ import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 
 import okhttp3.Cache;
@@ -48,12 +50,17 @@ public final class BitmapUtils {
         picasso = new Picasso.Builder(context).listener(new Picasso.Listener() {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                LogUtils.i("BitmapUtils加载图片失败:" + uri.toString(), exception);
+                if (exception instanceof SocketTimeoutException)
+                    LogUtils.i("加载超时：" + uri.toString(), exception);
+                else if (exception instanceof FileNotFoundException)
+                    LogUtils.i("图片不存在：" + uri.toString(), exception);
+                else
+                    LogUtils.i("BitmapUtils加载图片失败:" + uri.toString(), exception);
             }
         }).loggingEnabled(BuildConfig.DEBUG).indicatorsEnabled(true).downloader(new Downloader() {
-            final Call.Factory client = new OkHttpClient.Builder().cache(new Cache(createDefaultCacheDir(context), 65*1025*1024)).build();
+            final Call.Factory client = new OkHttpClient.Builder().cache(new Cache(createDefaultCacheDir(context), 65 * 1025 * 1024)).build();
 
-            @NonNull @Override public Response load(@NonNull Request request) throws IOException {
+            public Response load(Request request) throws IOException {
                 Request.Builder r = request.newBuilder();
                 if (null != header) {
                     for (String key : header.keySet()) {
@@ -63,18 +70,17 @@ public final class BitmapUtils {
                 return client.newCall(r.build()).execute();
             }
 
-            @Override public void shutdown() {
+            public void shutdown() {
             }
-        }).defaultBitmapConfig(Config.ARGB_4444).build();
-
+        }).defaultBitmapConfig(Config.ARGB_8888).build();
     }
+
     private static File createDefaultCacheDir(Context context) {
-        File cache = new File(context.getApplicationContext().getCacheDir(), "picasso-cache");
-        if (!cache.exists()) {
-            cache.mkdirs();
-        }
+        File cache = new File(CacheUtils.getPrivateCachePath(context, "picasso-cache"));
+        FileUtils.createFile(cache.getAbsolutePath());
         return cache;
     }
+
     public static Picasso getPicasso() {
         return picasso;
     }

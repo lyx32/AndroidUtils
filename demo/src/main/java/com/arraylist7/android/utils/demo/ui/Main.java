@@ -24,7 +24,6 @@ import com.arraylist7.android.utils.broadcast.ActivityBroadcast;
 import com.arraylist7.android.utils.broadcast.BaseBroadcastReceiver;
 import com.arraylist7.android.utils.demo.App;
 import com.arraylist7.android.utils.demo.R;
-import com.arraylist7.android.utils.demo.adapter.DemoAdapter;
 import com.arraylist7.android.utils.demo.base.Base;
 import com.arraylist7.android.utils.demo.model.DemoModel;
 import com.arraylist7.android.utils.listener.BaseBroadcastReceiverListener;
@@ -64,10 +63,8 @@ public class Main extends Base {
     private String app_name;
 
     // 由于NRecyclerView 不是继承自TextView，所以setText不会生效，但是setTag会生效
-    @Views(value = R.id.ui_main_recyclerView1, setText = "random", setTag = "random")
-    private NRecyclerView recyclerView1;
     // 演示自动绑定对象属性到xml布局中
-    @Views(R.id.ui_main_recyclerView2)
+    @Views(value = R.id.ui_main_recyclerView2, setText = "random", setTag = "random")
     private NRecyclerView recyclerView2;
 
 
@@ -80,7 +77,6 @@ public class Main extends Base {
     private int backgroundColor = -1;
 
 
-    private DemoAdapter adapter = null;
     private BaseBroadcastReceiver receiver = null;
 
     public static void instance(Activity from, boolean finish) {
@@ -113,12 +109,6 @@ public class Main extends Base {
                 UiUtils.showLong(App.getContext(), "点击了键盘右下角按钮");
             }
         });
-
-        recyclerView1.setListDivider(StringUtils.randomColor(), 5);
-        recyclerView1.setVertical(false);
-        recyclerView1.setAdapter(adapter = new DemoAdapter(R.layout.ui_main_item, this));
-
-
     }
 
     @Override
@@ -142,18 +132,22 @@ public class Main extends Base {
             list.add(model);
             model = null;
         }
-        adapter.addData(list);
-        adapter.updateUI();
         // 用于演示自动绑定对象属性到布局中，所以DemoModel中需要添加LayoutBind和DataBind注解
         recyclerView2.setAdapter(new AutoBindRecyclerViewAdapter(activity, list));
-
-
 
 
     }
 
     @Override
     public void initListener() {
+
+        ViewUtils.bindClickListener(this, R.id.ui_main_button6, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Notification.instance(activity,false);
+            }
+        });
+
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,6 +192,12 @@ public class Main extends Base {
             @Override
             public void onClick(View v) {
                 Html.instance(activity, false);
+            }
+        });
+        ViewUtils.bindClickListener(this, R.id.ui_main_button7, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Database.instance(activity, false);
             }
         });
     }

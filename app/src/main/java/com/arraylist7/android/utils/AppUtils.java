@@ -142,9 +142,20 @@ public final class AppUtils {
     }
 
 
+    /**
+     * 清理缓存，对应     设置——应用管理——app——存储——清理缓存
+     * @param context
+     */
     public static void clearCache(Context context){
+        CacheUtils.cleanCache(context);
+    }
 
-        CacheUtils.getPublicDir(context, "picasso-cache");
+    /**
+     * 清理数据，对应     设置——应用管理——app——存储——清理数据
+     * @param context
+     */
+    public static void clearData(Context context){
+        CacheUtils.cleanData(context);
     }
 
 
@@ -180,4 +191,6 @@ public final class AppUtils {
         LogUtils.d("可用内存---->>>" + (mi.availMem / (1024 * 1024)) + "M");
         return mi.availMem / (1024 * 1024);
     }
+
+
 }

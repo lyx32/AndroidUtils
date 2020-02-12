@@ -35,7 +35,7 @@ public class NEditText extends AppCompatEditText {
     public NEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // 这里为了避免没有设置setOnSubmitListener时，软键盘不消失的bug
-        setOnSubmitListener(null,null);
+        setOnSubmitListener(null, null);
     }
 
     @Override
@@ -47,15 +47,19 @@ public class NEditText extends AppCompatEditText {
     }
 
     public void setFocus() {
-        this.setFocusableInTouchMode(true);
-        this.requestFocus();
+        if (!isFocused()) {
+            this.setFocusableInTouchMode(true);
+            this.requestFocus();
+        }
         this.setSelection(getText().length());
     }
 
     public void setFocusAndSelectAll() {
-        this.setFocusableInTouchMode(true);
-        this.requestFocus();
-        this.setSelectAllOnFocus(true);
+        if (!isFocused()) {
+            this.setFocusableInTouchMode(true);
+            this.requestFocus();
+            this.setSelectAllOnFocus(true);
+        }
         this.selectAll();
     }
 

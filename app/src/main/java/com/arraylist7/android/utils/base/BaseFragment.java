@@ -40,7 +40,7 @@ public abstract class BaseFragment extends Fragment implements IActivity, IHandl
         rootView = inflater.inflate(getLayoutId(), container, false);
 
         that = this;
-        hanlder = new NHandler(this);
+        hanlder = new NHandler(getActivity(),this);
         context = getActivity().getApplicationContext();
         bundle = getArguments();
         onCreate(rootView);

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <Button
+            android:id="@+id/ui_notifi_button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_12dp"
+            android:layout_marginTop="@dimen/_12dp"
+            android:layout_marginRight="@dimen/_12dp"
+            android:text="普通通知" />
+
+        <Button
+            android:id="@+id/ui_notifi_button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_12dp"
+            android:layout_marginTop="@dimen/_12dp"
+            android:layout_marginRight="@dimen/_12dp"
+            android:text="多文字通知" />
+        <Button
+            android:id="@+id/ui_notifi_button3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_12dp"
+            android:layout_marginTop="@dimen/_12dp"
+            android:layout_marginRight="@dimen/_12dp"
+            android:text="大图通知" />
+        <Button
+            android:id="@+id/ui_notifi_button4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_12dp"
+            android:layout_marginTop="@dimen/_12dp"
+            android:layout_marginRight="@dimen/_12dp"
+            android:text="下载通知" />
+
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

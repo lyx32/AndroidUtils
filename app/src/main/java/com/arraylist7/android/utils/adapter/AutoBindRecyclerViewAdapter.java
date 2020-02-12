@@ -26,24 +26,34 @@ public class AutoBindRecyclerViewAdapter<T> extends RecyclerViewAdapter<T> {
         super(0, context);
     }
 
+
+    public AutoBindRecyclerViewAdapter(int layoutId,Context context) {
+        super(layoutId, context);
+    }
+
     public AutoBindRecyclerViewAdapter(Context context, List<T> data) {
         super(0, context, data);
+        init(data.get(0));
+    }
+
+    public AutoBindRecyclerViewAdapter(int layoutId, Context context, List<T> data) {
+        super(layoutId, context, data);
         init(data.get(0));
     }
 
     private void init(T t) {
         if (null == t)
             return;
-        if (null == layout) {
+        if (0 == getLayoutId()) {
             layout = t.getClass().getAnnotation(LayoutBind.class);
             setLayoutId(layout.value());
-            Field[] fields = t.getClass().getDeclaredFields();
-
-            for (Field f : fields) {
-                DataBind dataBind = f.getAnnotation(DataBind.class);
-                if (null != dataBind) {
-                    dataField.put(f.getName(), dataBind);
-                }
+        }
+        dataField.clear();
+        Field[] fields = t.getClass().getDeclaredFields();
+        for (Field f : fields) {
+            DataBind dataBind = f.getAnnotation(DataBind.class);
+            if (null != dataBind) {
+                dataField.put(f.getName(), dataBind);
             }
         }
     }
@@ -85,19 +95,22 @@ public class AutoBindRecyclerViewAdapter<T> extends RecyclerViewAdapter<T> {
     @Override
     public void addData(Collection<T> data) {
         super.addData(data);
-        init(data.iterator().next());
+        if (!StringUtils.isNullOrEmpty(data))
+            init(data.iterator().next());
     }
 
     @Override
     public void addData(T[] data) {
         super.addData(data);
-        init(data[0]);
+        if (!StringUtils.isNullOrEmpty(data))
+            init(data[0]);
     }
 
     @Override
     public void addData(T data) {
         super.addData(data);
-        init(data);
+        if (!StringUtils.isNullOrEmpty(data))
+            init(data);
     }
 
 }

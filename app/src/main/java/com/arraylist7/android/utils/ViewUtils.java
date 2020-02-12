@@ -265,6 +265,22 @@ public final class ViewUtils {
         vs.clear();
     }
 
+    public static void bindClickListener(View view, int viewId, View.OnClickListener listener){
+            bindClickListener(new ViewSource(view),viewId,listener);
+    }
+
+    public static void bindClickListener(Activity activity,int viewId,View.OnClickListener listener){
+        bindClickListener(new ViewSource(activity),viewId,listener);
+    }
+
+    private static void bindClickListener(ViewSource vs, int viewId, final View.OnClickListener listener){
+        View view = vs.findViewById(viewId);
+        if(null == view){
+            LogUtils.e(viewId + " id无效，不能绑定事件！");
+            return;
+        }
+        view.setOnClickListener(listener);
+    }
 
     private static String getFieldInfo(Field field) {
         String modifier = Modifier.toString(field.getModifiers());

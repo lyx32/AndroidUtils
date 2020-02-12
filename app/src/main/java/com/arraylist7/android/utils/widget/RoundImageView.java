@@ -26,7 +26,7 @@ import com.arraylist7.android.utils.R;
 /**
  * 圆角ImageView组件
  */
-public class RoundImageView extends AppCompatImageView {
+public class RoundImageView extends NetworkImageView {
 
     //save bundle state
     private static final String STATE_INSTANCE = "state_instance";

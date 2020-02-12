@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 public final class StringUtils {
 
-    private final static Pattern phone = Pattern.compile("1[3\\d|4[5|7]|5[0|1|5-9]|7[0|6|7|8]|8\\d|91]|\\d{8}");
     private final static SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -74,6 +73,19 @@ public final class StringUtils {
             String val = obj.toString().replaceAll("\\D", "");
             if (isInt(val))
                 return Integer.parseInt(val);
+        }
+        return def;
+    }
+
+    public static long getLong(Object obj, long def) {
+        if (!isNullOrEmpty(obj))
+            obj = obj.toString().trim();
+        if (isInt(obj)) {
+            return Long.parseLong(obj.toString());
+        } else {
+            String val = obj.toString().replaceAll("\\D", "");
+            if (isInt(val))
+                return Long.parseLong(val);
         }
         return def;
     }
@@ -145,6 +157,14 @@ public final class StringUtils {
         return true;
     }
 
+    public static <T> T get(List<T> list, int index) {
+        if (list.size() > index)
+            return list.get(index);
+        if (0 != StringUtils.len(list) && list.get(0) instanceof String)
+            return (T) "";
+        return null;
+    }
+
 
     public static boolean contains(Object left, Object right) {
         if (isAllNullOrEmpty(left, right)) return true;
@@ -190,6 +210,119 @@ public final class StringUtils {
         return new DecimalFormat(formart).format(val);
     }
 
+    public static String subString(String str, int start, int end) {
+        if (isNullOrEmpty(str) || start > end)
+            return "";
+        if (start < 0)
+            start = 0;
+        int l = len(str);
+        if (end > l)
+            end = l;
+        if (start == end)
+            return str.charAt(start) + "";
+        return str.substring(start, end);
+    }
+
+    public static boolean startsWith(String left, String right) {
+        if (isAllNullOrEmpty(left, right))
+            return true;
+        if (null == left)
+            throw new NullPointerException("left 参数不能为空！");
+        if (null == right)
+            return false;
+        return left.startsWith(right);
+    }
+
+    public static boolean startsWith(String left, String right, int charLen) {
+        if (null == left)
+            throw new NullPointerException("left 参数不能为空！");
+        if (null == right)
+            return false;
+        if (!left.startsWith(right))
+            return false;
+        if (charLen > left.length())
+            charLen = left.length();
+        String nl = left.substring(0, charLen);
+        String nr = right.length() > charLen ? right.substring(0, charLen) : right;
+        return nl.equals(nr);
+    }
+
+    public static boolean endsWith(String left, String right) {
+        if (isAllNullOrEmpty(left, right))
+            return true;
+        if (null == left)
+            throw new NullPointerException("left 参数不能为空！");
+        if (null == right)
+            return false;
+        return left.endsWith(right);
+    }
+
+    public static boolean endsWith(String left, String right, int charLen) {
+        if (null == left)
+            throw new NullPointerException("left 参数不能为空！");
+        if (null == right)
+            return false;
+        if (!left.endsWith(right))
+            return false;
+        if (charLen > left.length())
+            charLen = left.length();
+        String nl = left.substring(left.length() - charLen, charLen);
+        String nr = right.length() > charLen ? right.substring(right.length() - charLen, charLen) : right;
+        return nl.equals(nr);
+    }
+
+
+    public static int min(int... ints) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < ints.length; i++) {
+            if (ints[i] < min)
+                min = ints[i];
+        }
+        return min;
+    }
+
+    public static int max(int... ints) {
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < ints.length; i++) {
+            if (ints[i] > max)
+                max = ints[i];
+        }
+        return max;
+    }
+
+    public static <T> boolean in(T t, T... ts) {
+        boolean isIn = false;
+        for (T item_t : ts) {
+            if (item_t instanceof String) {
+                if (item_t.equals(t)) {
+                    isIn = true;
+                    break;
+                }
+            } else {
+                if (t == item_t) {
+                    isIn = true;
+                    break;
+                }
+            }
+        }
+        return isIn;
+    }
+
+    public static String join(String[] arrays, String separator) {
+        if (StringUtils.isNullOrEmpty(arrays))
+            return "";
+        StringBuffer sb = new StringBuffer(separator.length() * arrays.length * 5);
+        for (String item : arrays) {
+            if (null == item)
+                item = "";
+            sb.append(item + separator);
+        }
+        if (sb.length() > separator.length())
+            sb.setLength(sb.length() - separator.length());
+        return sb.toString();
+    }
+
+
     public static boolean isNullOrEmpty(Object value) {
         if (null == value) {
             return true;
@@ -228,27 +361,6 @@ public final class StringUtils {
         return isAllNotNullOrEmpty;
     }
 
-    public static String putRightTrim(String val, int length) {
-        return putTrim(val, false, length);
-    }
-
-    public static String putTrim(String val, boolean isLeft, int length) {
-        if (isNullOrEmpty(val)) return "";
-        StringBuffer newVal = new StringBuffer(length);
-        int end = val.length();
-        int len = length - end;
-        if (len > 0) {
-            for (int i = 0; i < len; i++) {
-                newVal.append(" ");
-            }
-            if (isLeft) newVal.append(val);
-            else newVal.insert(0, val);
-        } else {
-            newVal.append(val);
-        }
-        return newVal.toString();
-    }
-
     /**
      * 补位
      *
@@ -261,24 +373,12 @@ public final class StringUtils {
     public static String fillValue(String val, boolean isLeft, int fillLength, String fill) {
         if (isNullOrEmpty(val)) return "";
         int end = val.length();
-        int allLen = fillLength + end;
-        StringBuffer newVal = new StringBuffer(allLen);
-        if (fillLength > 0) {
-            for (int i = 0; i < fillLength; i++) {
-                newVal.append(fill);
-            }
-            if (isLeft) newVal.append(val);
-            else newVal.insert(0, val);
-        } else {
-            newVal.append(val);
+        int allLen = fillLength + end + fill.length();
+        StringBuffer fillString = new StringBuffer(allLen);
+        for (int i = 0; i < fillLength; i++) {
+            fillString.append(fill);
         }
-        return newVal.toString();
-    }
-
-    public static boolean isPhone(Object value) {
-        if (isNullOrEmpty(value))
-            return false;
-        return phone.matcher(value.toString()).matches();
+        return isLeft ? fillString.append(val).toString() : val + fillString.toString();
     }
 
     public static boolean isUrl(String str) {
@@ -339,9 +439,13 @@ public final class StringUtils {
 
 
     public static <T> List<T> asList(T... t) {
+        List<T> list = new ArrayList<>();
         if (null == t)
-            return new ArrayList<T>();
-        return Arrays.asList(t);
+            return list;
+        for (T item : t) {
+            list.add(item);
+        }
+        return list;
     }
 
     public static <T> List<T> asList(Set<T> t) {
@@ -354,7 +458,13 @@ public final class StringUtils {
         return t;
     }
 
-
+    /**
+     * 将 T 转换成map ，key 从0开始递增
+     *
+     * @param args
+     * @param <T>
+     * @return
+     */
     public static <T> Map<String, T> asMap(T... args) {
         Map<String, T> map = new HashMap<String, T>();
         int i = 0;
@@ -367,6 +477,14 @@ public final class StringUtils {
         return map;
     }
 
+    /**
+     * 将key，val转换为map
+     *
+     * @param key
+     * @param val
+     * @param <T>
+     * @return
+     */
     public static <T> Map<String, T> asMap(String key, T val) {
         Map<String, T> map = new HashMap<String, T>();
         map.put(key, val);
@@ -519,13 +637,26 @@ public final class StringUtils {
         return new SimpleDateFormat(format).format(calendar.getTime());
     }
 
+    /**
+     * 获取时间
+     *
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    public static String getDateTimeNow() {
+        return getDateTimeNow("yyyy-MM-dd HH:mm:ss");
+    }
+
     public static String getDateTimeNow(String format) {
         return new SimpleDateFormat(format).format(Calendar.getInstance(Locale.CHINA).getTime());
     }
 
-    public static String friendly_time(String dateStr, int day) {
-        if (1 > day)
-            day = 1;
+    /**
+     * 以友好的方式显示时间
+     *
+     * @param dateStr
+     * @return
+     */
+    public static String friendly_time(String dateStr) {
         Date time = toDate(dateStr);
         if (time == null) {
             return "Unknown";
@@ -535,19 +666,25 @@ public final class StringUtils {
         long lt = time.getTime() / 86400000;
         long ct = cal.getTimeInMillis() / 86400000;
         int days = (int) (ct - lt);
+        int months = (days / 30) + (days % 30 > 0 ? 1 : 0) + days > 30 ? 0 : -1;
+        int year = (months / 12) + (months % 12 > 0 ? 1 : 0) + months > 12 ? 0 : -1;
         if (days == 0) {
             int hour = (int) ((cal.getTimeInMillis() - time.getTime()) / 3600000);
             if (hour == 0)
                 ftime = Math.max((cal.getTimeInMillis() - time.getTime()) / 60000, 1) + "分钟前";
             else
                 ftime = hour + "小时前";
-        } else if (days == 1 && 1 <= day) {
+        } else if (days == 1) {
             ftime = "昨天";
-        } else if (days == 2 && 2 <= day) {
+        } else if (days == 2) {
             ftime = "前天";
-        } else if (days > 2 && days <= day) {
+        } else if (days > 2 && months == 0) {
             ftime = days + "天前";
-        } else if (days > day) {
+        } else if (months > 1 && months < 12) {
+            ftime = months + "个月前";
+        } else if (year > 1) {
+            ftime = year + "年前";
+        } else {
             ftime = date.format(time);
         }
         return ftime;
@@ -567,16 +704,6 @@ public final class StringUtils {
         a.set(Calendar.DATE, 1);// 把日期设置为当月第一天
         a.roll(Calendar.DATE, -1);// 日期回滚一天，也就是最后一天
         return a.get(Calendar.DATE);
-    }
-
-    /**
-     * 以友好的方式显示时间
-     *
-     * @param sdate
-     * @return
-     */
-    public static String friendly_time(String sdate) {
-        return friendly_time(sdate, 5);
     }
 
     public static Date toDate(String dateStr) {
