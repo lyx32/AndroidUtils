@@ -22,7 +22,7 @@
 
 10.ViewUtils 参考XUtils的ViewUtils，并作出一定修改完善。
 
-11.CacheUtils 主要是用于获取一些内置缓存目录。
+11.CacheUtils 主要是用于获取一些缓存目录。
 
 12.BitmapUtils 主要是对Picasso的封装。及一些Bitmap的操作。
 
@@ -32,21 +32,23 @@
 
 15.CanvasUtils 一些兼容低版本的绘制方法。
 
+16.DDUtils 一些操作数据库的简单封装。
+
 
 
 > 1.项目根目录 build.gradle
 
-> 1.1        allprojects {
+> 1.1           allprojects {
 
-> 1.2            repositories {
+> 1.2               repositories {
 
-> 1.3                maven { url 'https://jitpack.io' }
+> 1.3                   maven { url 'https://jitpack.io' }
 
-> 1.4            }
+> 1.4               }
 
-> 1.5        }
+> 1.5           }
 
 
 > 2.项目 module 下的 build.gradle
 
-> 2.1        implementation 'com.github.lyx32:AndroidUtils:x.x.x'
+> 2.1   implementation 'com.github.lyx32:AndroidUtils:x.x.x' [![](https://jitpack.io/v/lyx32/AndroidUtils.svg)](https://jitpack.io/#lyx32/AndroidUtils)

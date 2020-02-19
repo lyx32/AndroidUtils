@@ -154,7 +154,7 @@ public class NRecyclerView extends RecyclerView {
                             if (delta == 0)
                                 delta = 1;
                             double data = 2D / delta;
-                            // 说明已经爆了，那说明需要滚动的数量有点多，那么则滚快点
+                            // 已经爆了，那说明需要滚动的数量有点多，那么则滚快点
                             if ((data + "").contains("E")) {
                                 data = 0.001D;
                             }

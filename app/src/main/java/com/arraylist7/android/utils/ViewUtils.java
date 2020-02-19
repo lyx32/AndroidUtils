@@ -21,7 +21,9 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class ViewUtils {
 
@@ -44,6 +46,8 @@ public final class ViewUtils {
                 bundle = intent.getExtras();
         } else if (object instanceof android.app.Fragment) {
             bundle = ((android.app.Fragment) object).getArguments();
+        } else if (object instanceof androidx.fragment.app.Fragment) {
+            bundle = ((androidx.fragment.app.Fragment) object).getArguments();
         } else if (object instanceof Fragment) {
             bundle = ((Fragment) object).getArguments();
         }
@@ -56,15 +60,14 @@ public final class ViewUtils {
             return;
         }
         Class<?> clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        Bundle bundle = getBundle(object);
-        List<String> keys = null;
-        if (null != bundle) {
-            keys = StringUtils.asList(bundle.keySet());
-        } else {
-            keys = new ArrayList<>();
+        List<Field> fields = StringUtils.asList(clazz.getDeclaredFields());
+        List<Field> fields2 = StringUtils.asList(clazz.getFields());
+        for (Field f2 : fields2) {
+            if (!fields.contains(f2))
+                fields.add(f2);
         }
-
+        fields2.clear();
+        Bundle bundle = getBundle(object);
         for (Field field : fields) {
             Views aView = field.getAnnotation(Views.class);
             Params params = field.getAnnotation(Params.class);
@@ -83,8 +86,7 @@ public final class ViewUtils {
                     continue;
                 }
                 try {
-                    field.setAccessible(true);
-                    field.set(object, findView);
+                    ClassUtils.setValue(object,field.getName(),findView);
                 } catch (Throwable e) {
                     String injectViewName = findView.getClass().toString().replaceFirst("class", "");
                     LogUtils.e(getFieldInfo(field) + " 注入" + injectViewName + " 失败");
@@ -265,17 +267,17 @@ public final class ViewUtils {
         vs.clear();
     }
 
-    public static void bindClickListener(View view, int viewId, View.OnClickListener listener){
-            bindClickListener(new ViewSource(view),viewId,listener);
+    public static void bindClickListener(View view, int viewId, View.OnClickListener listener) {
+        bindClickListener(new ViewSource(view), viewId, listener);
     }
 
-    public static void bindClickListener(Activity activity,int viewId,View.OnClickListener listener){
-        bindClickListener(new ViewSource(activity),viewId,listener);
+    public static void bindClickListener(Activity activity, int viewId, View.OnClickListener listener) {
+        bindClickListener(new ViewSource(activity), viewId, listener);
     }
 
-    private static void bindClickListener(ViewSource vs, int viewId, final View.OnClickListener listener){
+    private static void bindClickListener(ViewSource vs, int viewId, final View.OnClickListener listener) {
         View view = vs.findViewById(viewId);
-        if(null == view){
+        if (null == view) {
             LogUtils.e(viewId + " id无效，不能绑定事件！");
             return;
         }
@@ -292,7 +294,7 @@ public final class ViewUtils {
 }
 
 class ViewSource {
-    private List<SoftReference<View>> list = new ArrayList<>();
+    private Map<String, SoftReference<View>> map = new HashMap<>();
     private Context context;
     private Activity activity;
     private View view;
@@ -310,19 +312,14 @@ class ViewSource {
     }
 
     public View findViewById(int id) {
-        View view = null;
-        for (SoftReference<View> softView : list) {
-            if (null != softView) {
-                if (null != softView.get()) {
-                    if (id == softView.get().getId()) {
-                        return softView.get();
-                    }
-                }
-            }
+        SoftReference<View> softReference = map.get(id + "");
+        if (null == softReference || null == softReference.get()) {
+            map.remove(id + "");
+            View view = null == this.activity ? this.view.findViewById(id) : this.activity.findViewById(id);
+            softReference = new SoftReference<View>(view);
+            map.put(id + "", softReference);
         }
-        view = null == this.activity ? this.view.findViewById(id) : this.activity.findViewById(id);
-        list.add(new SoftReference<View>(view));
-        return view;
+        return softReference.get();
     }
 
     public Context getContext() {
@@ -334,11 +331,10 @@ class ViewSource {
     }
 
     public void clear() {
-        for (SoftReference<View> softView : list) {
+        for (SoftReference<View> softView : map.values()) {
             softView.clear();
         }
-        list.clear();
-        list = null;
+        map.clear();
         context = null;
         activity = null;
         view = null;
